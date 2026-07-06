@@ -1,0 +1,386 @@
+openapi: 3.0.3
+
+info:
+  title: EDI@Energy Ad-Hoc Steuerung API
+  version: 1.0.0
+  description: >
+    API-Webdienste für Ad-hoc-Steuerungshandlungen zwischen LF, VNB und MSB
+    auf Basis der EDI@Energy Steuerungsprozesse.
+
+servers:
+  - url: https://api.example.de
+
+tags:
+  - name: AdHocControl
+  - name: AdHocResponse
+  - name: AdHocInformation
+
+paths:
+
+  /steuerbefehl/adhocPrio:
+    post:
+      tags: [AdHocControl]
+      summary: AdHoc-01 Priorisierte Ad-hoc-Steuerung
+      operationId: postAdHocPrio
+      parameters:
+        - $ref: '#/components/parameters/transactionId'
+        - $ref: '#/components/parameters/creationDateTime'
+        - $ref: '#/components/parameters/initialTransactionId'
+        - $ref: '#/components/parameters/controlActor'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdHocPrioRequest'
+      responses:
+        '202':
+          description: accepted
+
+  /steuerbefehl/adhocZyklisch:
+    post:
+      tags: [AdHocControl]
+      summary: AdHoc-02 Zyklischer Fahrplan
+      operationId: postAdHocZyklisch
+      parameters:
+        - $ref: '#/components/parameters/transactionId'
+        - $ref: '#/components/parameters/creationDateTime'
+        - $ref: '#/components/parameters/initialTransactionId'
+        - $ref: '#/components/parameters/controlActor'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdHocZyklischRequest'
+      responses:
+        '202':
+          description: accepted
+
+  /steuerbefehl/softstart:
+    post:
+      tags: [AdHocControl]
+      summary: AdHoc-03 Softstartprofil
+      operationId: postSoftstart
+      parameters:
+        - $ref: '#/components/parameters/transactionId'
+        - $ref: '#/components/parameters/creationDateTime'
+        - $ref: '#/components/parameters/initialTransactionId'
+        - $ref: '#/components/parameters/controlActor'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SoftstartRequest'
+      responses:
+        '202':
+          description: accepted
+
+  /steuerbefehl/failsafe:
+    post:
+      tags: [AdHocControl]
+      summary: AdHoc-04 Failsafe-Konfiguration
+      operationId: postFailsafe
+      parameters:
+        - $ref: '#/components/parameters/transactionId'
+        - $ref: '#/components/parameters/creationDateTime'
+        - $ref: '#/components/parameters/initialTransactionId'
+        - $ref: '#/components/parameters/controlActor'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FailsafeRequest'
+      responses:
+        '202':
+          description: accepted
+
+  /steuerbefehl/initialZustand:
+    post:
+      tags: [AdHocControl]
+      summary: AdHoc-05 Löschen vorhandener Ad-hoc-Steuerungen
+      operationId: postInitialZustand
+      parameters:
+        - $ref: '#/components/parameters/transactionId'
+        - $ref: '#/components/parameters/creationDateTime'
+        - $ref: '#/components/parameters/initialTransactionId'
+        - $ref: '#/components/parameters/controlActor'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InitialZustandRequest'
+      responses:
+        '202':
+          description: accepted
+
+  /antwort/vorlaeufig:
+    post:
+      tags: [AdHocResponse]
+      summary: AdHoc-06 Vorläufige Antwort
+      operationId: postPreliminaryResponse
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PreliminaryResponse'
+      responses:
+        '202':
+          description: accepted
+
+  /antwort/final:
+    post:
+      tags: [AdHocResponse]
+      summary: AdHoc-07 Finale Antwort
+      operationId: postFinalResponse
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FinalResponse'
+      responses:
+        '202':
+          description: accepted
+
+  /information:
+    post:
+      tags: [AdHocInformation]
+      summary: AdHoc-08 Information über aktive Ad-hoc-Steuerungen
+      operationId: postInformation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InformationRequest'
+      responses:
+        '202':
+          description: accepted
+
+components:
+
+  parameters:
+
+    transactionId:
+      name: transactionId
+      in: header
+      required: true
+      schema:
+        type: string
+        format: uuid
+
+    creationDateTime:
+      name: creationDateTime
+      in: header
+      required: true
+      schema:
+        type: string
+        format: date-time
+
+    initialTransactionId:
+      name: initialTransactionId
+      in: header
+      required: false
+      schema:
+        type: string
+        format: uuid
+
+    controlActor:
+      name: controlActor
+      in: header
+      required: false
+      schema:
+        type: string
+        pattern: '^\d{13}$'
+
+  schemas:
+
+    LocationReference:
+      type: object
+      required:
+        - locationId
+      properties:
+        locationId:
+          type: string
+          example: C1234848431
+
+    AdHocDirection:
+      type: string
+      enum:
+        - FeedIn
+        - Consumption
+
+    AdHocReason:
+      type: string
+      enum:
+        - DSO
+        - DSO_TSO
+        - Contract
+        - Test
+
+    PowerInterval:
+      type: object
+      required:
+        - activePowerValue
+      properties:
+        activePowerValue:
+          type: number
+          format: double
+          minimum: 0
+
+    ExecutionPowerInterval:
+      allOf:
+        - $ref: '#/components/schemas/PowerInterval'
+        - type: object
+          required:
+            - executionTimeFrom
+            - executionTimeUntil
+          properties:
+            executionTimeFrom:
+              type: string
+              format: date-time
+            executionTimeUntil:
+              type: string
+              format: date-time
+
+    DurationPowerInterval:
+      allOf:
+        - $ref: '#/components/schemas/PowerInterval'
+        - type: object
+          required:
+            - duration
+          properties:
+            duration:
+              type: integer
+
+    AdHocPrioItem:
+      allOf:
+        - $ref: '#/components/schemas/LocationReference'
+        - type: object
+          properties:
+            adHocReason:
+              $ref: '#/components/schemas/AdHocReason'
+            adHocDirection:
+              $ref: '#/components/schemas/AdHocDirection'
+            adHocContractId:
+              type: string
+            adHocMaximumValues:
+              type: array
+              items:
+                $ref: '#/components/schemas/ExecutionPowerInterval'
+
+    AdHocPrioRequest:
+      type: array
+      items:
+        $ref: '#/components/schemas/AdHocPrioItem'
+
+    AdHocZyklischItem:
+      allOf:
+        - $ref: '#/components/schemas/LocationReference'
+        - type: object
+          properties:
+            adHocReason:
+              $ref: '#/components/schemas/AdHocReason'
+            adHocDirection:
+              $ref: '#/components/schemas/AdHocDirection'
+            adHocContractId:
+              type: string
+            adHocMaximumValues:
+              type: array
+              maxItems: 96
+              items:
+                $ref: '#/components/schemas/DurationPowerInterval'
+
+    AdHocZyklischRequest:
+      type: array
+      items:
+        $ref: '#/components/schemas/AdHocZyklischItem'
+
+    SoftstartRequest:
+      type: array
+      items:
+        type: object
+        properties:
+          locationId:
+            type: string
+          softstartValuesMaxProduction:
+            type: array
+            items:
+              $ref: '#/components/schemas/DurationPowerInterval'
+          softstartValuesMaxConsumption:
+            type: array
+            items:
+              $ref: '#/components/schemas/DurationPowerInterval'
+
+    FailsafeRequest:
+      type: array
+      items:
+        type: object
+        properties:
+          locationId:
+            type: string
+          failsafeValueProduction:
+            $ref: '#/components/schemas/DurationPowerInterval'
+          failsafeValueConsumption:
+            $ref: '#/components/schemas/DurationPowerInterval'
+
+    InitialZustandRequest:
+      type: object
+      properties:
+        locationIds:
+          type: array
+          items:
+            type: string
+        adHocControlStopTime:
+          type: string
+          format: date-time
+
+    PreliminaryResponse:
+      type: object
+      properties:
+        locationId:
+          type: string
+        adHocPreliminaryState:
+          type: string
+          enum:
+            - possible
+            - unable
+        adHocPreliminaryReason:
+          type: string
+
+    FinalResponse:
+      type: object
+      properties:
+        locationId:
+          type: string
+        adHocState:
+          type: string
+          enum:
+            - possible
+            - unable
+        adHocReason:
+          type: string
+
+    InformationRequest:
+      type: object
+      properties:
+        locationId:
+          type: string
+        partnerId:
+          type: string
+        adHocEndDate:
+          type: string
+          format: date-time
+        adHocValuesMaxConsumption:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExecutionPowerInterval'
+        adHocValuesMaxFeedIn:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExecutionPowerInterval'
