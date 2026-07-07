@@ -5,11 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AdHoc API Dokumentation</title>
 
-    https://unpkg.com/swagger-ui-dist/swagger-ui.css
-
-    <style>
-        html {
-            box-sizing: border-box;
+    <link rel="stylesheet"
+          href="https://unpkg.com/swagger-ui-dist/swagger         box-sizing: border-box;
             overflow-y: scroll;
         }
 
@@ -29,14 +26,14 @@
 
 <div id="swagger-ui"></div>
 
-https://unpkg.com/swagger-ui-dist/swagger-ui-bundle.js
-https://unpkg.com/swagger-ui-dist/swagger-ui-standalone-preset.js
+unpkg.com/swagger-ui-dist/swagger-ui-bundle.js"></script>
+<ttps://unpkg.com/swagger-ui-dist/swagger-ui-standalone-preset.js
 
 <script>
 window.onload = function () {
     SwaggerUIBundle({
         url: "./adhocapi.yaml",
-        dom_id: '#swagger-ui',
+        dom_id: "#swagger-ui",
         deepLinking: true,
         presets: [
             SwaggerUIBundle.presets.apis,
