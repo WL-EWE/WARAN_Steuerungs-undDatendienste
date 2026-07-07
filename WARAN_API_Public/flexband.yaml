@@ -1,0 +1,311 @@
+openapi: 3.0.3
+info:
+  title: POEN Flexband API
+  version: 1.0.0
+  description: API zur Steuerung von Flexband-Anweisungen gemäß POEN Spezifikation
+
+servers:
+  - url: https://api.example.com
+
+tags:
+  - name: Flexband
+  - name: Fallback
+  - name: Status
+  - name: Information
+
+paths:
+
+  /flexband:
+    post:
+      tags: [Flexband]
+      summary: Übermittlung von Flexband-Hüllkurven
+      operationId: createFlexband
+      parameters:
+        - $ref: '#/components/parameters/transactionId'
+        - $ref: '#/components/parameters/creationDateTime'
+        - $ref: '#/components/parameters/initialTransactionId'
+        - $ref: '#/components/parameters/controlActor'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/FlexbandRequest'
+      responses:
+        '200':
+          description: Erfolgreich verarbeitet
+
+  /parameter/fallback:
+    post:
+      tags: [Fallback]
+      summary: Übermittlung einer Fallback-Kurve
+      operationId: createFallback
+      parameters:
+        - $ref: '#/components/parameters/transactionId'
+        - $ref: '#/components/parameters/creationDateTime'
+        - $ref: '#/components/parameters/initialTransactionId'
+        - $ref: '#/components/parameters/controlActor'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              $ref: '#/components/schemas/FallbackRequest'
+      responses:
+        '200':
+          description: Erfolgreich verarbeitet
+
+  /flexband/initialZustand:
+    post:
+      tags: [Flexband]
+      summary: Löschen bestehender Hüllkurven
+      operationId: resetFlexband
+      parameters:
+        - $ref: '#/components/parameters/commonHeaders'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InitialStateRequest'
+      responses:
+        '200':
+          description: Erfolgreich zurückgesetzt
+
+  /flexband/vorlaufigeAntwort:
+    post:
+      tags: [Status]
+      summary: Vorläufige Antwort
+      operationId: preliminaryResponse
+      parameters:
+        - $ref: '#/components/parameters/commonHeaders'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PreliminaryResponse'
+      responses:
+        '200':
+          description: Antwort übermittelt
+
+  /flexband/finaleAntwort:
+    post:
+      tags: [Status]
+      summary: Finale Antwort
+      operationId: finalResponse
+      parameters:
+        - $ref: '#/components/parameters/commonHeaders'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FinalResponse'
+      responses:
+        '200':
+          description: Finale Antwort übermittelt
+
+  /flexband/information:
+    post:
+      tags: [Information]
+      summary: Information an Marktpartner
+      operationId: informPartners
+      parameters:
+        - $ref: '#/components/parameters/commonHeaders'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InformationRequest'
+      responses:
+        '200':
+          description: Information versendet
+
+components:
+
+  parameters:
+
+    commonHeaders:
+      name: transactionId
+      in: header
+      required: true
+      schema:
+        type: string
+        format: uuid
+
+    transactionId:
+      name: transactionId
+      in: header
+      required: true
+      schema:
+        type: string
+        format: uuid
+
+    creationDateTime:
+      name: creationDateTime
+      in: header
+      required: true
+      schema:
+        type: string
+        format: date-time
+
+    initialTransactionId:
+      name: initialTransactionId
+      in: header
+      required: false
+      schema:
+        type: string
+        format: uuid
+
+    controlActor:
+      name: controlActor
+      in: header
+      required: false
+      schema:
+        type: string
+        description: BDEW-ID
+
+  schemas:
+
+    FlexbandRequest:
+      type: object
+      required:
+        - locationId
+        - poenControlStartTime
+        - poenControlProfile
+        - poenControlSlots
+      properties:
+        locationId:
+          type: string
+        poenContractId:
+          type: string
+        poenControlStartTime:
+          type: string
+          format: date-time
+        poenControlProfile:
+          type: string
+          enum: [P_ConMax, P_ConMin, P_ProdMax, P_ProdMin]
+        poenRepetitionFlag:
+          type: boolean
+          default: false
+        poenControlSlots:
+          type: array
+          maxItems: 192
+          items:
+            $ref: '#/components/schemas/ControlSlot'
+
+    FallbackRequest:
+      type: object
+      required:
+        - locationId
+        - poenConfigProfile
+        - poenConfigSlots
+      properties:
+        locationId:
+          type: string
+        poenContractId:
+          type: string
+        poenConfigProfile:
+          type: string
+          enum: [P_ConFB, P_ProdFB]
+        poenConfigSlots:
+          type: array
+          maxItems: 96
+          items:
+            $ref: '#/components/schemas/FallbackSlot'
+
+    InitialStateRequest:
+      type: object
+      properties:
+        locationId:
+          type: array
+          items:
+            type: string
+        poenContractId:
+          type: string
+        poenControlStopTime:
+          type: string
+          format: date-time
+
+    PreliminaryResponse:
+      type: object
+      properties:
+        locationId:
+          type: array
+          items:
+            type: string
+        poenContractId:
+          type: string
+        poenPreliminaryState:
+          type: string
+          enum: [possible, unable]
+        poenPreliminaryReason:
+          type: string
+          enum: [communicationFailure, overload, unable]
+
+    FinalResponse:
+      type: object
+      properties:
+        locationId:
+          type: array
+          items:
+            type: string
+        poenContractId:
+          type: string
+        poenPreliminaryState:
+          type: string
+          enum: [possible, unable]
+        poenPreliminaryReason:
+          type: string
+          enum: [communicationFailure, overload, unable]
+
+    InformationRequest:
+      type: object
+      properties:
+        payload:
+          type: array
+          items:
+            type: object
+            properties:
+              locationId:
+                type: string
+              poenConfigProfile:
+                type: string
+                enum: [P_ConFB, P_ProdFB]
+              poenConfigSlots:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FallbackSlot'
+
+    ControlSlot:
+      type: object
+      required:
+        - duration
+        - activePowerValue
+      properties:
+        duration:
+          type: integer
+          minimum: 900
+          maximum: 86400
+        activePowerValue:
+          type: integer
+          minimum: 0
+
+    FallbackSlot:
+      type: object
+      required:
+        - duration
+        - powerValue
+      properties:
+        duration:
+          type: integer
+          minimum: 900
+          maximum: 86400
+        powerValue:
+          type: integer
+          minimum: 0
