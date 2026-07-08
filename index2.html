@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>WARAN API Dokumentation</title>
+
+    <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist/swagger-ui.css">
+
+    <style>
+        .logo {
+            position: fixed;
+            top: 10px;
+            right: 20px;
+            height: 60px;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Logo -->
+    <imges/logo.png
+
+    <h2>API-Auswahl</h2>
+
+    <select id="apiSelect">
+        <option value="adhocapi.yaml">AdHoc API</option>
+        <option value="flexband.yaml">Flexband API</option>
+    </select>
+
+    <div id="swagger-ui"></div>
+
+    ://unpkg.com/swagger-ui-dist/swagger-ui-bundle.js"></script>
+
+    <script>
+        let ui = SwaggerUIBundle({
+            url: "adhocapi.yaml",
+            dom_id: "#swagger-ui"
+        });
+
+        document.getElementById("apiSelect").addEventListener("change", function() {
+            ui.specActions.updateUrl(this.value);
+            ui.specActions.download(this.value);
+        });
+    </script>
+
+</body>
+</html>
