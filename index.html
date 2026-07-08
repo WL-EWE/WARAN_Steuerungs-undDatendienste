@@ -6,12 +6,25 @@
     <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist/swagger-ui.css">
 
     <style>
-        .logo {
+        .logo-container {
             position: fixed;
             top: 10px;
             right: 20px;
-            height: 60px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
             z-index: 1000;
+        }
+
+        .logo-waran {
+            max-height: 60px;
+            max-width: auto;
+        }
+        
+        .logo-bmwe {
+            max-height: 180px;
+            max-width: auto;
         }
 
         body {
@@ -21,7 +34,10 @@
 </head>
 <body>
 
-    <img src="waran.png" alt="WARAN Logo" class="logo">
+    <div class="logo-container">
+        <img src="waran.png" alt="WARAN Logo" class="logo-waran">
+        <img src="bmwe.svg" alt="BMWE Logo" class="logo-bmwe">
+    </div>
 
     <h2>API-Auswahl</h2>
 
