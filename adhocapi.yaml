@@ -67,7 +67,7 @@ paths:
       tags: [Anweisung AdHoc Steuerungshandlung]
       summary: AdHoc-02 Zyklische AdHoc Steuerung 
       description: >
-        Erweiterung auf Array mit zyklischer (täglich wiederkehrender) Ad-hoc Ausführung). Erhält niedrigere Priorität und ist somit durch AdHoc-01 übersteuerbar. Wird ebenfalls ins jeweilige Ad-hoc Residualprofil übernommen. 
+        Erweiterung auf Array mit zyklischer (täglich wiederkehrender) Ad-hoc Ausführung. Erhält niedrigere Priorität und ist somit durch AdHoc-01 übersteuerbar. Wird ebenfalls ins jeweilige Ad-hoc Residualprofil übernommen. Entspricht weitestgehend den heutigen langfristigen Steuerungshandlungen (Leistungskurvendefinition).
         
 
         Mögliche Szenarien:
