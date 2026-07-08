@@ -1,0 +1,427 @@
+openapi: 3.0.3
+info:
+  title: WARAN - Impuls zur Erstellung einer Flexband API
+  version: 1.0.0
+  description: >
+    Aufbauend auf dem Ad-hoc-API Diensten und den voranschreitenden Steuerungsrollout, bieten die hier skizzierte API-Dienste erweiterte Möglichkeiten Steurungshandlungen über die MSB-Infrastruktur umzusetzen. Basis hierfür ist der EEBUS Anwendungsfall Power Envelope (POEN), welcher auch unter dem Begriff Hüllkurve oder Flexband bekannt ist. In Abgrenzung zur kurativen Ad-hoc Steuerung, bietet die Hüllkurve dabei die Chance eine proaktive Wirkung, sowie eine bessere Verzahnung von Markt- und Netzinteressen zu gewährleisten. In einem Ampelmodell (siehe Hinweise vom FNN zum Netzbetrieb mit Flexibilitäten) kann die Hüllkurve als Netzbetreiber-Instrument für die grüne und gelbe Ampelphase eingeordnet werden. Als übergeordnetes Ziel aus VNB Perspektive steht die effizientere Auslastung der Infrastruktur und die kostengünstige Integration von steuerbaren Anlagen ("Energiewendeanlagen") in die Niederspannungsnetze. Das generische Flexbandkonzept ermöglicht dabei eine Vielzahl von energiewirtschaftlichen Anwendungsmöglichkeiten. Bei unterschielichen Akteuren (bspw. Netzbetreiber und Lieferant), bildet der MSB ein kosolidiertes Profil. Analog zum Ad-hoc Residualprofil, wird hier das sogenannte "POEN-Residualprofil gebildet. Weitere Details zur Verwendung und Einordnung finden sich in den folgenden Veröffentlichungen: 
+
+    - https://www.ppc-ag.de/de/blog/vorausschauen-statt-nachbessern-steuerung-nach-huellkurve/
+
+    - https://www.vde.com/de/fnn/aktuelles/impuls-flexband 
+
+
+    Ingesamt ergeben sich die folgenden API Dienste die mit der entsprechenden Berechtigung beim MSB bestellt und genutzt werden können:
+      -  Flex-01 - "Übermittlung Flexband" Vorgabe der verbrauchsseitigen (POEN Szenario 1) oder der einspeiseseitigen Hüllkurve (POEN Szenario 2).  Es können je nach Berechtigung maximale und minimale Leistungslimits für die nächsten 48 Stunden definiert werden. Der MSB bildet auf der Basis ein POEN-Residualprofil (POEN-RP) und sorgt damit für eine konfliktfreie Übertragung des Flexbandes. Optional kann der MSB eine täglich wiederkehrende Ausführung sicherstellen.
+
+      - Flex-02 - "Übermittlung Fallback" - Vorgabe einer Fallbackkurve (POEN Szenario 3). Es können maximale und minimale Leistungslimits für beide Energierichtungen definiert werden. Die Vorgaben haben einen zeitlichen Bezug (0-24h), aber keine Datumsangabe. Die Fallbackwerte werden temporär bei lokalen Kommunikationsstörungen oder Lücken im POEN-Residualprofil aktiviert. Der MSB sorgt für ein konsolidiertes Fallbackprofil, dieses entspricht dem Steuerungsanwendungsfällen 9 gemäß Implementierungshinweis des BSI (SAF9)
+
+      - Flex-03 - "Löschen von Hülllkurven" - Erlaubt die Deaktivierung von zuvor übermittelten Hüllkurven. Die gesamten Einträge des jeweiligen Absenders werden im POEN Residualprofil gelöscht.
+
+
+
+
+
+ 
+  
+servers:
+  - url: https://api.example.com
+
+tags:
+  - name: Anweisung Flexband
+  - name: Antwort Flexband
+  - name: Mitteilung Flexband an Berechtigte
+  
+
+paths:
+
+  /flexband/anweisung/poen-residualprofil:
+    post:
+      tags: [Anweisung Flexband]
+      summary: Flex-01 - Übermittlung  Flexband
+      description: >
+        Vorgabe der verbrauchsseitigen (POEN Szenario 1) oder der einspeiseseitigen Hüllkurve (POEN Szenario 2).  Es können je nach Berechtigung maximale und minimale Leistungslimits für die nächsten 48 Stunden definiert werden. Der MSB bildet auf der Basis ein POEN-Residualprofil (POEN-RP) und sorgt damit für eine konfliktfreie Übertragung des Flexbandes. Optional kann der MSB eine täglich wiederkehrende Ausführung sicherstellen.
+
+        Die POEN Residualprofile (POEN RP S1 und POEN RP S2) entsprechen dabei den Steuerungsanwendungsfällen 7 und 8 gemäß Implementierungshinweis des BSI (SAF7 / SAF8).
+
+        Mögliche Szenarien:
+         - VNB - §14a EnWG „präventiv” (Bis Ende 2028) -> POEN RP S1
+         - 	VNB - Redispatch (2.0/3.0) -> POEN RP S2
+         - 	VNB - Vorausschauende Steuerung* -> POEN RP S1/S2
+         - LF – Direktvermarktung** -> POEN RP S2
+         - LF - Vertrags- und Bilanzoptimierung** -> POEN S1/S2
+         - LF – Systemdienstleistungen (aFRR / mFRR ** -> POEN S1/S2
+
+      operationId: createFlexband
+      parameters:
+        - $ref: '#/components/parameters/transactionId'
+        - $ref: '#/components/parameters/creationDateTime'
+        - $ref: '#/components/parameters/initialTransactionId'
+        - $ref: '#/components/parameters/controlActor'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/FlexbandRequest'
+      responses:
+        '200':
+          description: Erfolgreich verarbeitet
+
+  /flexband/parameter/fallback:
+    post:
+      tags: [Anweisung Flexband]
+      summary: Flex-02 Konfiguration einer Fallback-Küllkurve
+      description: >
+        Vorgabe einer Fallbackkurve (POEN Szenario 3). Es können maximale und minimale Leistungslimits für beide Energierichtungen definiert werden. Die Vorgaben haben einen zeitlichen Bezug (0-24h), aber keine Datumsangabe. Die Fallbackwerte werden temporär bei lokalen Kommunikationsstörungen oder Lücken im POEN-Residualprofil aktiviert. Der MSB sorgt für ein konsolidiertes Fallbackprofil, dieses entspricht dem Steuerungsanwendungsfällen 9 gemäß Implementierungshinweis des BSI (SAF9)
+      operationId: createFallback
+      parameters:
+        - $ref: '#/components/parameters/transactionId'
+        - $ref: '#/components/parameters/creationDateTime'
+        - $ref: '#/components/parameters/initialTransactionId'
+        - $ref: '#/components/parameters/controlActor'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FallbackRequest'
+      responses:
+        '200':
+          description: Erfolgreich verarbeitet
+
+  /flexband/initialZustand:
+    post:
+      tags: [Anweisung Flexband]
+      summary: Flex-03 Löschen bestehender Hüllkurven
+      description: >
+        Erlaubt die Deaktivierung von zuvor übermittelten Hüllkurven. Die gesamten Einträge des jeweiligen Absenders werden im POEN Residualprofil gelöscht.
+      operationId: resetFlexband
+      parameters:
+        - $ref: '#/components/parameters/commonHeaders'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InitialStateRequest'
+      responses:
+        '200':
+          description: Erfolgreich zurückgesetzt
+
+  /flexband/vorlaufigeAntwort:
+    post:
+      tags: [Antwort Flexband]
+      summary: Vorläufige Antwort
+      operationId: preliminaryResponse
+      parameters:
+        - $ref: '#/components/parameters/commonHeaders'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PreliminaryResponse'
+      responses:
+        '200':
+          description: Antwort übermittelt
+
+  /flexband/finaleAntwort:
+    post:
+      tags: [Antwort Flexband]
+      summary: Finale Antwort
+      operationId: finalResponse
+      parameters:
+        - $ref: '#/components/parameters/commonHeaders'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FinalResponse'
+      responses:
+        '200':
+          description: Finale Antwort übermittelt
+
+  /flexband/information:
+    post:
+      tags: [Mitteilung Flexband an Berechtigte]
+      summary: Information an Marktpartner
+      operationId: informPartners
+      parameters:
+        - $ref: '#/components/parameters/commonHeaders'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InformationRequest'
+      responses:
+        '200':
+          description: Information versendet
+
+components:
+
+  parameters:
+
+    commonHeaders:
+      name: transactionId
+      in: header
+      required: true
+      schema:
+        type: string
+        format: uuid
+
+    transactionId:
+      name: transactionId
+      in: header
+      required: true
+      schema:
+        type: string
+        format: uuid
+
+    creationDateTime:
+      name: creationDateTime
+      in: header
+      required: true
+      schema:
+        type: string
+        format: date-time
+
+    initialTransactionId:
+      name: initialTransactionId
+      in: header
+      required: false
+      schema:
+        type: string
+        format: uuid
+
+    controlActor:
+      name: controlActor
+      in: header
+      required: false
+      schema:
+        type: string
+        description: BDEW-ID
+
+  schemas:
+
+    FlexbandRequest:
+      type: object
+
+      required:
+        - locationId
+        - poenControlStartTime
+        - poenControlProfile
+
+      properties:
+
+        locationId:
+          type: string
+          example: C1234848431
+
+        poenContractId:
+          type: string
+          example: LF-2026-4711
+
+        poenReason:
+          type: string
+          enum:
+            - Contract
+            - Test
+          example: Contract
+
+        poenControlStartTime:
+          type: string
+          format: date-time
+          example: "2026-01-15T00:00:00Z"
+
+        poenControlProfile:
+          type: string
+          enum:
+            - Consumption
+            - FeedIn
+          example: Consumption
+
+        poenRepetitionFlag:
+          type: boolean
+          default: false
+          example: false
+
+        poenControlSlotsMax:
+          type: array
+          maxItems: 192
+          items:
+            $ref: '#/components/schemas/ControlSlot'
+          example:
+            - duration: 900
+              activePowerValue: 11000
+            - duration: 900
+              activePowerValue: 9000
+            - duration: 900
+              activePowerValue: 7000
+            - duration: 900
+              activePowerValue: 5000
+
+        poenControlSlotsMin:
+          type: array
+          maxItems: 192
+          items:
+            $ref: '#/components/schemas/ControlSlot'
+          example:
+            - duration: 900
+              activePowerValue: 2000
+            - duration: 900
+              activePowerValue: 2000
+            - duration: 900
+              activePowerValue: 3000
+            - duration: 900
+              activePowerValue: 4000
+
+    FallbackRequest:
+      type: object
+
+      required:
+        - locationId
+        - poenConfigProfile
+        - poenConfigSlots
+
+      properties:
+
+        locationId:
+          type: string
+          example: C1234848431
+
+        poenContractId:
+          type: string
+          example: LF-2026-4711
+
+        poenConfigProfile:
+          type: string
+          enum:
+            - P_ConFB
+            - P_ProdFB
+          example: P_ConFB
+
+        poenConfigSlots:
+          type: array
+          maxItems: 96
+          items:
+            $ref: '#/components/schemas/FallbackSlot'
+          example:
+            - duration: 900
+              powerValue: 8000
+            - duration: 900
+              powerValue: 7500
+            - duration: 900
+              powerValue: 7000
+            - duration: 900
+              powerValue: 6500
+
+    InitialStateRequest:
+      type: object
+
+      properties:
+        locationId:
+          type: array
+          items:
+            type: string
+
+        poenControlStopTime:
+          type: string
+          format: date-time
+
+      example:
+        locationId:
+          - C1234848431
+          - C1234848432
+          - C1234848433
+          - C1234848434
+        poenControlStopTime: "2026-01-15T12:00:00Z"
+    PreliminaryResponse:
+      type: object
+      properties:
+        locationId:
+          type: array
+          items:
+            type: string
+        poenContractId:
+          type: string
+        poenPreliminaryState:
+          type: string
+          enum: [possible, unable]
+        poenPreliminaryReason:
+          type: string
+          enum: [communicationFailure, overload, unable]
+      example:
+          locationId: C1234848431
+          poenState: possible
+          poenReason: Steuerungseinrichtung erreichbar. Flexband plausibel und im POEN-Residualprofil übernommen.
+
+    FinalResponse:
+      type: object
+      properties:
+        locationId:
+          type: array
+          items:
+            type: string
+        poenContractId:
+          type: string
+        poenState:
+          type: string
+          enum: [possible, unable]
+        poenReason:
+          type: string
+          enum: [communicationFailure, overload, unable]
+      example:
+          locationId: C1234848431
+          poenState: possible
+          poenReason: Flexband bzw. POEN-Residualprofil erfolgreich in der Steuerungseinrichtung aktiviet.
+      
+
+    InformationRequest:
+      type: object
+      properties:
+        payload:
+          type: array
+          items:
+            type: object
+            properties:
+              locationId:
+                type: string
+              poenConfigProfile:
+                type: string
+                enum: [P_ConFB, P_ProdFB]
+              poenConfigSlots:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FallbackSlot'
+
+    ControlSlot:
+      type: object
+      required:
+        - duration
+        - activePowerValue
+      properties:
+        duration:
+          type: integer
+          minimum: 900
+          maximum: 86400
+        activePowerValue:
+          type: integer
+          minimum: 0
+
+    FallbackSlot:
+      type: object
+      required:
+        - duration
+        - powerValue
+      properties:
+        duration:
+          type: integer
+          minimum: 900
+          maximum: 86400
+        powerValue:
+          type: integer
+          minimum: 0
