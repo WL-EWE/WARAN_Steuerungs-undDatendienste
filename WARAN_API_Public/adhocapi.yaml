@@ -32,6 +32,16 @@ paths:
     post:
       tags: [Anweisung AdHoc Steuerungshandlung]
       summary: AdHoc-01 Priorisierte Ad-hoc-Steuerung
+      description: >
+        Aufbauend auf dem bestehenden API-Webdienst zur Steuerung, wird die Schnittstelle mit minimalen inhaltlichen Anpassungen vorgeschlagen. Zu den Anpassungen zählen bspw. die Berücksichtigung der Energierichtung. Die Werte werden je Energierichtung in das jeweilige Ad-hoc Residualprofil übernommen und mit hoher Priorität umgesetzt. Die Ad-hoc Residualprofile (LPC-RP / LPP-RP) entsprechen dabei den Steuerungsanwendungsfällen 1 und 2 gemäß Implementierungshinweis des BSI (SAF1 / SAF2).
+        
+
+        Mögliche Szenarien:
+          -	VNB - §14a EnWG „Notfallsignal -> LPC RP  
+          -	VNB - §9 EEG „Notfallsignal“ -> LPP RP
+          -	VNB - Redispatch (2.0/3.0) -> LPP RP*
+          -	LF – Direktvermarktung u.a. § §10b EEG – LPP RP**
+
       operationId: postAdHocPrio
       parameters:
         - $ref: '#/components/parameters/transactionId'
@@ -56,6 +66,15 @@ paths:
     post:
       tags: [Anweisung AdHoc Steuerungshandlung]
       summary: AdHoc-02 Zyklische AdHoc Steuerung 
+      description: >
+        Erweiterung auf Array mit zyklischer (täglich wiederkehrender) Ad-hoc Ausführung). Erhält niedrigere Priorität und ist somit durch AdHoc-01 übersteuerbar. Wird ebenfalls ins jeweilige Ad-hoc Residualprofil übernommen. 
+        
+
+        Mögliche Szenarien:
+          -	VNB - §14a EnWG „präventiv” (Bis Ende 2028) -> LPC RP
+          -	VNB – Backup-Fahrplan für Kommunikationsstörung -> LPC/LPP RP
+          -	LF – Backup-Fahrplan für Kommunikationsstörung -> LPC/LPP RP**
+
       operationId: postAdHocZyklisch
       parameters:
         - $ref: '#/components/parameters/transactionId'
@@ -80,6 +99,14 @@ paths:
     post:
       tags: [Anweisung AdHoc Steuerungshandlung]
       summary: AdHoc-03 Softstartprofil
+      description: >
+        Ein Ad-hoc Profil (LPC/LPP ST) welches dediziert auf der Steuerungseinrichtung hinterlegt wird und nur bei einer lokalen Spannungsunterbrechung aktiviert wird. Wird mit höchster Priorität ausgeführt und übersteuert somit das Ad-hoc Residualprofil.
+        Die Softstart Profile (LPC SST / LPP SST) entsprechen den Steuerungsanwendungsfällen 5 und 6 gemäß Implementierungshinweis des BSI (SAF5 / SAF6).
+        
+        Mögliche Szenarien:
+          - VNB - Netzstabilität nach Spannungswiederkehr -> LPC/LPP SST
+
+        
       operationId: postSoftstart
       parameters:
         - $ref: '#/components/parameters/transactionId'
@@ -104,6 +131,15 @@ paths:
     post:
       tags: [Anweisung AdHoc Steuerungshandlung]
       summary: AdHoc-04 Failsafe-Konfiguration
+      description: >
+        Konfiguration des Failsafe Werte gemäß EEBUS LPC / LPP Szenario 2. Nur durch den VNB zulässig. Wird über die Infrastruktur bis zur steuerbaren Anlage durchgereicht und dort bei lokalem Kommunikationsausfall aktiviert.
+        Die Failsafe Werte (LPC FS / LPP FS) entsprechen den Steuerungsanwendungsfällen 3 und 4 gemäß Implementierungshinweis des BSI (SAF3 / SAF4).
+
+        
+        Mögliche Szenarien:
+          - VNB – Definiertes Verhalten bei temporären lokalen Kommunikationsstörung 
+
+
       operationId: postFailsafe
       parameters:
         - $ref: '#/components/parameters/transactionId'
@@ -128,6 +164,8 @@ paths:
     post:
       tags: [Anweisung AdHoc Steuerungshandlung]
       summary: AdHoc-05 Löschen vorhandener Ad-hoc-Steuerungen
+      description: >
+        Erlaubt die Deaktivierung von zuvor übermittelten Steuerungshandlungen. Die gesamten Einträge des Absenders werden im AdHoc Residualprofil gelöscht.  
       operationId: postInitialZustand
       parameters:
         - $ref: '#/components/parameters/transactionId'
