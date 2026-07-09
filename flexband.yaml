@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: WARAN - Impuls zur Erstellung einer Flexband API
-  version: 1.0.0
+  version: 0.8.0
   description: >
     Aufbauend auf dem Ad-hoc-API Diensten und den voranschreitenden Steuerungsrollout, bieten die hier skizzierte API-Dienste erweiterte Möglichkeiten Steurungshandlungen über die MSB-Infrastruktur umzusetzen. Basis hierfür ist der EEBUS Anwendungsfall Power Envelope (POEN), welcher auch unter dem Begriff Hüllkurve oder Flexband bekannt ist. In Abgrenzung zur kurativen Ad-hoc Steuerung, bietet die Hüllkurve dabei die Chance eine proaktive Wirkung, sowie eine bessere Verzahnung von Markt- und Netzinteressen zu gewährleisten. In einem Ampelmodell (siehe Hinweise vom FNN zum Netzbetrieb mit Flexibilitäten) kann die Hüllkurve als Netzbetreiber-Instrument für die grüne und gelbe Ampelphase eingeordnet werden. Als übergeordnetes Ziel aus VNB Perspektive steht die effizientere Auslastung der Infrastruktur und die kostengünstige Integration von steuerbaren Anlagen ("Energiewendeanlagen") in die Niederspannungsnetze. Das generische Flexbandkonzept ermöglicht dabei eine Vielzahl von energiewirtschaftlichen Anwendungsmöglichkeiten. Bei unterschielichen Akteuren (bspw. Netzbetreiber und Lieferant), bildet der MSB ein kosolidiertes Profil. Analog zum Ad-hoc Residualprofil, wird hier das sogenannte "POEN-Residualprofil gebildet. Weitere Details zur Verwendung und Einordnung finden sich in den folgenden Veröffentlichungen: 
 
