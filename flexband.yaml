@@ -557,10 +557,20 @@ components:
                 example: "unable"
               preliminaryResponseCode:
                 type: string
-                enum: [communicationFailure, overload, unable]
+                enum: [succeeded, communicationFailure, overload, maintanance, missing contract, invalid message, unable]
+                description: >
+                  succeeded = erfolgreiche Verarbeitung; 
+                  communicationFailure = temporäre Störung in der Gerätekommunikation; 
+                  localFailure = Gerät(e) Störung - wird durch Außendienst behoben;
+                  customerInteractionRequired = Mitwirkung durch den Betreiber notwendig (bspw. SHIP Pairing);
+                  overload = Überlastung der Kommunikationsstrecke;
+                  missing contract = Keine gültige Berechtigung;
+                  invalid message = Nachricht enthält fachliche Fehler;
+                  unable = Sonstiger Fehler, siehe weitere Fehlerbeschreibung.
+                example: "customerInteractionRequired"
               preliminaryReason:
                 type: string
-                example: "Die Anfrage konnte aufgrund einer temporären Störung nicht verarbverarbeitet werden"
+                example: "Fehlendes Pairing zwischen der Steuerungseinrichtung und der steuerbaren Einrichtung des Betreibers. Eine Kundeninteraktion ist notwendig"
 
     FinalResponse:
       allOf:
@@ -578,9 +588,19 @@ components:
                 enum: [possible, unable]
               responseCode:
                 type: string
-                enum: [succeeded, communicationFailure, overload, unable]
+                enum: [succeeded, communicationFailure, overload, maintanance, missing contract, invalid message, unable]
+                description: >
+                  succeeded = erfolgreiche Verarbeitung; 
+                  communicationFailure = temporäre Störung in der Gerätekommunikation; 
+                  localFailure = Gerät(e) Störung - wird durch Außendienst behoben;
+                  customerInteractionRequired = Mitwirkung durch den Betreiber notwendig (bspw. SHIP Pairing);
+                  overload = Überlastung der Kommunikationsstrecke;
+                  missing contract = Keine gültige Berechtigung;
+                  invalid message = Nachricht enthält fachliche Fehler;
+                  unable = Sonstiger Fehler, siehe weitere Fehlerbeschreibung.
               reason:
                 type: string
+                description: Freitext zur weiteren Fehlerbeschreibung
             
             example:
                 srId: C1234848431
