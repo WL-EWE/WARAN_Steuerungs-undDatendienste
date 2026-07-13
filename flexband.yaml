@@ -58,7 +58,7 @@ paths:
         - $ref: '#/components/parameters/transactionId'
         - $ref: '#/components/parameters/creationDateTime'
         - $ref: '#/components/parameters/initialTransactionId'
-        - $ref: '#/components/parameters/controlActor'
+       # - $ref: '#/components/parameters/controlActor'
       requestBody:
         required: true
         content:
@@ -111,7 +111,7 @@ paths:
         - $ref: '#/components/parameters/transactionId'
         - $ref: '#/components/parameters/creationDateTime'
         - $ref: '#/components/parameters/initialTransactionId'
-        - $ref: '#/components/parameters/controlActor'
+       # - $ref: '#/components/parameters/controlActor'
       requestBody:
         required: true
         content:
@@ -134,7 +134,7 @@ paths:
         - $ref: '#/components/parameters/transactionId'
         - $ref: '#/components/parameters/creationDateTime'
         - $ref: '#/components/parameters/initialTransactionId'
-        - $ref: '#/components/parameters/controlActor'
+       # - $ref: '#/components/parameters/controlActor'
       requestBody:
         required: true
         content:
@@ -176,7 +176,7 @@ paths:
         - $ref: '#/components/parameters/transactionId'
         - $ref: '#/components/parameters/creationDateTime'
         - $ref: '#/components/parameters/initialTransactionId'
-        - $ref: '#/components/parameters/controlActor'
+       # - $ref: '#/components/parameters/controlActor'
       requestBody:
         required: true
         content:
@@ -196,7 +196,7 @@ paths:
         - $ref: '#/components/parameters/transactionId'
         - $ref: '#/components/parameters/creationDateTime'
         - $ref: '#/components/parameters/initialTransactionId'
-        - $ref: '#/components/parameters/controlActor'
+       # - $ref: '#/components/parameters/controlActor'
       requestBody:
         required: true
         content:
@@ -236,7 +236,7 @@ paths:
         - $ref: '#/components/parameters/transactionId'
         - $ref: '#/components/parameters/creationDateTime'
         - $ref: '#/components/parameters/initialTransactionId'
-        - $ref: '#/components/parameters/controlActor'
+       # - $ref: '#/components/parameters/controlActor'
       requestBody:
         required: true
         content:
@@ -276,7 +276,7 @@ paths:
         - $ref: '#/components/parameters/transactionId'
         - $ref: '#/components/parameters/creationDateTime'
         - $ref: '#/components/parameters/initialTransactionId'
-        - $ref: '#/components/parameters/controlActor'
+       # - $ref: '#/components/parameters/controlActor'
       requestBody:
         required: true
         content:
@@ -318,6 +318,7 @@ components:
       schema:
         type: string
         format: uuid
+        example: fd85cf16-c24d-41ff-938d-ff45f2273100
 
     creationDateTime:
       name: creationDateTime
@@ -326,6 +327,7 @@ components:
       schema:
         type: string
         format: date-time
+        example: 2026-07-07T06:58:27.384Z
 
     initialTransactionId:
       name: initialTransactionId
