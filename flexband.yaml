@@ -11,11 +11,13 @@ info:
 
 
     Ingesamt ergeben sich die folgenden API Dienste die mit der entsprechenden Berechtigung beim MSB bestellt und genutzt werden können:
-      -  Flex-01 - "Übermittlung Flexband" Vorgabe der verbrauchsseitigen (POEN Szenario 1) oder der einspeiseseitigen Hüllkurve (POEN Szenario 2).  Es können je nach Berechtigung maximale und minimale Leistungslimits für die nächsten 48 Stunden definiert werden. Der MSB bildet auf der Basis ein POEN-Residualprofil (POEN-RP) und sorgt damit für eine konfliktfreie Übertragung des Flexbandes. Optional kann der MSB eine täglich wiederkehrende Ausführung sicherstellen.
+      -  Flex-01 - "Übermittlung dynamisches Flexband" Vorgabe der verbrauchsseitigen (POEN Szenario 1) oder der einspeiseseitigen Hüllkurve (POEN Szenario 2).  Es können je nach Berechtigung maximale und minimale Leistungslimits für die nächsten 48 Stunden definiert werden. Der MSB bildet auf der Basis ein POEN-Residualprofil (POEN-RP) und sorgt damit für eine konfliktfreie Übertragung des Flexbandes. 
 
-      - Flex-02 - "Übermittlung Fallback" - Vorgabe einer Fallbackkurve (POEN Szenario 3). Es können maximale und minimale Leistungslimits für beide Energierichtungen definiert werden. Die Vorgaben haben einen zeitlichen Bezug (0-24h), aber keine Datumsangabe. Die Fallbackwerte werden temporär bei lokalen Kommunikationsstörungen oder Lücken im POEN-Residualprofil aktiviert. Der MSB sorgt für ein konsolidiertes Fallbackprofil, dieses entspricht dem Steuerungsanwendungsfällen 9 gemäß Implementierungshinweis des BSI (SAF9)
+      -  Flex-02 - TBD: "Übermittlung statisches Flexband"  Vorgabe eines zyklischen, sich täglich wiederholenden Flexbandes. Sofern die Steuerungseinrichtung den statischen Anwendungsfall unterstützt, kann das Profil lokal hinterlegt und autonom ausgeführt werden. Andernfalls sorgt der MSB dafür, dass Flex-01 und Flex-02 zu einem gemeinsamen POEN-Residualprofil verarbeitet und regelmäßig übermittelt werden.
 
-      - Flex-03 - "Löschen von Hülllkurven" - Erlaubt die Deaktivierung von zuvor übermittelten Hüllkurven. Die gesamten Einträge des jeweiligen Absenders werden im POEN Residualprofil gelöscht.
+      - Flex-03 - "Übermittlung Fallback" - Vorgabe einer Fallbackkurve (POEN Szenario 3). Es können maximale und minimale Leistungslimits für beide Energierichtungen definiert werden. Die Vorgaben haben einen zeitlichen Bezug (0-24h), aber keine Datumsangabe. Die Fallbackwerte werden temporär bei lokalen Kommunikationsstörungen oder Lücken im POEN-Residualprofil aktiviert. Der MSB sorgt für ein konsolidiertes Fallbackprofil, dieses entspricht dem Steuerungsanwendungsfällen 9 gemäß Implementierungshinweis des BSI (SAF9)
+
+      - Flex-04 - "Löschen von Hülllkurven" - Erlaubt die Löschung von zuvor übermittelten Hüllkurven. Die ausgewählten Profile des jeweiligen Absenders werden gelöscht und das POEN-Residualprofil aktualisiert.
 
 
 
@@ -34,10 +36,10 @@ tags:
 
 paths:
 
-  /flexband/anweisung/poen-residualprofil:
+  /to/msb/flexband/command/poen-dynamic-profile:
     post:
       tags: [Anweisung Flexband]
-      summary: Flex-01 - Übermittlung  Flexband
+      summary: Flex-01 - Übermittlung dynamisches Flexband
       description: >
         Vorgabe der verbrauchsseitigen (POEN Szenario 1) oder der einspeiseseitigen Hüllkurve (POEN Szenario 2).  Es können je nach Berechtigung maximale und minimale Leistungslimits für die nächsten 48 Stunden definiert werden. Der MSB bildet auf der Basis ein POEN-Residualprofil (POEN-RP) und sorgt damit für eine konfliktfreie Übertragung des Flexbandes. Optional kann der MSB eine täglich wiederkehrende Ausführung sicherstellen.
 
@@ -66,13 +68,65 @@ paths:
               items:
                 $ref: '#/components/schemas/FlexbandRequest'
       responses:
-        '200':
-          description: Erfolgreich verarbeitet
+        '202':
+          description: accepted
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+        '405':
+          description: Method not allowed
+        '415':
+          description: Unsupported Media Type
+        '422': 
+          description: Unprocessable Entity
+        '429':
+          description: Too Many Requests
+        '500':
+          description: Internal Server Error
+        '503':
+          description: Service Unavailable
+        '504':
+          description: Gateway Timeout
 
-  /flexband/parameter/fallback:
+  /to/msb/flexband/command/poen-static-profile:
     post:
       tags: [Anweisung Flexband]
-      summary: Flex-02 Konfiguration einer Fallback-Küllkurve
+      summary: Flex-02 - Übermittlung statisches Flexband
+      description: >
+        Statisches, täglich wiederkehrendes Hüllkurvenprofil. Vorgabe der verbrauchsseitigen (POEN Szenario 1) oder der einspeiseseitigen Hüllkurve (POEN Szenario 2).  Es können je nach Berechtigung maximale und minimale Leistungslimits für die nächsten 48 Stunden definiert werden. Der MSB bildet auf der Basis ein POEN-Residualprofil (POEN-RP) und sorgt damit für eine konfliktfreie Übertragung des Flexbandes. 
+
+        Die POEN Residualprofile (POEN RP S1 und POEN RP S2) entsprechen dabei den Steuerungsanwendungsfällen 7 und 8 gemäß Implementierungshinweis des BSI (SAF7 / SAF8).
+
+        Mögliche Szenarien:
+         - VNB - §14a EnWG „präventiv” (Bis Ende 2028) -> POEN RP S1
+         - VNB – Backup-Fahrplan für Kommunikationsstörung -> POEN RP S1/S2
+         - LF – Backup-Fahrplan für Kommunikationsstörung -> POEN RP S1/S2
+
+
+      operationId: createStaticFlexband
+      parameters:
+        - $ref: '#/components/parameters/transactionId'
+        - $ref: '#/components/parameters/creationDateTime'
+        - $ref: '#/components/parameters/initialTransactionId'
+        - $ref: '#/components/parameters/controlActor'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/FlexbandStaticRequest'
+      responses:
+        '200':
+          description: Erfolgreich verarbeitet
+  /to/msb/flexband/parameter/fallback:
+    post:
+      tags: [Anweisung Flexband]
+      summary: Flex-03 Konfiguration einer Fallback-Küllkurve
       description: >
         Vorgabe einer Fallbackkurve (POEN Szenario 3). Es können maximale und minimale Leistungslimits für beide Energierichtungen definiert werden. Die Vorgaben haben einen zeitlichen Bezug (0-24h), aber keine Datumsangabe. Die Fallbackwerte werden temporär bei lokalen Kommunikationsstörungen oder Lücken im POEN-Residualprofil aktiviert. Der MSB sorgt für ein konsolidiertes Fallbackprofil, dieses entspricht dem Steuerungsanwendungsfällen 9 gemäß Implementierungshinweis des BSI (SAF9)
       operationId: createFallback
@@ -88,18 +142,41 @@ paths:
             schema:
               $ref: '#/components/schemas/FallbackRequest'
       responses:
-        '200':
-          description: Erfolgreich verarbeitet
+        '202':
+          description: accepted
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+        '405':
+          description: Method not allowed
+        '415':
+          description: Unsupported Media Type
+        '422': 
+          description: Unprocessable Entity
+        '429':
+          description: Too Many Requests
+        '500':
+          description: Internal Server Error
+        '503':
+          description: Service Unavailable
+        '504':
+          description: Gateway Timeout
 
-  /flexband/initialZustand:
+  /to/msb/flexband/reset:
     post:
       tags: [Anweisung Flexband]
-      summary: Flex-03 Löschen bestehender Hüllkurven
+      summary: Flex-04 Löschen bestehender Hüllkurven
       description: >
         Erlaubt die Deaktivierung von zuvor übermittelten Hüllkurven. Die gesamten Einträge des jeweiligen Absenders werden im POEN Residualprofil gelöscht.
       operationId: resetFlexband
       parameters:
-        - $ref: '#/components/parameters/commonHeaders'
+        - $ref: '#/components/parameters/transactionId'
+        - $ref: '#/components/parameters/creationDateTime'
+        - $ref: '#/components/parameters/initialTransactionId'
+        - $ref: '#/components/parameters/controlActor'
       requestBody:
         required: true
         content:
@@ -110,13 +187,16 @@ paths:
         '200':
           description: Erfolgreich zurückgesetzt
 
-  /flexband/vorlaufigeAntwort:
+  /from/msb/flexband/preliminaryResponse:
     post:
       tags: [Antwort Flexband]
       summary: Vorläufige Antwort
       operationId: preliminaryResponse
       parameters:
-        - $ref: '#/components/parameters/commonHeaders'
+        - $ref: '#/components/parameters/transactionId'
+        - $ref: '#/components/parameters/creationDateTime'
+        - $ref: '#/components/parameters/initialTransactionId'
+        - $ref: '#/components/parameters/controlActor'
       requestBody:
         required: true
         content:
@@ -124,16 +204,39 @@ paths:
             schema:
               $ref: '#/components/schemas/PreliminaryResponse'
       responses:
-        '200':
-          description: Antwort übermittelt
+        '202':
+          description: accepted
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+        '405':
+          description: Method not allowed
+        '415':
+          description: Unsupported Media Type
+        '422': 
+          description: Unprocessable Entity
+        '429':
+          description: Too Many Requests
+        '500':
+          description: Internal Server Error
+        '503':
+          description: Service Unavailable
+        '504':
+          description: Gateway Timeout
 
-  /flexband/finaleAntwort:
+  /from/msb/flexband/finalResponse:
     post:
       tags: [Antwort Flexband]
       summary: Finale Antwort
       operationId: finalResponse
       parameters:
-        - $ref: '#/components/parameters/commonHeaders'
+        - $ref: '#/components/parameters/transactionId'
+        - $ref: '#/components/parameters/creationDateTime'
+        - $ref: '#/components/parameters/initialTransactionId'
+        - $ref: '#/components/parameters/controlActor'
       requestBody:
         required: true
         content:
@@ -141,16 +244,39 @@ paths:
             schema:
               $ref: '#/components/schemas/FinalResponse'
       responses:
-        '200':
-          description: Finale Antwort übermittelt
+        '202':
+          description: accepted
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+        '405':
+          description: Method not allowed
+        '415':
+          description: Unsupported Media Type
+        '422': 
+          description: Unprocessable Entity
+        '429':
+          description: Too Many Requests
+        '500':
+          description: Internal Server Error
+        '503':
+          description: Service Unavailable
+        '504':
+          description: Gateway Timeout
 
-  /flexband/information:
+  /from/msb/flexband/information:
     post:
       tags: [Mitteilung Flexband an Berechtigte]
       summary: Information an Marktpartner
       operationId: informPartners
       parameters:
-        - $ref: '#/components/parameters/commonHeaders'
+        - $ref: '#/components/parameters/transactionId'
+        - $ref: '#/components/parameters/creationDateTime'
+        - $ref: '#/components/parameters/initialTransactionId'
+        - $ref: '#/components/parameters/controlActor'
       requestBody:
         required: true
         content:
@@ -158,20 +284,32 @@ paths:
             schema:
               $ref: '#/components/schemas/InformationRequest'
       responses:
-        '200':
-          description: Information versendet
+        '202':
+          description: accepted
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+        '405':
+          description: Method not allowed
+        '415':
+          description: Unsupported Media Type
+        '422': 
+          description: Unprocessable Entity
+        '429':
+          description: Too Many Requests
+        '500':
+          description: Internal Server Error
+        '503':
+          description: Service Unavailable
+        '504':
+          description: Gateway Timeout
 
 components:
 
   parameters:
-
-    commonHeaders:
-      name: transactionId
-      in: header
-      required: true
-      schema:
-        type: string
-        format: uuid
 
     transactionId:
       name: transactionId
@@ -198,7 +336,7 @@ components:
         format: uuid
 
     controlActor:
-      name: controlActor
+      name: marketPartnerId
       in: header
       required: false
       schema:
@@ -206,197 +344,275 @@ components:
         description: BDEW-ID
 
   schemas:
+    LocationReference:
+      type: object
+      required:
+        - srId
+      properties:
+        srId:
+          type: string
+          pattern: '^C[A-Z0-9]{9}[0-9]$'
+          example: C1234848431
 
     FlexbandRequest:
-      type: object
+      allOf:
+          - $ref: '#/components/schemas/LocationReference'  
+          - type: object
+            required:
+              - poenControlStartTime
+              - poenControlProfile
+              - poenReason
+            properties:
+              poenContractId:
+                type: string
+                example: LF-2026-4711
+              poenReason:
+                type: string
+                enum:
+                  - Contract
+                  - Test
+                example: Contract
+              poenControlStartTime:
+                type: string
+                format: date-time
+                example: "2026-01-15T00:00:00Z"
+              poenControlProfile:
+                type: string
+                enum:
+                  - Consumption
+                  - FeedIn
+                example: Consumption
 
-      required:
-        - locationId
-        - poenControlStartTime
-        - poenControlProfile
+      #        poenRepetitionFlag:
+      #          type: boolean
+      #          default: false
+      #          example: false
+              poenControlSlotsMax:
+                type: array
+                maxItems: 192
+                items:
+                  $ref: '#/components/schemas/ControlSlot'
+                example:
+                  - duration: 900
+                    activePowerValue: 11000
+                  - duration: 900
+                    activePowerValue: 9000
+                  - duration: 900
+                    activePowerValue: 7000
+                  - duration: 900
+                    activePowerValue: 5000
 
-      properties:
+              poenControlSlotsMin:
+                type: array
+                maxItems: 192
+                items:
+                  $ref: '#/components/schemas/ControlSlot'
+                example:
+                  - duration: 900
+                    activePowerValue: 2000
+                  - duration: 900
+                    activePowerValue: 2000
+                  - duration: 900
+                    activePowerValue: 3000
+                  - duration: 900
+                    activePowerValue: 4000
 
-        locationId:
-          type: string
-          example: C1234848431
+    FlexbandStaticRequest:
+      allOf:
+          - $ref: '#/components/schemas/LocationReference'       
+          - type: object
 
-        poenContractId:
-          type: string
-          example: LF-2026-4711
+            required:
+              - poenControlStartTime
+              - poenControlProfile
+              - poenReason
+              - ExecutionRange
 
-        poenReason:
-          type: string
-          enum:
-            - Contract
-            - Test
-          example: Contract
-
-        poenControlStartTime:
-          type: string
-          format: date-time
-          example: "2026-01-15T00:00:00Z"
-
-        poenControlProfile:
-          type: string
-          enum:
-            - Consumption
-            - FeedIn
-          example: Consumption
-
-        poenRepetitionFlag:
-          type: boolean
-          default: false
-          example: false
-
-        poenControlSlotsMax:
-          type: array
-          maxItems: 192
-          items:
-            $ref: '#/components/schemas/ControlSlot'
-          example:
-            - duration: 900
-              activePowerValue: 11000
-            - duration: 900
-              activePowerValue: 9000
-            - duration: 900
-              activePowerValue: 7000
-            - duration: 900
-              activePowerValue: 5000
-
-        poenControlSlotsMin:
-          type: array
-          maxItems: 192
-          items:
-            $ref: '#/components/schemas/ControlSlot'
-          example:
-            - duration: 900
-              activePowerValue: 2000
-            - duration: 900
-              activePowerValue: 2000
-            - duration: 900
-              activePowerValue: 3000
-            - duration: 900
-              activePowerValue: 4000
+            properties:
+              poenContractId:
+                type: string
+                example: LF-2026-4711
+              poenReason:
+                type: string
+                enum:
+                  - Contract
+                  - Test
+                example: Contract
+              poenControlProfile:
+                type: string
+                enum:
+                  - Consumption
+                  - FeedIn
+                example: Consumption
+              ExecutionRange:
+                allOf:
+                  - type: object
+                    required:
+                      - executionFrom
+                      - executionUntil
+                    properties:
+                      executionFrom:
+                        type: string
+                        format: date-time
+                      executionUntil:
+                        type: string
+                        format: date-time
+              poenControlStartTime:
+                type: string
+                pattern: '^([01]\d|2[0-3]):[0-5]\d:[0-5]\dZ$'
+                example: "00:00:00Z"
+              poenControlSlotsMax:
+                type: array
+                maxItems: 96
+                items:
+                  $ref: '#/components/schemas/ControlSlot'
+                example:
+                  - duration: 900
+                    activePowerValue: 11000
+                  - duration: 900
+                    activePowerValue: 9000
+                  - duration: 900
+                    activePowerValue: 7000
+                  - duration: 900
+                    activePowerValue: 5000
+              poenControlSlotsMin:
+                type: array
+                maxItems: 96
+                items:
+                  $ref: '#/components/schemas/ControlSlot'
+                example:
+                  - duration: 900
+                    activePowerValue: 2000
+                  - duration: 900
+                    activePowerValue: 2000
+                  - duration: 900
+                    activePowerValue: 3000
+                  - duration: 900
+                    activePowerValue: 4000
 
     FallbackRequest:
-      type: object
+      allOf:
+          - $ref: '#/components/schemas/LocationReference'  
+          - type: object
+            required:
+              - poenConfigProfile
+              - poenConfigSlots
+            properties:
+              poenContractId:
+                type: string
+                example: LF-2026-4711
 
-      required:
-        - locationId
-        - poenConfigProfile
-        - poenConfigSlots
+              poenConfigProfile:
+                type: string
+                enum:
+                  - Fallback_FeedIn
+                  - Fallback_Consumption
+                example: Fallback_Consumption
 
-      properties:
-
-        locationId:
-          type: string
-          example: C1234848431
-
-        poenContractId:
-          type: string
-          example: LF-2026-4711
-
-        poenConfigProfile:
-          type: string
-          enum:
-            - P_ConFB
-            - P_ProdFB
-          example: P_ConFB
-
-        poenConfigSlots:
-          type: array
-          maxItems: 96
-          items:
-            $ref: '#/components/schemas/FallbackSlot'
-          example:
-            - duration: 900
-              powerValue: 8000
-            - duration: 900
-              powerValue: 7500
-            - duration: 900
-              powerValue: 7000
-            - duration: 900
-              powerValue: 6500
+              poenConfigSlots:
+                type: array
+                description: Startzeitpunkt für Fallback-Profile ist immer 00:00:00Z
+                maxItems: 96
+                items:
+                  $ref: '#/components/schemas/FallbackSlot'
+                example:
+                  - duration: 900
+                    powerValue: 8000
+                  - duration: 900
+                    powerValue: 7500
+                  - duration: 900
+                    powerValue: 7000
+                  - duration: 900
+                    powerValue: 6500
 
     InitialStateRequest:
-      type: object
-
-      properties:
-        locationId:
-          type: array
-          items:
-            type: string
-
-        poenControlStopTime:
-          type: string
-          format: date-time
-
-      example:
-        locationId:
-          - C1234848431
-          - C1234848432
-          - C1234848433
-          - C1234848434
-        poenControlStopTime: "2026-01-15T12:00:00Z"
+        allOf:
+          - $ref: '#/components/schemas/LocationReference'  
+          - type: object
+            required:
+              - poenStopTime
+            properties:
+              poenStopTime:
+                type: string
+                format: date-time
+              stopProfile:
+                type: string
+                example: "Flex-01"
+                enum:
+                  - Flex-01
+                  - Flex-02
+                  - Flex-03
+                  - All
     PreliminaryResponse:
-      type: object
-      properties:
-        locationId:
-          type: array
-          items:
-            type: string
-        poenContractId:
-          type: string
-        poenPreliminaryState:
-          type: string
-          enum: [possible, unable]
-        poenPreliminaryReason:
-          type: string
-          enum: [communicationFailure, overload, unable]
-      example:
-          locationId: C1234848431
-          poenState: possible
-          poenReason: Steuerungseinrichtung erreichbar. Flexband plausibel und im POEN-Residualprofil übernommen.
+      allOf:
+          - $ref: '#/components/schemas/LocationReference'  
+          - type: object
+            required:
+              - preliminaryState
+              - preliminaryResponseCode
+            properties:
+              preliminaryState:
+                type: string
+                enum: [possible, unable]
+                example: "unable"
+              preliminaryResponseCode:
+                type: string
+                enum: [communicationFailure, overload, unable]
+              preliminaryReason:
+                type: string
+                example: "Die Anfrage konnte aufgrund einer temporären Störung nicht verarbverarbeitet werden"
 
     FinalResponse:
-      type: object
-      properties:
-        locationId:
-          type: array
-          items:
-            type: string
-        poenContractId:
-          type: string
-        poenState:
-          type: string
-          enum: [possible, unable]
-        poenReason:
-          type: string
-          enum: [communicationFailure, overload, unable]
-      example:
-          locationId: C1234848431
-          poenState: possible
-          poenReason: Flexband bzw. POEN-Residualprofil erfolgreich in der Steuerungseinrichtung aktiviet.
+      allOf:
+          - $ref: '#/components/schemas/LocationReference'  
+          - type: object
+            required:
+              - state
+              - responseCode
+            properties:
+
+              poenContractId:
+                type: string
+              state:
+                type: string
+                enum: [possible, unable]
+              responseCode:
+                type: string
+                enum: [succeeded, communicationFailure, overload, unable]
+              reason:
+                type: string
+            
+            example:
+                srId: C1234848431
+                state: possible
+                responseCode: succeeded 
+                reason: Flexband bzw. POEN-Residualprofil erfolgreich in der Steuerungseinrichtung aktiviet.
       
 
     InformationRequest:
-      type: object
-      properties:
-        payload:
-          type: array
-          items:
-            type: object
+      allOf:
+          - $ref: '#/components/schemas/LocationReference'  
+          - type: object
             properties:
-              locationId:
+              partnerId:
                 type: string
-              poenConfigProfile:
-                type: string
-                enum: [P_ConFB, P_ProdFB]
-              poenConfigSlots:
+                example: 9900496000005
+              dynamicFlexband:
                 type: array
                 items:
-                  $ref: '#/components/schemas/FallbackSlot'
+                  $ref: '#/components/schemas/FlexbandRequest'
+              staticFlexband:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FlexbandStaticRequest'
+              fallbackFlexband:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FallbackRequest'
+              resetFlexband:
+                type: array
+                items:
+                  $ref: '#/components/schemas/InitialStateRequest'
 
     ControlSlot:
       type: object
