@@ -28,7 +28,7 @@ tags:
 
 paths:
 
-  /to/MSB/steuerungshandlung/adhocPrio:
+  /to/MSB/adHoc/command/adhocPrio:
     post:
       tags: [Anweisung AdHoc Steuerungshandlung]
       summary: AdHoc-01 Priorisierte Ad-hoc-Steuerung
@@ -78,7 +78,7 @@ paths:
         '504':
           description: Gateway Timeout
 
-  /to/MSB/steuerungshandlung/adhocZyklisch:
+  /to/MSB/adHoc/command/adhocCyclic:
     post:
       tags: [Anweisung AdHoc Steuerungshandlung]
       summary: AdHoc-02 Zyklische AdHoc Steuerung 
@@ -127,7 +127,7 @@ paths:
         '504':
           description: Gateway Timeout
 
-  /to/MSB/steuerungshandlung/softstart:
+  /to/MSB/adHoc/parameter/softstart:
     post:
       tags: [Anweisung AdHoc Steuerungshandlung]
       summary: AdHoc-03 Softstartprofil
@@ -175,7 +175,7 @@ paths:
         '504':
           description: Gateway Timeout
 
-  /to/MSB/steuerungshandlung/failsafe:
+  /to/MSB/adHoc/parameter/failsafe:
     post:
       tags: [Anweisung AdHoc Steuerungshandlung]
       summary: AdHoc-04 Failsafe-Konfiguration
@@ -224,7 +224,7 @@ paths:
         '504':
           description: Gateway Timeout
 
-  /to/MSB/steuerungshandlung/initialZustand:
+  /to/MSB/adHoc/reset:
     post:
       tags: [Anweisung AdHoc Steuerungshandlung]
       summary: AdHoc-05 Löschen vorhandener Ad-hoc-Steuerungen
@@ -266,7 +266,7 @@ paths:
         '504':
           description: Gateway Timeout
 
-  /from/MSB/antwort/vorlaeufig:
+  /from/MSB/adHoc/preliminaryResponse:
     post:
       tags: [Antwort AdHoc Steuerungshandlung]
       summary: AdHoc-06 Vorläufige Antwort
@@ -306,7 +306,7 @@ paths:
         '504':
           description: Gateway Timeout
 
-  /from/MSB/antwort/final:
+  /from/MSB/adHoc/finalResponse:
     post:
       tags: [Antwort AdHoc Steuerungshandlung]
       summary: AdHoc-07 Finale Antwort
@@ -346,7 +346,7 @@ paths:
         '504':
           description: Gateway Timeout
 
-  /from/MSB/information:
+  /from/MSB/adHoc/information:
     post:
       tags: [Mitteilung AdHoc Steuerungshandlung an Berechtigte]
       summary: AdHoc-08 Information über aktive Ad-hoc-Steuerungen
