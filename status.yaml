@@ -1,1 +1,521 @@
+openapi: 3.0.3
 
+info:
+  title: WARAN - Impuls zur Erstellung einer Status API zur steuerbaren Ressource (SR)
+  version: 1.1.0
+  description: >
+    API zur Abfrage aktueller und historischer Steuerungsvorgaben,
+    Betriebszustände sowie Steuerbarkeitsnachweise für steuerbare
+    Ressourcen.
+
+    Über diese API kann der Status einer steuerbaren Ressource abgefragt werden.
+    Ziel ist es, berechtigten Akteuren transparent darzustellen, ob und welche
+    Handlungsoptionen hinsichtlich der Anlage bestehen.
+
+    Folgende Dienste werden bereitgestellt:
+
+    - Status-01 "activeLimits":
+      Aktive Steuerungsvorgaben der nächsten 48 Stunden.
+
+    - Status-02 "limitsHistory":
+      Historische Steuerungsvorgaben inklusive tatsächlich ausgeführter
+      Steuerungshandlungen.
+
+    - Status-03 "operatingStatus":
+      Betriebs- und Kommunikationsstatus der steuerbaren Ressource,
+      unterstützte lokale Use-Cases sowie API-Berechtigungen.
+
+servers:
+  - url: https://api.example.com/v1
+
+tags:
+  - name: Status Abfrage API
+    description: Status- und Monitoring-Schnittstellen zur steuerbaren Ressource
+
+paths:
+
+  /status/limits:
+    get:
+      tags:
+        - Status Abfrage API
+
+      summary: Status-01 - Aktive Steuerungshandlungen abrufen
+      operationId: getActiveLimits
+
+      description: >
+        Liefert alle aktuell aktiven sowie zukünftigen Steuerungsvorgaben
+        für die nächsten 48 Stunden.
+
+        Enthalten sind:
+
+        - Ad-Hoc-Steuerungen (LPC/LPP)
+        - Flexbandvorgaben (POEN)
+
+        Die zurückgegebenen Werte entsprechen den aktuell wirksamen
+        Leistungsgrenzen der steuerbaren Ressource.
+
+      parameters:
+        - $ref: '#/components/parameters/TransactionId'
+        - $ref: '#/components/parameters/CreationDateTime'
+        - $ref: '#/components/parameters/ControlActor'
+        - $ref: '#/components/parameters/LocationId'
+
+      responses:
+        '200':
+          description: Aktive Steuerungsvorgaben
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActiveControlLimitsResponse'
+
+  /status/limits-history:
+    get:
+      tags:
+        - Status Abfrage API
+
+      summary: Status-02 - Historische Steuerungshandlungen abrufen
+      operationId: getLimitsHistory
+
+      description: >
+        Liefert alle bekannten Steuerungsvorgaben innerhalb eines frei
+        definierbaren Zeitraumes.
+
+      parameters:
+        - $ref: '#/components/parameters/TransactionId'
+        - $ref: '#/components/parameters/CreationDateTime'
+        - $ref: '#/components/parameters/ControlActor'
+        - $ref: '#/components/parameters/LocationId'
+
+        - name: from
+          in: query
+          required: false
+          description: Startzeitpunkt der Historienabfrage
+          schema:
+            type: string
+            format: date-time
+
+        - name: until
+          in: query
+          required: false
+          description: Endzeitpunkt der Historienabfrage
+          schema:
+            type: string
+            format: date-time
+
+      responses:
+        '200':
+          description: Historische Steuerungsvorgaben
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HistoricControlLimitsResponse'
+
+  /status/operating-status:
+    get:
+      tags:
+        - Status Abfrage API
+
+      summary: Status-03 - Betriebsstatus steuerbarer Ressourcen abrufen
+      operationId: getResourceStatus
+
+      description: >
+        Liefert aktuelle Informationen über den Betriebszustand,
+        die Kommunikationsfähigkeit, unterstützte lokale Use-Cases
+        sowie die dem Marktakteur zugewiesenen API-Berechtigungen.
+
+      parameters:
+        - $ref: '#/components/parameters/TransactionId'
+        - $ref: '#/components/parameters/CreationDateTime'
+        - $ref: '#/components/parameters/ControlActor'
+        - $ref: '#/components/parameters/LocationId'
+
+      responses:
+        '200':
+          description: Aktueller Betriebsstatus
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResourceStatusResponse'
+
+components:
+
+  parameters:
+
+    TransactionId:
+      name: transactionId
+      in: query
+      required: true
+      description: Eindeutige Transaktions-ID der Anfrage.
+      schema:
+        type: string
+        maxLength: 64
+        example: 754ce569-3d95-4d7b-87cc-1d8f22289a00
+
+    CreationDateTime:
+      name: creationDateTime
+      in: query
+      required: true
+      description: Zeitpunkt der Erstellung der Anfrage.
+      schema:
+        type: string
+        format: date-time
+        example: "2026-07-09T06:56:21Z"
+
+    ControlActor:
+      name: controlActor
+      in: query
+      required: false
+      description: Marktakteur, für den die Informationen angefordert werden.
+      schema:
+        type: string
+        example: MSB
+
+    LocationId:
+      name: locationId
+      in: query
+      required: true
+      description: Eine oder mehrere Lokationskennungen.
+      style: form
+      explode: true
+      schema:
+        type: array
+        items:
+          type: string
+
+  schemas:
+
+    PowerLimit:
+      type: object
+
+      required:
+        - activePowerValue
+        - executionTimeFrom
+        - executionTimeUntil
+
+      properties:
+
+        activePowerValue:
+          type: number
+          format: double
+          description: Wirkleistungswert in kW
+
+        executionTimeFrom:
+          type: string
+          format: date-time
+
+        executionTimeUntil:
+          type: string
+          format: date-time
+
+    HistoricPowerLimit:
+      allOf:
+        - $ref: '#/components/schemas/PowerLimit'
+        - type: object
+          properties:
+
+            commandId:
+              type: string
+
+            useCase:
+              type: string
+              enum:
+                - LPC
+                - LPP
+                - POEN
+
+            receivedAt:
+              type: string
+              format: date-time
+
+            executedAt:
+              type: string
+              format: date-time
+
+            executionStatus:
+              type: string
+              enum:
+                - received
+                - accepted
+                - rejected
+                - executed
+                - cancelled
+
+            source:
+              type: string
+
+            comment:
+              type: string
+
+    ActiveControlLimits:
+      type: object
+
+      properties:
+
+        locationId:
+          type: string
+
+        partnerId:
+          type: integer
+          format: int64
+
+        adHocValuesMaxConsumption:
+          type: array
+          items:
+            $ref: '#/components/schemas/PowerLimit'
+
+        adHocValuesMaxFeedIn:
+          type: array
+          items:
+            $ref: '#/components/schemas/PowerLimit'
+
+        poenValuesMinConsumption:
+          type: array
+          items:
+            $ref: '#/components/schemas/PowerLimit'
+
+        poenValuesMaxConsumption:
+          type: array
+          items:
+            $ref: '#/components/schemas/PowerLimit'
+
+        poenValuesMinFeedIn:
+          type: array
+          items:
+            $ref: '#/components/schemas/PowerLimit'
+
+        poenValuesMaxFeedIn:
+          type: array
+          items:
+            $ref: '#/components/schemas/PowerLimit'
+
+    HistoricControlLimits:
+      type: object
+
+      properties:
+
+        locationId:
+          type: string
+
+        partnerId:
+          type: integer
+          format: int64
+
+        periodStart:
+          type: string
+          format: date-time
+
+        periodEnd:
+          type: string
+          format: date-time
+
+        adHocValuesMaxConsumption:
+          type: array
+          items:
+            $ref: '#/components/schemas/HistoricPowerLimit'
+
+        adHocValuesMaxFeedIn:
+          type: array
+          items:
+            $ref: '#/components/schemas/HistoricPowerLimit'
+
+        poenValuesMinConsumption:
+          type: array
+          items:
+            $ref: '#/components/schemas/HistoricPowerLimit'
+
+        poenValuesMaxConsumption:
+          type: array
+          items:
+            $ref: '#/components/schemas/HistoricPowerLimit'
+
+        poenValuesMinFeedIn:
+          type: array
+          items:
+            $ref: '#/components/schemas/HistoricPowerLimit'
+
+        poenValuesMaxFeedIn:
+          type: array
+          items:
+            $ref: '#/components/schemas/HistoricPowerLimit'
+
+    ActiveControlLimitsResponse:
+      type: object
+
+      required:
+        - transactionId
+        - creationDateTime
+        - limits
+
+      properties:
+
+        transactionId:
+          type: string
+
+        creationDateTime:
+          type: string
+          format: date-time
+
+        controlActor:
+          type: string
+
+        limits:
+          type: array
+          items:
+            $ref: '#/components/schemas/ActiveControlLimits'
+
+    HistoricControlLimitsResponse:
+      type: object
+
+      required:
+        - transactionId
+        - creationDateTime
+        - limits
+
+      properties:
+
+        transactionId:
+          type: string
+
+        creationDateTime:
+          type: string
+          format: date-time
+
+        controlActor:
+          type: string
+
+        limits:
+          type: array
+          items:
+            $ref: '#/components/schemas/HistoricControlLimits'
+
+    ResourceOperatingStatus:
+      type: object
+
+      properties:
+
+        operatingState:
+          type: string
+          description: Aktueller Betriebszustand der Ressource.
+          enum:
+            - active
+            - maintenance
+            - fault
+
+        description:
+          type: string
+
+        lastConnectionTimestamp:
+          type: string
+          format: date-time
+
+        lastLocalConnectionFailure:
+          type: string
+          format: date-time
+
+    SupportedLocalUseCases:
+      type: object
+
+      properties:
+
+        relayConsumption:
+          type: boolean
+          description: Lokale Verbrauchssteuerung über Relais.
+
+        relayFeedIn:
+          type: boolean
+          description: Lokale Einspeisesteuerung über Relais.
+
+        EEBUS_LPC:
+          type: boolean
+
+        EEBUS_LPP:
+          type: boolean
+
+        EEBUS_POEN:
+          type: boolean
+
+        EEBUS_PODF:
+          type: boolean
+
+        EEBUS_TOUT:
+          type: boolean
+
+        EEBUS_MPC:
+          type: boolean
+
+    ApiPermission:
+      type: object
+
+      properties:
+
+        apiName:
+          type: string
+          enum:
+            - AdHoc-API
+            - Flexband-API
+            - EEBUS-Data-API
+            - TAF-Config-API
+            - Proxy-Data-API
+
+        operatorAgreement:
+          type: string
+          description: Grundlage der Berechtigung.
+          enum:
+            - legal
+            - contract
+
+        activeFrom:
+          type: string
+          format: date-time
+
+        activeTo:
+          type: string
+          format: date-time
+
+    ResourceStatus:
+      type: object
+
+      required:
+        - locationId
+        - statusSR
+
+      properties:
+
+        locationId:
+          type: string
+
+        statusSR:
+          $ref: '#/components/schemas/ResourceOperatingStatus'
+
+        supportedLocalUseCases:
+          $ref: '#/components/schemas/SupportedLocalUseCases'
+
+        apiPermissions:
+          type: array
+          items:
+            $ref: '#/components/schemas/ApiPermission'
+
+    ResourceStatusResponse:
+      type: object
+
+      required:
+        - transactionId
+        - creationDateTime
+        - resources
+
+      properties:
+
+        transactionId:
+          type: string
+
+        creationDateTime:
+          type: string
+          format: date-time
+
+        controlActor:
+          type: string
+
+        resources:
+          type: array
+          items:
+            $ref: '#/components/schemas/ResourceStatus'
