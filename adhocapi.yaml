@@ -2,7 +2,7 @@ openapi: 3.0.3
 
 info:
   title: WARAN - Impuls zur Anpassung der Ad-Hoc-Steuerungs-API
-  version: 0.8.0
+  version: 0.9.0
   description: >
     Aufbauend auf dem bereits existierenden API-Webdienst zur prozessualen Abwicklung von Steuerungshandlungen (https://edi-energy.github.io/api-electricity/aktuell-gueltig/#/), werden im vorliegenden Abschnitt Erweiterungen vorgeschlagen, die es den Marktakteuren ermöglichen das volle Potential der Ad-hoc Steuerung zu nutzen. Zur eindeutigen fachlichen Zuordnung der Steuerungsdienste, soll zunächst präzisiert werden, dass die lokale Weitergabe der Ad-hoc Steuerungshandlungen verbrauchsseitig stets über den EEBUS UseCase LPC und einspeiseseitig stets über den EEBUS UseCase LPP erfolgt.* Neben dem kurativen Ad-hoc Eingriff des Netzbetreiber (bspw. nach $14a EnW) ist es vorgesehen die Anwendungsfälle auch im Kontext weiterer netzstabilisierender Maßnahmen zu verwenden. Dazu zählen u.a. Fallbackszenarien, um im Falle von Kommunikationsstörungen oder bei Spannungswiederkehr ein definiertes Verhalten der steuerbaren Anlagen zu gewährleisten. Damit die unterschiedlichen Szenarien konfliktfrei eingesetzt werden können, sind entsprechende Prioritäten bei der Umsetzung zu berücksichtigen. Die Berücksichtigung der Prioritäten und die Weitergabe der Steuerungshandlungen an die Steuerungseinrichtung bzw. an die steuerbare Einrichtung orientiert sich dabei u.a. an dem FNN Hinweis „Steuerungs-Administration“. Insbesondere das Konzept des Residualprofils wird aufgegriffen und als geeignete Möglichkeit identifiziert, die unterschiedlichen Signale im Backend des Messstellenbetreibers zu harmonisieren. Im aktuellen Abschnitt meint das Ad-hoc Residualprofil dabei die jeweiligen LPC und LPP Werte, die als auszuführendes Array an Werten auf die Steuerungseinrichtung übertragen werden. Die Werte können dabei einen zeitlichen Horizont von mehreren Stunden oder Tagen abdecken. Jeder neue Aufruf sorgt für eine Aktualisierung des Residualprofils.
 
@@ -28,7 +28,7 @@ tags:
 
 paths:
 
-  /steuerungshandlung/adhocPrio:
+  /to/MSB/steuerungshandlung/adhocPrio:
     post:
       tags: [Anweisung AdHoc Steuerungshandlung]
       summary: AdHoc-01 Priorisierte Ad-hoc-Steuerung
@@ -47,7 +47,7 @@ paths:
         - $ref: '#/components/parameters/transactionId'
         - $ref: '#/components/parameters/creationDateTime'
         - $ref: '#/components/parameters/initialTransactionId'
-        - $ref: '#/components/parameters/controlActor'
+       # - $ref: '#/components/parameters/controlActor'
       requestBody:
         required: true
         content:
@@ -55,14 +55,30 @@ paths:
             schema:
               $ref: '#/components/schemas/AdHocPrioRequest'
       responses:
-        '202': {$ref: '#/components/responses/Accepted'}
-        '400': {$ref: '#/components/responses/BadRequest'}
-        '401': {$ref: '#/components/responses/Unauthorized'}
-        '404': {$ref: '#/components/responses/NotFound'}
-        '405': {$ref: '#/components/responses/MethodNotAllowed'}
-        '500': {$ref: '#/components/responses/InternalError'}
+        '202':
+          description: accepted
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+        '405':
+          description: Method not allowed
+        '415':
+          description: Unsupported Media Type
+        '422': 
+          description: Unprocessable Entity
+        '429':
+          description: Too Many Requests
+        '500':
+          description: Internal Server Error
+        '503':
+          description: Service Unavailable
+        '504':
+          description: Gateway Timeout
 
-  /steuerungshandlung/adhocZyklisch:
+  /to/MSB/steuerungshandlung/adhocZyklisch:
     post:
       tags: [Anweisung AdHoc Steuerungshandlung]
       summary: AdHoc-02 Zyklische AdHoc Steuerung 
@@ -80,7 +96,7 @@ paths:
         - $ref: '#/components/parameters/transactionId'
         - $ref: '#/components/parameters/creationDateTime'
         - $ref: '#/components/parameters/initialTransactionId'
-        - $ref: '#/components/parameters/controlActor'
+       # - $ref: '#/components/parameters/controlActor'
       requestBody:
         required: true
         content:
@@ -88,14 +104,30 @@ paths:
             schema:
               $ref: '#/components/schemas/AdHocZyklischRequest'
       responses:
-        '202': {$ref: '#/components/responses/Accepted'}
-        '400': {$ref: '#/components/responses/BadRequest'}
-        '401': {$ref: '#/components/responses/Unauthorized'}
-        '404': {$ref: '#/components/responses/NotFound'}
-        '405': {$ref: '#/components/responses/MethodNotAllowed'}
-        '500': {$ref: '#/components/responses/InternalError'}
+        '202':
+          description: accepted
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+        '405':
+          description: Method not allowed
+        '415':
+          description: Unsupported Media Type
+        '422': 
+          description: Unprocessable Entity
+        '429':
+          description: Too Many Requests
+        '500':
+          description: Internal Server Error
+        '503':
+          description: Service Unavailable
+        '504':
+          description: Gateway Timeout
 
-  /steuerungshandlung/softstart:
+  /to/MSB/steuerungshandlung/softstart:
     post:
       tags: [Anweisung AdHoc Steuerungshandlung]
       summary: AdHoc-03 Softstartprofil
@@ -112,7 +144,7 @@ paths:
         - $ref: '#/components/parameters/transactionId'
         - $ref: '#/components/parameters/creationDateTime'
         - $ref: '#/components/parameters/initialTransactionId'
-        - $ref: '#/components/parameters/controlActor'
+       # - $ref: '#/components/parameters/controlActor'
       requestBody:
         required: true
         content:
@@ -120,14 +152,30 @@ paths:
             schema:
               $ref: '#/components/schemas/SoftstartRequest'
       responses:
-        '202': {$ref: '#/components/responses/Accepted'}
-        '400': {$ref: '#/components/responses/BadRequest'}
-        '401': {$ref: '#/components/responses/Unauthorized'}
-        '404': {$ref: '#/components/responses/NotFound'}
-        '405': {$ref: '#/components/responses/MethodNotAllowed'}
-        '500': {$ref: '#/components/responses/InternalError'}
+        '202':
+          description: accepted
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+        '405':
+          description: Method not allowed
+        '415':
+          description: Unsupported Media Type
+        '422': 
+          description: Unprocessable Entity
+        '429':
+          description: Too Many Requests
+        '500':
+          description: Internal Server Error
+        '503':
+          description: Service Unavailable
+        '504':
+          description: Gateway Timeout
 
-  /steuerungshandlung/failsafe:
+  /to/MSB/steuerungshandlung/failsafe:
     post:
       tags: [Anweisung AdHoc Steuerungshandlung]
       summary: AdHoc-04 Failsafe-Konfiguration
@@ -145,7 +193,7 @@ paths:
         - $ref: '#/components/parameters/transactionId'
         - $ref: '#/components/parameters/creationDateTime'
         - $ref: '#/components/parameters/initialTransactionId'
-        - $ref: '#/components/parameters/controlActor'
+       # - $ref: '#/components/parameters/controlActor'
       requestBody:
         required: true
         content:
@@ -153,14 +201,30 @@ paths:
             schema:
               $ref: '#/components/schemas/FailsafeRequest'
       responses:
-        '202': {$ref: '#/components/responses/Accepted'}
-        '400': {$ref: '#/components/responses/BadRequest'}
-        '401': {$ref: '#/components/responses/Unauthorized'}
-        '404': {$ref: '#/components/responses/NotFound'}
-        '405': {$ref: '#/components/responses/MethodNotAllowed'}
-        '500': {$ref: '#/components/responses/InternalError'}
+        '202':
+          description: accepted
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+        '405':
+          description: Method not allowed
+        '415':
+          description: Unsupported Media Type
+        '422': 
+          description: Unprocessable Entity
+        '429':
+          description: Too Many Requests
+        '500':
+          description: Internal Server Error
+        '503':
+          description: Service Unavailable
+        '504':
+          description: Gateway Timeout
 
-  /steuerungshandlung/initialZustand:
+  /to/MSB/steuerungshandlung/initialZustand:
     post:
       tags: [Anweisung AdHoc Steuerungshandlung]
       summary: AdHoc-05 Löschen vorhandener Ad-hoc-Steuerungen
@@ -171,7 +235,7 @@ paths:
         - $ref: '#/components/parameters/transactionId'
         - $ref: '#/components/parameters/creationDateTime'
         - $ref: '#/components/parameters/initialTransactionId'
-        - $ref: '#/components/parameters/controlActor'
+      #  - $ref: '#/components/parameters/controlActor'
       requestBody:
         required: true
         content:
@@ -179,14 +243,30 @@ paths:
             schema:
               $ref: '#/components/schemas/InitialZustandRequest'
       responses:
-        '202': {$ref: '#/components/responses/Accepted'}
-        '400': {$ref: '#/components/responses/BadRequest'}
-        '401': {$ref: '#/components/responses/Unauthorized'}
-        '404': {$ref: '#/components/responses/NotFound'}
-        '405': {$ref: '#/components/responses/MethodNotAllowed'}
-        '500': {$ref: '#/components/responses/InternalError'}
+        '202':
+          description: accepted
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+        '405':
+          description: Method not allowed
+        '415':
+          description: Unsupported Media Type
+        '422': 
+          description: Unprocessable Entity
+        '429':
+          description: Too Many Requests
+        '500':
+          description: Internal Server Error
+        '503':
+          description: Service Unavailable
+        '504':
+          description: Gateway Timeout
 
-  /antwort/vorlaeufig:
+  /from/MSB/antwort/vorlaeufig:
     post:
       tags: [Antwort AdHoc Steuerungshandlung]
       summary: AdHoc-06 Vorläufige Antwort
@@ -195,7 +275,7 @@ paths:
         - $ref: '#/components/parameters/transactionId'
         - $ref: '#/components/parameters/creationDateTime'
         - $ref: '#/components/parameters/initialTransactionId'
-        - $ref: '#/components/parameters/controlActor'
+       # - $ref: '#/components/parameters/controlActor'
       requestBody:
         required: true
         content:
@@ -203,14 +283,30 @@ paths:
             schema:
               $ref: '#/components/schemas/PreliminaryResponse'
       responses:
-        '202': {$ref: '#/components/responses/Accepted'}
-        '400': {$ref: '#/components/responses/BadRequest'}
-        '401': {$ref: '#/components/responses/Unauthorized'}
-        '404': {$ref: '#/components/responses/NotFound'}
-        '405': {$ref: '#/components/responses/MethodNotAllowed'}
-        '500': {$ref: '#/components/responses/InternalError'}
+        '202':
+          description: accepted
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+        '405':
+          description: Method not allowed
+        '415':
+          description: Unsupported Media Type
+        '422': 
+          description: Unprocessable Entity
+        '429':
+          description: Too Many Requests
+        '500':
+          description: Internal Server Error
+        '503':
+          description: Service Unavailable
+        '504':
+          description: Gateway Timeout
 
-  /antwort/final:
+  /from/MSB/antwort/final:
     post:
       tags: [Antwort AdHoc Steuerungshandlung]
       summary: AdHoc-07 Finale Antwort
@@ -219,7 +315,7 @@ paths:
         - $ref: '#/components/parameters/transactionId'
         - $ref: '#/components/parameters/creationDateTime'
         - $ref: '#/components/parameters/initialTransactionId'
-        - $ref: '#/components/parameters/controlActor'      
+       # - $ref: '#/components/parameters/controlActor'      
       requestBody:
         required: true
         content:
@@ -227,14 +323,30 @@ paths:
             schema:
               $ref: '#/components/schemas/FinalResponse'
       responses:
-        '202': {$ref: '#/components/responses/Accepted'}
-        '400': {$ref: '#/components/responses/BadRequest'}
-        '401': {$ref: '#/components/responses/Unauthorized'}
-        '404': {$ref: '#/components/responses/NotFound'}
-        '405': {$ref: '#/components/responses/MethodNotAllowed'}
-        '500': {$ref: '#/components/responses/InternalError'}
+        '202':
+          description: accepted
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+        '405':
+          description: Method not allowed
+        '415':
+          description: Unsupported Media Type
+        '422': 
+          description: Unprocessable Entity
+        '429':
+          description: Too Many Requests
+        '500':
+          description: Internal Server Error
+        '503':
+          description: Service Unavailable
+        '504':
+          description: Gateway Timeout
 
-  /information:
+  /from/MSB/information:
     post:
       tags: [Mitteilung AdHoc Steuerungshandlung an Berechtigte]
       summary: AdHoc-08 Information über aktive Ad-hoc-Steuerungen
@@ -243,7 +355,7 @@ paths:
         - $ref: '#/components/parameters/transactionId'
         - $ref: '#/components/parameters/creationDateTime'
         - $ref: '#/components/parameters/initialTransactionId'
-        - $ref: '#/components/parameters/controlActor'      
+       # - $ref: '#/components/parameters/controlActor'      
       requestBody:
         required: true
         content:
@@ -251,12 +363,28 @@ paths:
             schema:
               $ref: '#/components/schemas/InformationRequest'
       responses:
-        '202': {$ref: '#/components/responses/Accepted'}
-        '400': {$ref: '#/components/responses/BadRequest'}
-        '401': {$ref: '#/components/responses/Unauthorized'}
-        '404': {$ref: '#/components/responses/NotFound'}
-        '405': {$ref: '#/components/responses/MethodNotAllowed'}
-        '500': {$ref: '#/components/responses/InternalError'}
+        '202':
+          description: accepted
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+        '405':
+          description: Method not allowed
+        '415':
+          description: Unsupported Media Type
+        '422': 
+          description: Unprocessable Entity
+        '429':
+          description: Too Many Requests
+        '500':
+          description: Internal Server Error
+        '503':
+          description: Service Unavailable
+        '504':
+          description: Gateway Timeout
 
 components:
   responses:
@@ -295,23 +423,23 @@ components:
         type: string
         format: uuid
 
-    controlActor:
-      name: controlActor
-      in: header
-      required: true
-      schema:
-        type: string
-        pattern: '^\d{13}$'
-        example: 9900496000005
+   # controlActor:
+  #  name: controlActor
+  #    in: header
+   #   required: true
+    #  schema:
+     #   type: string
+      #  pattern: '^\d{13}$'
+       # example: 9900496000005
 
   schemas:
 
     LocationReference:
       type: object
       required:
-        - locationId
+        - srId
       properties:
-        locationId:
+        srId:
           type: string
           pattern: '^C[A-Z0-9]{9}[0-9]$'
           example: C1234848431
@@ -333,10 +461,12 @@ components:
 
     PowerInterval:
       type: object
+      
       required:
         - activePowerValue
       properties:
         activePowerValue:
+          description: Maximale Wirkleistung in kW
           type: number
           format: double
           minimum: 0
@@ -356,6 +486,20 @@ components:
             executionTimeUntil:
               type: string
               format: date-time
+    
+    ExecutionInterval:
+      allOf:
+        - type: object
+          required:
+            - executionFrom
+            - executionUntil
+          properties:
+            executionFrom:
+              type: string
+              format: date-time
+            executionUntil:
+              type: string
+              format: date-time
 
     DurationPowerInterval:
       allOf:
@@ -368,10 +512,33 @@ components:
               type: integer
               example: 900
 
+    PowerIntervalHHMM:
+      allOf:
+        - $ref: '#/components/schemas/PowerInterval'
+        - type: object
+          required:
+            - executionTimeFrom
+            - executionTimeUntil
+          properties:
+            executionTimeFrom:
+              type: string
+              pattern: '^([01]\d|2[0-3]):[0-5]\d:[0-5]\dZ$'
+
+              example: "15:30:00Z"
+            executionTimeUntil:
+              type: string
+              pattern: '^([01]\d|2[0-3]):[0-5]\d:[0-5]\dZ$'
+
+              example: "18:15:00Z"
+    
     AdHocPrioItem:
       allOf:
         - $ref: '#/components/schemas/LocationReference'
         - type: object
+          required:
+            - adHocReason
+            - adHocDirection
+            - adHocMaximumValues
           properties:
             adHocReason:
               $ref: '#/components/schemas/AdHocReason'
@@ -383,181 +550,159 @@ components:
                 $ref: '#/components/schemas/ExecutionPowerInterval'
 
     AdHocPrioRequest:
-      type: array
-      items:
         $ref: '#/components/schemas/AdHocPrioItem'
 
     AdHocZyklischItem:
       allOf:
         - $ref: '#/components/schemas/LocationReference'
         - type: object
+          required:
+            - adHocReason
+            - adHocDirection
+            - executionRange
+            - adHocMaximumValues
           properties:
             adHocReason:
               $ref: '#/components/schemas/AdHocReason'
             adHocDirection:
               $ref: '#/components/schemas/AdHocDirection'
+            executionRange:
+              $ref: '#/components/schemas/ExecutionInterval'
+
             adHocMaximumValues:
               type: array
               maxItems: 96
               items:
-                $ref: '#/components/schemas/DurationPowerInterval'
-              example:
-              - activePowerValue: 6
-                duration: 900
-              - activePowerValue: 4.2
-                duration: 3600
-              - activePowerValue: 5.3
-                duration: 3600
-              - activePowerValue: 7.2
-                duration: 900
+                $ref: '#/components/schemas/PowerIntervalHHMM'
+
 
 
     AdHocZyklischRequest:
-      type: array
-      items:
         $ref: '#/components/schemas/AdHocZyklischItem'
 
     SoftstartRequest:
-      type: array
-      items:
-        type: object
-        properties:
-          locationId:
-            type: string
-          softstartValuesMaxProduction:
-            type: array
-            items:
-              $ref: '#/components/schemas/DurationPowerInterval'
-            example:
-              - activePowerValue: 0
-                duration: 900
-              - activePowerValue: 4.2
-                duration: 3600
-          softstartValuesMaxConsumption:
-            type: array
-            items:
-              $ref: '#/components/schemas/DurationPowerInterval'
-            example:
-              - activePowerValue: 2
-                duration: 900
-              - activePowerValue: 4.2
-                duration: 3600
+        allOf:
+          - $ref: '#/components/schemas/LocationReference'   
+          - type: object
+            properties:
+              softstartValuesMaxFeedIn:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DurationPowerInterval'
+                example:
+                  - activePowerValue: 0
+                    duration: 900
+                  - activePowerValue: 4.2
+                    duration: 3600
+              softstartValuesMaxConsumption:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DurationPowerInterval'
+                example:
+                  - activePowerValue: 2
+                    duration: 900
+                  - activePowerValue: 4.2
+                    duration: 3600
 
     FailsafeRequest:
-      type: array
-      items:
-        type: object
-        properties:
-          locationId:
-            type: string
-          failsafeValueProduction:
-            $ref: '#/components/schemas/DurationPowerInterval'
-          failsafeValueConsumption:
-            $ref: '#/components/schemas/DurationPowerInterval'
+        allOf:
+          - $ref: '#/components/schemas/LocationReference'  
+          - type: object
+            properties:
+              failsafeValueFeedIn:
+                $ref: '#/components/schemas/DurationPowerInterval'
+              failsafeValueConsumption:
+                $ref: '#/components/schemas/DurationPowerInterval'
 
     InitialZustandRequest:
-      type: object
-      properties:
-        locationIds:
-          type: array
-          items:
-            type: string
-        AdHocStopTime:
-          type: string
-          format: date-time
-        StopProfile:
-          type: string
-          example: "AdHoc-01"
-          enum:
-            - AdHoc-01
-            - AdHoc-02
-            - AdHoc-03
+      allOf:
+          - $ref: '#/components/schemas/LocationReference'  
+          - type: object
+            properties:
+        
+              adHocStopTime:
+                type: string
+                format: date-time
+              stopProfile:
+                type: string
+                example: "AdHoc-01"
+                enum:
+                  - AdHoc-01
+                  - AdHoc-02
+                  - AdHoc-03
 
 
     PreliminaryResponse:
-      type: object
-      example:
-         locationId: C1234848431
-         adHocState: possible
-         adHocReason: Steuerungseinrichtung erreichbar und Fahrplan plausibel geprüft.
-      properties:
-        locationId:
-          type: string
-          example: C1234848431
-        adHocPreliminaryState:
-          type: string
-          enum:
-            - possible
-            - unable
-          example: possible
-        adHocPreliminaryReason:
-          type: string
-          example: Steuerungseinrichtung erreichbar und Fahrplan plausibel geprüft.
+      allOf:
+          - $ref: '#/components/schemas/LocationReference'  
+          - type: object
+            required:
+                - adHocPreliminaryState
+                - adHocPreliminaryReason
+            properties:
+              adHocPreliminaryState:
+                type: string
+                enum:
+                  - possible
+                  - unable
+                example: possible
+              adHocPreliminaryReason:
+                type: string
+                example: Steuerungseinrichtung erreichbar und Fahrplan plausibel geprüft.
 
 
     FinalResponse:
-      type: object
-      example:
-          locationId: C1234848431
-          adHocState: possible
-          adHocReason: Fahrplan erfolgreich in der Steuerungseinrichtung aktiviet.
-
-      properties:
-        locationId:
-          type: string
-        adHocState:
-          type: string
-          enum:
-            - possible
-            - unable
-        adHocReason:
-          type: string
+      allOf:
+          - $ref: '#/components/schemas/LocationReference'  
+          - type: object
+            required:
+              - adHocState
+              - adHocReason
+            example:
+                srId: C1234848431
+                adHocState: possible
+                adHocReason: Fahrplan erfolgreich in der Steuerungseinrichtung aktiviet.
+            properties:
+              adHocState:
+                type: string
+                enum:
+                  - possible
+                  - unable
+              adHocReason:
+                type: string
 
     InformationRequest:
-      type: object
-      properties:
-        locationId:
-          type: string
-        partnerId:
-          type: string
-        adHocEndDate:
-          type: string
-          format: date-time
-        adHocValuesMaxConsumption:
-          type: array
-          items:
-            $ref: '#/components/schemas/ExecutionPowerInterval'
+      allOf:
+          - $ref: '#/components/schemas/LocationReference'  
+          - type: object     
+            required:
+              - srId
+              - partnerId
+            properties:
+              partnerId:
+                type: string
+                example: 9900496000005
+            # adHocEndDate:
+            #   type: string
+            #   format: date-time
+              adHocPrioValues:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AdHocPrioItem'
 
-        adHocValuesMaxFeedIn:
-          type: array
-          items:
-            $ref: '#/components/schemas/ExecutionPowerInterval'
-      example:
-        locationId: C1234848431
-        partnerId: 9901234567890
-        adHocValuesMaxConsumption:
-          - activePowerValue: 4.2
-            executionTimeFrom: '2025-10-15T17:00:00Z'
-            executionTimeUntil: '2025-10-15T17:15:00Z'
-          - activePowerValue: 3.5
-            executionTimeFrom: '2025-10-15T17:15:00Z'
-            executionTimeUntil: '2025-10-15T17:30:00Z'
-          - activePowerValue: 2.8
-            executionTimeFrom: '2025-10-15T17:30:00Z'
-            executionTimeUntil: '2025-10-15T17:45:00Z'
-          - activePowerValue: 1.0
-            executionTimeFrom: '2025-10-15T17:45:00Z'
-            executionTimeUntil: '2025-10-15T18:00:00Z'
-        adHocValuesMaxFeedIn:
-          - activePowerValue: 8.0
-            executionTimeFrom: '2025-10-15T17:00:00Z'
-            executionTimeUntil: '2025-10-15T17:15:00Z'
-          - activePowerValue: 6.0
-            executionTimeFrom: '2025-10-15T17:15:00Z'
-            executionTimeUntil: '2025-10-15T17:30:00Z'
-          - activePowerValue: 4.0
-            executionTimeFrom: '2025-10-15T17:30:00Z'
-            executionTimeUntil: '2025-10-15T17:45:00Z'
-          - activePowerValue: 2.0
-            executionTimeFrom: '2025-10-15T17:45:00Z'
-            executionTimeUntil: '2025-10-15T18:00:00Z'
+              adHocZyklisch:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AdHocZyklischItem'
+              adHocSoftstart:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SoftstartRequest'
+              adHocFailsafe:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FailsafeRequest'
+              initialZustand:
+                type: array
+                items:
+                  $ref: '#/components/schemas/InitialZustandRequest'
