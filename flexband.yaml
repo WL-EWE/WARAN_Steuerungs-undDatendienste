@@ -517,13 +517,13 @@ components:
                   $ref: '#/components/schemas/FallbackSlot'
                 example:
                   - duration: 900
-                    powerValue: 8000
+                    activepowerValue: 8000
                   - duration: 900
-                    powerValue: 7500
+                    activepowerValue: 7500
                   - duration: 900
-                    powerValue: 7000
+                    activepowerValue: 7000
                   - duration: 900
-                    powerValue: 6500
+                    activepowerValue: 6500
 
     InitialStateRequest:
         allOf:
@@ -593,6 +593,8 @@ components:
       allOf:
           - $ref: '#/components/schemas/LocationReference'  
           - type: object
+            required:
+              - partnerId
             properties:
               partnerId:
                 type: string
@@ -622,10 +624,12 @@ components:
       properties:
         duration:
           type: integer
+          description: Dauer in Sekunden
           minimum: 900
           maximum: 86400
         activePowerValue:
           type: integer
+          description: Wirkleistung in kW
           minimum: 0
 
     FallbackSlot:
@@ -636,8 +640,10 @@ components:
       properties:
         duration:
           type: integer
+          description: Dauer in Sekunden
           minimum: 900
           maximum: 86400
-        powerValue:
+        activePowerValue:
           type: integer
+          description: Wirkleistung in kW
           minimum: 0
