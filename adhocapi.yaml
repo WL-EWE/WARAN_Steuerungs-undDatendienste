@@ -2,9 +2,12 @@ openapi: 3.0.3
 
 info:
   title: WARAN - Impuls zur Anpassung der Ad-Hoc-Steuerungs-API
-  version: 0.9.0
+  version: 0.9.1
   description: >
-    Aufbauend auf dem bereits existierenden API-Webdienst zur prozessualen Abwicklung von Steuerungshandlungen (https://edi-energy.github.io/api-electricity/aktuell-gueltig/#/), werden im vorliegenden Abschnitt Erweiterungen vorgeschlagen, die es den Marktakteuren ermöglichen das volle Potential der Ad-hoc Steuerung zu nutzen. Zur eindeutigen fachlichen Zuordnung der Steuerungsdienste, soll zunächst präzisiert werden, dass die lokale Weitergabe der Ad-hoc Steuerungshandlungen verbrauchsseitig stets über den EEBUS UseCase LPC und einspeiseseitig stets über den EEBUS UseCase LPP erfolgt.* Neben dem kurativen Ad-hoc Eingriff des Netzbetreiber (bspw. nach $14a EnW) ist es vorgesehen die Anwendungsfälle auch im Kontext weiterer netzstabilisierender Maßnahmen zu verwenden. Dazu zählen u.a. Fallbackszenarien, um im Falle von Kommunikationsstörungen oder bei Spannungswiederkehr ein definiertes Verhalten der steuerbaren Anlagen zu gewährleisten. Damit die unterschiedlichen Szenarien konfliktfrei eingesetzt werden können, sind entsprechende Prioritäten bei der Umsetzung zu berücksichtigen. Die Berücksichtigung der Prioritäten und die Weitergabe der Steuerungshandlungen an die Steuerungseinrichtung bzw. an die steuerbare Einrichtung orientiert sich dabei u.a. an dem FNN Hinweis „Steuerungs-Administration“. Insbesondere das Konzept des Residualprofils wird aufgegriffen und als geeignete Möglichkeit identifiziert, die unterschiedlichen Signale im Backend des Messstellenbetreibers zu harmonisieren. Im aktuellen Abschnitt meint das Ad-hoc Residualprofil dabei die jeweiligen LPC und LPP Werte, die als auszuführendes Array an Werten auf die Steuerungseinrichtung übertragen werden. Die Werte können dabei einen zeitlichen Horizont von mehreren Stunden oder Tagen abdecken. Jeder neue Aufruf sorgt für eine Aktualisierung des Residualprofils.
+    Aufbauend auf dem bereits existierenden API-Webdienst zur prozessualen Abwicklung von Steuerungshandlungen (https://edi-energy.github.io/api-electricity/aktuell-gueltig/#/), werden im vorliegenden Abschnitt Erweiterungen vorgeschlagen, die es den Marktakteuren ermöglichen das volle Potential der Ad-hoc Steuerung zu nutzen. 
+    
+
+    Zur eindeutigen fachlichen Zuordnung der Steuerungsdienste, soll zunächst präzisiert werden, dass die lokale Weitergabe der Ad-hoc Steuerungshandlungen verbrauchsseitig stets über den EEBUS UseCase LPC und einspeiseseitig stets über den EEBUS UseCase LPP erfolgt.* Neben dem kurativen Ad-hoc Eingriff des Netzbetreiber (bspw. nach $14a EnWG) ist es vorgesehen die Steuerungssignale auch im Kontext weiterer netzstabilisierender Maßnahmen zu verwenden. Dazu zählen u.a. Fallbackszenarien, um im Falle von Kommunikationsstörungen oder bei Spannungswiederkehr ein definiertes Verhalten der steuerbaren Anlagen zu gewährleisten. Damit die unterschiedlichen Szenarien konfliktfrei eingesetzt werden können, sind Definitionen und Prioritäten bei der Umsetzung zu berücksichtigen. Die Berücksichtigung der Prioritäten und die Weitergabe der Steuerungshandlungen an die Steuerungseinrichtung bzw. an die steuerbare Einrichtung orientiert sich dabei u.a. an dem VDE FNN Hinweis „Steuerungs-Administration“. Insbesondere das Konzept des Residualprofils wird aufgegriffen und als geeignete Möglichkeit identifiziert, die unterschiedlichen Signale im Backend des Messstellenbetreibers zu harmonisieren. Im aktuellen Abschnitt meint das Ad-hoc Residualprofil dabei die jeweiligen LPC und LPP Werte, die als auszuführendes Array an Werten auf die Steuerungseinrichtung übertragen werden. Die Werte können dabei einen zeitlichen Horizont von mehreren Stunden oder Tagen abdecken. Jeder neue Aufruf sorgt für eine Aktualisierung des Residualprofils.
 
 
     Ingesamt ergeben sich die folgenden API Dienste die mit der entsprechenden Berechtigung beim MSB bestellt und genutzt werden können:
@@ -16,7 +19,7 @@ info:
 
 
 
-    *Fokus liegt auf der digitalen Schnittstelle. Insbesondere im Falle von Steuerungsdiensten wird angenommen, dass die „Relaissteuerung“ lediglich als Übergangslösung zu sehen ist. Die fachliche Ausprägung der Prozesse und API-Dienste sollte daher stets mit dem Fokus auf die digitale EEBUS Steuerung erfolgen. Eine Abwärtskompatibilität zum Relais kann in der Regel gewährleistet werden, ist aber nicht Fokus im vorliegenden Dokument. 
+    *Fokus liegt auf der digitalen Schnittstelle. Insbesondere im Falle von Steuerungsdiensten wird angenommen, dass die „Relaissteuerung“ eine Übergangslösung darstellt. Die fachliche Ausprägung der Prozesse und API-Dienste sollte daher stets mit Fokus auf die digitale Steuerung gemäß der VDE-2829-6-1 erfolgen. Eine Abwärtskompatibilität zum Relais kann in der Regel gewährleistet werden, ist aber nicht Fokus der vorliegenden Spezifikation. 
 
 servers:
   - url: https://api.example.de
@@ -28,19 +31,24 @@ tags:
 
 paths:
 
-  /to/MSB/adHoc/command/adhocPrio:
+  /to/MSB/adHoc/command/adhocPrio/v0:
     post:
       tags: [Anweisung AdHoc Steuerungshandlung]
-      summary: AdHoc-01 Priorisierte Ad-hoc-Steuerung
+      summary: AdHoc-01 -> Priorisierte Ad-hoc-Steuerung
       description: >
-        Aufbauend auf dem bestehenden API-Webdienst zur Steuerung, wird die Schnittstelle mit minimalen inhaltlichen Anpassungen vorgeschlagen. Zu den Anpassungen zählen bspw. die Berücksichtigung der Energierichtung. Die Werte werden je Energierichtung in das jeweilige Ad-hoc Residualprofil übernommen und mit hoher Priorität umgesetzt. Die Ad-hoc Residualprofile (LPC-RP / LPP-RP) entsprechen dabei den Steuerungsanwendungsfällen 1 und 2 gemäß Implementierungshinweis des BSI (SAF1 / SAF2).
+        Aufbauend auf dem bestehenden API-Webdienst zur Steuerung, werden inhaltliche Anpassungen bzw. Erweiterungen vorgeschlagen. Zu den Anpassungen zählen bspw. die Berücksichtigung der Energierichtung. Die Werte werden je Energierichtung in das jeweilige Ad-hoc Residualprofil übernommen und mit hoher Priorität umgesetzt. Die Ad-hoc Residualprofile (LPC-RP / LPP-RP) können im Backend des MSB gebildet unnd an die Steuerungseinrichtung weitergericht werden. Sie entsprechen dabei den Steuerungsanwendungsfällen 1 und 2 gemäß Implementierungshinweis des BSI (SAF1 / SAF2).
         
 
-        Mögliche Szenarien:
-          -	VNB - §14a EnWG „Notfallsignal -> LPC RP  
+        **Mögliche energiewirtschaftliche Szenarien:**
+          -	VNB - §14a EnWG „Notfallsignal" -> LPC RP  
           -	VNB - §9 EEG „Notfallsignal“ -> LPP RP
           -	VNB - Redispatch (2.0/3.0) -> LPP RP*
           -	LF – Direktvermarktung u.a. § §10b EEG – LPP RP**
+
+        *Für Redispatch wird (bei Verfügbarkeit) der Hüllkurven Anwendungsfall empfohlen. Durch die Prognosebasis sind Eingriffe in der Regel mit ausreichend Vorlauf bekannt, sodass eine lokale Optimierung auf dem Energiemanagement erreicht werden kann.
+
+
+        **„Marktliche Steuerung“ durch bspw. Direktvermarkter ist grundsätzlich auch mit Ad-hoc Steuerungssignalen umsetzbar. Es gilt zu beachten, dass der technische Use Case (LPC/LPP) nicht für die marktliche Anwendung bestimmt ist. Missverständnisse bei der Umsetzung, aufgrund der Darstellung als Netzengpasssignal auf der Kundenseite sind zu erwarten. Für die marktlichen Steuerung wird daher der Flexband bzw. Hüllkurven Anwendungsfall empfohlen.
 
       operationId: postAdHocPrio
       parameters:
@@ -78,18 +86,20 @@ paths:
         '504':
           description: Gateway Timeout
 
-  /to/MSB/adHoc/command/adhocCyclic:
+  /to/MSB/adHoc/command/adhocCyclic/v0:
     post:
       tags: [Anweisung AdHoc Steuerungshandlung]
-      summary: AdHoc-02 Zyklische AdHoc Steuerung 
+      summary: AdHoc-02 -> Zyklische AdHoc Steuerung 
       description: >
-        Erweiterung auf Array mit zyklischer (täglich wiederkehrender) Ad-hoc Ausführung. Erhält niedrigere Priorität und ist somit durch AdHoc-01 übersteuerbar. Wird ebenfalls ins jeweilige Ad-hoc Residualprofil übernommen. Entspricht weitestgehend den heutigen langfristigen Steuerungshandlungen (Leistungskurvendefinition).
+        Erweiterung auf einen zweiten Ad-hoc Steuerungsservice der eine zyklische (täglich wiederkehrender) Ausführung ermöglicht. Erhält eine niedrigere Priorität und ist somit durch AdHoc-01 übersteuerbar. Wird ebenfalls ins jeweilige Ad-hoc Residualprofil übernommen. Entspricht fachlich weitestgehend den heutigen langfristigen Steuerungshandlungen (bspw. Leistungskurvendefinition) und kann diese Anwendungsfälle ggf. zukünftig ersetzen.
         
 
-        Mögliche Szenarien:
+        **Mögliche energiewirtschaftliche Szenarien:**
           -	VNB - §14a EnWG „präventiv” (Bis Ende 2028) -> LPC RP
           -	VNB – Backup-Fahrplan für Kommunikationsstörung -> LPC/LPP RP
           -	LF – Backup-Fahrplan für Kommunikationsstörung -> LPC/LPP RP**
+
+         **„Marktliche Steuerung“ durch bspw. Direktvermarkter ist grundsätzlich auch mit Ad-hoc Steuerungssignalen umsetzbar. Es gilt zu beachten, dass der technische Use Case (LPC/LPP) nicht für die marktliche Anwendung bestimmt ist. Missverständnisse bei der Umsetzung, aufgrund der Darstellung als Netzengpasssignal auf der Kundenseite sind zu erwarten. Für die marktlichen Steuerung wird daher der Flexband bzw. Hüllkurven Anwendungsfall empfohlen.
 
       operationId: postAdHocZyklisch
       parameters:
@@ -127,17 +137,18 @@ paths:
         '504':
           description: Gateway Timeout
 
-  /to/MSB/adHoc/parameter/softstart:
+  /to/MSB/adHoc/parameter/softstart/v0:
     post:
       tags: [Anweisung AdHoc Steuerungshandlung]
-      summary: AdHoc-03 Softstartprofil
+      summary: AdHoc-03 -> Softstartprofil
       description: >
-        Ein Ad-hoc Profil (LPC/LPP ST) welches dediziert auf der Steuerungseinrichtung hinterlegt wird und nur bei einer lokalen Spannungsunterbrechung aktiviert wird. Wird mit höchster Priorität ausgeführt und übersteuert somit das Ad-hoc Residualprofil.
-        Die Softstart Profile (LPC SST / LPP SST) entsprechen den Steuerungsanwendungsfällen 5 und 6 gemäß Implementierungshinweis des BSI (SAF5 / SAF6).
+        Ein Ad-hoc Profil (LPC/LPP SSt) welches dediziert auf der Steuerungseinrichtung hinterlegt wird und nur bei einer lokalen Spannungsunterbrechung aktiviert wird. Wird mit höchster Priorität ausgeführt und übersteuert somit das Ad-hoc Residualprofil (LPC RP / LPP RP). Sofern die Verbindung zum Backend wieder hergestellt ist, kann ein aktiviertes Softstartprofil über den API Dienst "AdHoc-05" zurückgesetzt werden. Die Softstart Profile (LPC SSt / LPP SSt) entsprechen den Steuerungsanwendungsfällen 5 und 6 gemäß Implementierungshinweis des BSI (SAF5 / SAF6).
         
-        Mögliche Szenarien:
-          - VNB - Netzstabilität nach Spannungswiederkehr -> LPC/LPP SST
 
+        **Mögliche energiewirtschaftliche Szenarien:**
+          - VNB - Netzstabilität nach Spannungswiederkehr -> LPC/LPP SSt
+
+        **Einschränkung:** Nur durch den VNB zulässig
         
       operationId: postSoftstart
       parameters:
@@ -175,17 +186,19 @@ paths:
         '504':
           description: Gateway Timeout
 
-  /to/MSB/adHoc/parameter/failsafe:
+  /to/MSB/adHoc/parameter/failsafe/v0:
     post:
       tags: [Anweisung AdHoc Steuerungshandlung]
-      summary: AdHoc-04 Failsafe-Konfiguration
+      summary: AdHoc-04 -> Failsafe-Konfiguration
       description: >
-        Konfiguration des Failsafe Werte gemäß EEBUS LPC / LPP Szenario 2. Nur durch den VNB zulässig. Wird über die Infrastruktur bis zur steuerbaren Anlage durchgereicht und dort bei lokalem Kommunikationsausfall aktiviert.
+        Konfiguration des Failsafe Werte gemäß EEBUS LPC / LPP Szenario 2. Wird über die Infrastruktur bis zur steuerbaren Anlage durchgereicht und dort bei lokalem Kommunikationsausfall aktiviert.
         Die Failsafe Werte (LPC FS / LPP FS) entsprechen den Steuerungsanwendungsfällen 3 und 4 gemäß Implementierungshinweis des BSI (SAF3 / SAF4).
 
         
-        Mögliche Szenarien:
+        **Mögliche energiewirtscgaftliche Szenarien:**
           - VNB – Definiertes Verhalten bei temporären lokalen Kommunikationsstörung 
+          
+        **Einschränkung:** Nur durch den VNB zulässig
 
 
       operationId: postFailsafe
@@ -224,12 +237,12 @@ paths:
         '504':
           description: Gateway Timeout
 
-  /to/MSB/adHoc/reset:
+  /to/MSB/adHoc/reset/v0:
     post:
       tags: [Anweisung AdHoc Steuerungshandlung]
-      summary: AdHoc-05 Löschen vorhandener Ad-hoc-Steuerungen
+      summary: AdHoc-05 -> Reset vorhandener Ad-hoc-Steuerungen
       description: >
-        Erlaubt die Deaktivierung von zuvor übermittelten Steuerungshandlungen. Die gesamten Einträge des Absenders werden im AdHoc Residualprofil gelöscht.  
+        Erlaubt die Deaktivierung oder das Zurücksetzen von zuvor übermittelten AdHoc Steuerungsprofilen. Es werden alle betroffenen Einträge des Absenders, die nach dem gewünschten Änderungszeitpunkt liegen, im jeweiligen AdHoc Profil adressiert (also gelöscht oder zurückgesetzt)  
       operationId: postInitialZustand
       parameters:
         - $ref: '#/components/parameters/transactionId'
@@ -266,15 +279,21 @@ paths:
         '504':
           description: Gateway Timeout
 
-  /from/MSB/adHoc/preliminaryResponse:
+  /from/MSB/adHoc/preliminaryResponse/v0:
     post:
       tags: [Antwort AdHoc Steuerungshandlung]
-      summary: AdHoc-06 Vorläufige Antwort
+      summary: AdHoc-06 -> Vorläufige Antwort
+      description: >
+       Anpassung und Erweiterung der vorläufigen Rückmeldung. Unter anderem wurden zusätzliche ResponseCodes eingeführt, um eine möglichst präzise Rückmeldung an den auslösenden Akteur zu übermitteln.
+
+       Die vorläufige Antwort wird unmittelbar nach fachlicher Prüfung der Steuerungsanweisung versendet, unabhängig davon, ob die Steuerungseinrichtug den Befehl tatsächlich umsetzen kann.
       operationId: postPreliminaryResponse
       parameters:
         - $ref: '#/components/parameters/transactionId'
         - $ref: '#/components/parameters/creationDateTime'
         - $ref: '#/components/parameters/initialTransactionId'
+        - $ref: '#/components/parameters/referenceId'
+
        # - $ref: '#/components/parameters/controlActor'
       requestBody:
         required: true
@@ -306,15 +325,23 @@ paths:
         '504':
           description: Gateway Timeout
 
-  /from/MSB/adHoc/finalResponse:
+  /from/MSB/adHoc/finalResponse/v0:
     post:
       tags: [Antwort AdHoc Steuerungshandlung]
-      summary: AdHoc-07 Finale Antwort
+      summary: AdHoc-07 -> Finale Antwort
+      description: >
+       Anpassung und Erweiterung der finalen Rückmeldung. Unter anderem wurden zusätzliche ResponseCodes eingeführt, um eine möglichst präzise Rückmeldung an den auslösenden Akteur zu übermitteln.
+
+       Die finale Antwort wird unmittelbar nach erfolgreicher Konfiguration der Steuerungsanweisung versendet, d.h. sobald die Steuerungseinrichtug den Befehl erfolgreich entgegengenommen hat.
+
+
+       **Hinweis:** Ob die steuerbare Einrichtung auf Kundenseite den Steuerbefehl zum Ausführungszeitpunkt verarbeiten kann und erfolgreich umsetzt, ist mit dieser Antwort nicht sichergestellt.
       operationId: postFinalResponse
       parameters:
         - $ref: '#/components/parameters/transactionId'
         - $ref: '#/components/parameters/creationDateTime'
         - $ref: '#/components/parameters/initialTransactionId'
+        - $ref: '#/components/parameters/referenceId'
        # - $ref: '#/components/parameters/controlActor'      
       requestBody:
         required: true
@@ -346,10 +373,15 @@ paths:
         '504':
           description: Gateway Timeout
 
-  /from/MSB/adHoc/information:
+  /from/MSB/adHoc/information/v0:
     post:
       tags: [Mitteilung AdHoc Steuerungshandlung an Berechtigte]
-      summary: AdHoc-08 Information über aktive Ad-hoc-Steuerungen
+      summary: AdHoc-08 -> Information über aktive Ad-hoc-Steuerungen
+      description: >
+       Alle erfolgreich verarbeiteten Steuerungshandlungen werden unmittelbar nach der positiven finalen Antwort auch an alle berechtigten Marktpartner übermittelt, sodass eine Transparenz über sämtliche Steuerungsanweisungen besteht. Dabei werden nur die angefragten Steuerungshandlungen transparent gemacht. Die daraus abgeleiteten Residualprofile können über eine seperarte Status API abgefragt werden, sofern seitens des Absenders daran Bedarf besteht.
+
+
+       **Besonderheit:** Zusätzlich werden aktivie Softstartsequenzen übermittelt, sobald diese nach Wiederherstellung der Kommunikation vom MSB erkannt werden. Dadurch kann der VNB die laufenden Softstartsequenz bei Bedarf beenden.
       operationId: postInformation
       parameters:
         - $ref: '#/components/parameters/transactionId'
@@ -399,16 +431,27 @@ components:
     transactionId:
       name: transactionId
       in: header
+      description: Externe Transaktions-Id zur eindeutigen Identifikation des Aufrufs des sendenden Marktpartners.
       required: true
       schema:
         type: string
         format: uuid
         example: de14872e-71e7-407f-916f-da8dbde05176
-
+ 
+    referenceId:
+      name: referenceId
+      in: header
+      description: Externe Vorgangsreferenz zur eindeutigen Identifikation des ursprünglichen Befehls (transactionId aus vorlegleagerten Request "Anweisung AdHoc Steuerungshandlung").
+      required: true
+      schema:
+        type: string
+        format: uuid
+        example: de14872e-71e7-407f-916f-da8dbde05177
 
     creationDateTime:
       name: creationDateTime
       in: header
+      description: Zeitpunkt an dem der Aufruf erstellt wurde
       required: true
       schema:
         type: string
@@ -418,6 +461,7 @@ components:
     initialTransactionId:
       name: initialTransactionId
       in: header
+      description: Zur Angabe des Idempotenzschlüssels im Falle eines Retry.
       required: false
       schema:
         type: string
@@ -437,25 +481,27 @@ components:
     LocationReference:
       type: object
       required:
-        - srId
+        - locationId
       properties:
-        srId:
+        locationId:
           type: string
+          description: Die ID wird durch den BDEW festgelegt. In der vorliegenden Spezifikation wird angenommen, dasss zukünftig ausschließlich über die SR-ID gesteuert wird.
           pattern: '^C[A-Z0-9]{9}[0-9]$'
           example: C1234848431
 
     AdHocDirection:
       type: string
       enum:
-        - FeedIn
+        - Production
         - Consumption
 
     AdHocReason:
       type: string
       example: Test
+      description: >
+       Die Angabe eines AdHocReason sorgt für eine Transparenz und kann u.a. für Dokumentationen und Veröffentlichungspflichten genutzt werden. Neben gesezlich vorschegeschriebenen Gründen (bspw. §14a EnWG) kann es eine vertragliche Basis geben (bspw. bei marktlichen Akteuren). Außerdem kann "Test" als Grund angegeben werden und explizit für Teststeuerungen eingesetzt werden.
       enum:
-        - DSO
-        - DSO_TSO
+        - Legal/Regulatory
         - Contract
         - Test
 
@@ -585,7 +631,7 @@ components:
           - $ref: '#/components/schemas/LocationReference'   
           - type: object
             properties:
-              softstartValuesMaxFeedIn:
+              softstartValuesMaxProduction:
                 type: array
                 items:
                   $ref: '#/components/schemas/DurationPowerInterval'
@@ -609,7 +655,7 @@ components:
           - $ref: '#/components/schemas/LocationReference'  
           - type: object
             properties:
-              failsafeValueFeedIn:
+              failsafeValueProduction:
                 $ref: '#/components/schemas/DurationPowerInterval'
               failsafeValueConsumption:
                 $ref: '#/components/schemas/DurationPowerInterval'
@@ -637,18 +683,29 @@ components:
           - $ref: '#/components/schemas/LocationReference'  
           - type: object
             required:
-                - adHocPreliminaryState
-                - adHocPreliminaryReason
+              - preliminaryState
+              - preliminaryResponseCode
             properties:
-              adHocPreliminaryState:
+              preliminaryState:
                 type: string
-                enum:
-                  - possible
-                  - unable
-                example: possible
-              adHocPreliminaryReason:
+                enum: [possible, unable]
+                example: "unable"
+              preliminaryResponseCode:
                 type: string
-                example: Steuerungseinrichtung erreichbar und Fahrplan plausibel geprüft.
+                enum: [succeeded, communicationFailure, overload, maintanance, missing contract, invalid message, unable]
+                description: >
+                  succeeded = erfolgreiche Verarbeitung; 
+                  communicationFailure = temporäre Störung in der Gerätekommunikation; 
+                  localFailure = Gerät(e) Störung - wird durch Außendienst behoben;
+                  customerInteractionRequired = Mitwirkung durch den Betreiber notwendig (bspw. SHIP Pairing);
+                  overload = Überlastung der Kommunikationsstrecke;
+                  missing contract = Keine gültige Berechtigung;
+                  invalid message = Nachricht enthält fachliche Fehler;
+                  unable = Sonstiger Fehler, siehe weitere Fehlerbeschreibung.
+                example: "customerInteractionRequired"
+              preliminaryReason:
+                type: string
+                example: "Fehlendes Pairing zwischen der Steuerungseinrichtung und der steuerbaren Einrichtung des Betreibers. Eine Kundeninteraktion ist notwendig"
 
 
     FinalResponse:
@@ -659,7 +716,7 @@ components:
               - adHocState
               - adHocReason
             example:
-                srId: C1234848431
+                locationId: C1234848431
                 adHocState: possible
                 adHocReason: Fahrplan erfolgreich in der Steuerungseinrichtung aktiviet.
             properties:
@@ -673,10 +730,9 @@ components:
 
     InformationRequest:
       allOf:
-          - $ref: '#/components/schemas/LocationReference'  
+          #- $ref: '#/components/schemas/LocationReference'  
           - type: object     
             required:
-              - srId
               - partnerId
             properties:
               partnerId:
@@ -694,10 +750,20 @@ components:
                 type: array
                 items:
                   $ref: '#/components/schemas/AdHocZyklischItem'
+              
               adHocSoftstart:
                 type: array
                 items:
-                  $ref: '#/components/schemas/SoftstartRequest'
+                  allOf:
+                    - type: object
+                      properties:
+                        softstartActive:
+                          type: boolean
+                          description: Wenn eine aktive SoftstartSequenz erkannt wird, wird der Wert auf "True" gesetztz; Andernfalls wird standardmäßig "false" gesendet
+                      required:
+                        - softstartActive
+                    - $ref: '#/components/schemas/SoftstartRequest'
+
               adHocFailsafe:
                 type: array
                 items:
