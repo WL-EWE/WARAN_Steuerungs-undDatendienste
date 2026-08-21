@@ -376,7 +376,7 @@ paths:
   /from/MSB/adHoc/information/v0:
     post:
       tags: [Mitteilung AdHoc Steuerungshandlung an Berechtigte]
-      summary: AdHoc-08 -> Information über aktive Ad-hoc-Steuerungen
+      summary: AdHoc-08 -> Information über AdHoc Steuerungshandlungen
       description: >
        Alle erfolgreich verarbeiteten Steuerungshandlungen werden unmittelbar nach der positiven finalen Antwort auch an alle berechtigten Marktpartner übermittelt, sodass eine Transparenz über sämtliche Steuerungsanweisungen besteht. Dabei werden nur die angefragten Steuerungshandlungen transparent gemacht. Die daraus abgeleiteten Residualprofile können über eine seperarte Status API abgefragt werden, sofern seitens des Absenders daran Bedarf besteht.
 
