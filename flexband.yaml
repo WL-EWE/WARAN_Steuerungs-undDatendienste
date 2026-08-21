@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: WARAN - Impuls zur Erstellung einer Flexband API
-  version: 0.8.0
+  version: 0.8.1
   description: >
     Aufbauend auf dem Ad-hoc-API Diensten und den voranschreitenden Steuerungsrollout, bieten die hier skizzierte API-Dienste erweiterte Möglichkeiten Steurungshandlungen über die MSB-Infrastruktur umzusetzen. Basis hierfür ist der EEBUS Anwendungsfall Power Envelope (POEN), welcher auch unter dem Begriff Hüllkurve oder Flexband bekannt ist. In Abgrenzung zur kurativen Ad-hoc Steuerung, bietet die Hüllkurve dabei die Chance eine proaktive Wirkung, sowie eine bessere Verzahnung von Markt- und Netzinteressen zu gewährleisten. In einem Ampelmodell (siehe Hinweise vom FNN zum Netzbetrieb mit Flexibilitäten) kann die Hüllkurve als Netzbetreiber-Instrument für die grüne und gelbe Ampelphase eingeordnet werden. Als übergeordnetes Ziel aus VNB Perspektive steht die effizientere Auslastung der Infrastruktur und die kostengünstige Integration von steuerbaren Anlagen ("Energiewendeanlagen") in die Niederspannungsnetze. Das generische Flexbandkonzept ermöglicht dabei eine Vielzahl von energiewirtschaftlichen Anwendungsmöglichkeiten. Bei unterschielichen Akteuren (bspw. Netzbetreiber und Lieferant), bildet der MSB ein kosolidiertes Profil. Analog zum Ad-hoc Residualprofil, wird hier das sogenannte "POEN-Residualprofil gebildet. Weitere Details zur Verwendung und Einordnung finden sich in den folgenden Veröffentlichungen: 
 
@@ -36,22 +36,27 @@ tags:
 
 paths:
 
-  /to/msb/flexband/command/poen-dynamic-profile:
+  /to/msb/flexband/command/poen-dynamic-profile/v0:
     post:
       tags: [Anweisung Flexband]
-      summary: Flex-01 - Übermittlung dynamisches Flexband
+      summary: Flex-01 -> Übermittlung dynamisches Flexband
       description: >
-        Vorgabe der verbrauchsseitigen (POEN Szenario 1) oder der einspeiseseitigen Hüllkurve (POEN Szenario 2).  Es können je nach Berechtigung maximale und minimale Leistungslimits für die nächsten 48 Stunden definiert werden. Der MSB bildet auf der Basis ein POEN-Residualprofil (POEN-RP) und sorgt damit für eine konfliktfreie Übertragung des Flexbandes. Optional kann der MSB eine täglich wiederkehrende Ausführung sicherstellen.
+        Vorgabe der verbrauchsseitigen (POEN Szenario 1) oder der einspeiseseitigen Hüllkurve (POEN Szenario 2).  Es können je nach Berechtigung maximale und minimale Leistungslimits für die nächsten 48 Stunden definiert werden. Der MSB bildet auf der Basis ein POEN-Residualprofil (POEN-RP) und sorgt damit für eine konfliktfreie Übertragung des Flexbandes. Die POEN Residualprofile (POEN RP S1 und POEN RP S2) entsprechen dabei den Steuerungsanwendungsfällen 7 und 8 gemäß Implementierungshinweis des BSI (SAF7 / SAF8).
 
-        Die POEN Residualprofile (POEN RP S1 und POEN RP S2) entsprechen dabei den Steuerungsanwendungsfällen 7 und 8 gemäß Implementierungshinweis des BSI (SAF7 / SAF8).
 
-        Mögliche Szenarien:
+        **Mögliche energiewirtschaftliche Szenarien:**
          - VNB - §14a EnWG „präventiv” (Bis Ende 2028) -> POEN RP S1
          - 	VNB - Redispatch (2.0/3.0) -> POEN RP S2
          - 	VNB - Vorausschauende Steuerung* -> POEN RP S1/S2
          - LF – Direktvermarktung** -> POEN RP S2
          - LF - Vertrags- und Bilanzoptimierung** -> POEN S1/S2
          - LF – Systemdienstleistungen (aFRR / mFRR ** -> POEN S1/S2
+
+        *Vorausschauende, prognosebasierte Steuerung, vgl. FNN Hinweis „Netzbetrieb mit Flexibilitäten“. Umsetzbar bspw. auf vertraglicher Basis (z.B. per FCA - flexibler Netzanschlussvereinbarung (§17 (2b) EnWG))
+
+
+        **Insbesondere die Option auch Leistung zu aktivieren und gezielt für Einspeisung bzw. Bezug aus dem Netz zu sorgen, kann eine wichtige Option sein, die optimierte Nutzung der Kleinstflexibilitäten über die iMs Infrastruktur zu realisieren. Gesetzlich/Regulatorische Themen stellen einen „Treiber“ für die marktlichen Steuerungsanwendungsfälle dar (u.a. §10b EEG, §34 (2) MsbG und MiSpeL).
+
 
       operationId: createFlexband
       parameters:
@@ -91,19 +96,23 @@ paths:
         '504':
           description: Gateway Timeout
 
-  /to/msb/flexband/command/poen-static-profile:
+  /to/msb/flexband/command/poen-static-profile/v0:
     post:
       tags: [Anweisung Flexband]
-      summary: Flex-02 - Übermittlung statisches Flexband
+      summary: Flex-02 -> Übermittlung statisches Flexband
       description: >
-        Statisches, täglich wiederkehrendes Hüllkurvenprofil. Vorgabe der verbrauchsseitigen (POEN Szenario 1) oder der einspeiseseitigen Hüllkurve (POEN Szenario 2).  Es können je nach Berechtigung maximale und minimale Leistungslimits für die nächsten 48 Stunden definiert werden. Der MSB bildet auf der Basis ein POEN-Residualprofil (POEN-RP) und sorgt damit für eine konfliktfreie Übertragung des Flexbandes. 
-
+        Statisches, täglich wiederkehrendes Hüllkurvenprofil. Vorgabe der verbrauchsseitigen (POEN Szenario 1) oder der einspeiseseitigen Hüllkurve (POEN Szenario 2).  Es können je nach Berechtigung maximale und minimale Leistungslimits für 24 Stunden definiert werden. Der MSB bildet zusammen mit den dynamisch übermittelten Hüllkurven geeignete POEN-Residualprofil (POEN-RP) und sorgt damit für eine konfliktfreie Übertragung des Flexbandes.
         Die POEN Residualprofile (POEN RP S1 und POEN RP S2) entsprechen dabei den Steuerungsanwendungsfällen 7 und 8 gemäß Implementierungshinweis des BSI (SAF7 / SAF8).
 
-        Mögliche Szenarien:
+
+
+        **Mögliche energiewirtschaftliche Szenarien:**
          - VNB - §14a EnWG „präventiv” (Bis Ende 2028) -> POEN RP S1
          - VNB – Backup-Fahrplan für Kommunikationsstörung -> POEN RP S1/S2
          - LF – Backup-Fahrplan für Kommunikationsstörung -> POEN RP S1/S2
+
+
+         **Hinweis:** Es gilt zu diskuttieren ob diese Art der Flexband Ausprägung notwendig ist. Eine Alternative könnte die Anpassung der technischen UseCase Spezifikation (EEBUS) sein, sodass stattdessen die Fallbackkurven für die fachlichen Szenarien eingesetzt werden können. Aktuell defineren diese lediglich das temporäre Verhalten bei lokalem Kommunikationsausfall und sind somit ungeeignet. Eine Anpassung, sodass diese auch dauerhaft gültig sind wenn keine dynamische Hüllkurve aktiviert ist, könnte ein Lösungsweg darstellen. 
 
 
       operationId: createStaticFlexband
@@ -123,12 +132,12 @@ paths:
       responses:
         '200':
           description: Erfolgreich verarbeitet
-  /to/msb/flexband/parameter/fallback:
+  /to/msb/flexband/parameter/fallback/v0:
     post:
       tags: [Anweisung Flexband]
-      summary: Flex-03 Konfiguration einer Fallback-Küllkurve
+      summary: Flex-03 -> Konfiguration einer Fallback-Küllkurve
       description: >
-        Vorgabe einer Fallbackkurve (POEN Szenario 3). Es können maximale und minimale Leistungslimits für beide Energierichtungen definiert werden. Die Vorgaben haben einen zeitlichen Bezug (0-24h), aber keine Datumsangabe. Die Fallbackwerte werden temporär bei lokalen Kommunikationsstörungen oder Lücken im POEN-Residualprofil aktiviert. Der MSB sorgt für ein konsolidiertes Fallbackprofil, dieses entspricht dem Steuerungsanwendungsfällen 9 gemäß Implementierungshinweis des BSI (SAF9)
+        Vorgabe einer Fallbackkurve (POEN Szenario 3). Es können maximale Leistungslimits für die jeweilige  Energierichtungen definiert werden. Die Vorgaben haben einen zeitlichen Bezug (0-24h), aber keine Datumsangabe. Die Fallbackwerte werden temporär bei lokalen Kommunikationsstörungen oder Lücken im POEN-Residualprofil aktiviert. Der MSB sorgt für ein konsolidiertes Fallbackprofil, dieses entspricht dem Steuerungsanwendungsfällen 9 gemäß Implementierungshinweis des BSI (SAF9)
       operationId: createFallback
       parameters:
         - $ref: '#/components/parameters/transactionId'
@@ -165,12 +174,12 @@ paths:
         '504':
           description: Gateway Timeout
 
-  /to/msb/flexband/reset:
+  /to/msb/flexband/reset/v0:
     post:
       tags: [Anweisung Flexband]
-      summary: Flex-04 Löschen bestehender Hüllkurven
+      summary: Flex-04 -> Löschen bestehender Hüllkurven
       description: >
-        Erlaubt die Deaktivierung von zuvor übermittelten Hüllkurven. Die gesamten Einträge des jeweiligen Absenders werden im POEN Residualprofil gelöscht.
+        Erlaubt die Deaktivierung/Löschung von zuvor übermittelten Hüllkurven. Es werden alle Einträge des Absenders, die nach dem gewünschten Zeitpunkt liegen, im ausgewählten Profil gelöscht.
       operationId: resetFlexband
       parameters:
         - $ref: '#/components/parameters/transactionId'
@@ -187,15 +196,16 @@ paths:
         '200':
           description: Erfolgreich zurückgesetzt
 
-  /from/msb/flexband/preliminaryResponse:
+  /from/msb/flexband/preliminaryResponse/v0:
     post:
       tags: [Antwort Flexband]
-      summary: Vorläufige Antwort
+      summary: Flex-05 -> Vorläufige Antwort
       operationId: preliminaryResponse
       parameters:
         - $ref: '#/components/parameters/transactionId'
         - $ref: '#/components/parameters/creationDateTime'
         - $ref: '#/components/parameters/initialTransactionId'
+        - $ref: '#/components/parameters/referenceId'
        # - $ref: '#/components/parameters/controlActor'
       requestBody:
         required: true
@@ -227,15 +237,16 @@ paths:
         '504':
           description: Gateway Timeout
 
-  /from/msb/flexband/finalResponse:
+  /from/msb/flexband/finalResponse/v0:
     post:
       tags: [Antwort Flexband]
-      summary: Finale Antwort
+      summary: Flex-06 -> Finale Antwort
       operationId: finalResponse
       parameters:
         - $ref: '#/components/parameters/transactionId'
         - $ref: '#/components/parameters/creationDateTime'
         - $ref: '#/components/parameters/initialTransactionId'
+        - $ref: '#/components/parameters/referenceId'
        # - $ref: '#/components/parameters/controlActor'
       requestBody:
         required: true
@@ -267,10 +278,10 @@ paths:
         '504':
           description: Gateway Timeout
 
-  /from/msb/flexband/information:
+  /from/msb/flexband/information/v0:
     post:
       tags: [Mitteilung Flexband an Berechtigte]
-      summary: Information an Marktpartner
+      summary: Flex-07 -> Information an Marktpartner
       operationId: informPartners
       parameters:
         - $ref: '#/components/parameters/transactionId'
@@ -314,6 +325,7 @@ components:
     transactionId:
       name: transactionId
       in: header
+      description: Externe Transaktions-Id zur eindeutigen Identifikation des Aufrufs des sendenden Marktpartners.
       required: true
       schema:
         type: string
@@ -323,15 +335,26 @@ components:
     creationDateTime:
       name: creationDateTime
       in: header
+      description: Zeitpunkt an dem der Aufruf erstellt wurde
       required: true
       schema:
         type: string
         format: date-time
         example: 2026-07-07T06:58:27.384Z
+    referenceId:
+          name: referenceId
+          in: header
+          description: Externe Vorgangsreferenz zur eindeutigen Identifikation des ursprünglichen Befehls (transactionId aus vorlegleagerten Request "Anweisung Flexband").
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: de14872e-71e7-407f-916f-da8dbde05178
 
     initialTransactionId:
       name: initialTransactionId
       in: header
+      description: Zur Angabe des Idempotenzschlüssels im Falle eines Retry.
       required: false
       schema:
         type: string
@@ -349,12 +372,20 @@ components:
     LocationReference:
       type: object
       required:
-        - srId
+        - locationId
       properties:
-        srId:
+        locationId:
           type: string
+          description: Die ID wird durch den BDEW festgelegt. In der vorliegenden Spezifikation wird angenommen, dasss zukünftig ausschließlich über die SR-ID gesteuert wird.
           pattern: '^C[A-Z0-9]{9}[0-9]$'
           example: C1234848431
+        subLocationId:
+          type: string
+          #items:
+          #  type: string
+          example: "i:98765_u:238bfn2299vfb3"
+          description: Ausblick -> Optionale SubLocationId um zukünftig den Steuerbefehl auf einzelne Geräte unterhalb der SR-ID zu beschränken. Im Standard bezieht sich der Befehl auf den Netzanschlusspunkt (adressiert über die SR-ID). Sollen einzelne Geräte (oder Gerätegruppen) speziell Vermarktet und adressiert werden, kann die SubLocationId genutzt werden.  Es könnte bspw. eine spezifische EMS-ID adressiert werden, sodass eine EMS Hierachie abbildbar wäre inkl unterschiedlichewr Zuständikeit (bspw. im MFH).
+          
 
     FlexbandRequest:
       allOf:
@@ -367,6 +398,7 @@ components:
             properties:
               poenContractId:
                 type: string
+                description: Ausblick -> Optional und gff zielführned, sofern der POEN UseCase überwiegend auf vertraglicher Basiis eingesetzt wird. Die ID könnte zukünftig bis zu HEMS durchgereicht werden und dort zur Validierung und Nachvollziehbarkeit verwendet werden. Es wäre eine Anpassung am technischen UseCase (EEBUS) notwendig  
                 example: LF-2026-4711
               poenReason:
                 type: string
@@ -433,6 +465,7 @@ components:
             properties:
               poenContractId:
                 type: string
+                description: Ausblick -> Optional und gff zielführned, sofern der POEN UseCase überwiegend auf vertraglicher Basiis eingesetzt wird. Die ID könnte zukünftig bis zu HEMS durchgereicht werden und dort zur Validierung und Nachvollziehbarkeit verwendet werden. Es wäre eine Anpassung am technischen UseCase (EEBUS) notwendig  
                 example: LF-2026-4711
               poenReason:
                 type: string
@@ -502,6 +535,7 @@ components:
             properties:
               poenContractId:
                 type: string
+                description: Ausblick -> Optional und gff zielführned, sofern der POEN UseCase überwiegend auf vertraglicher Basiis eingesetzt wird. Die ID könnte zukünftig bis zu HEMS durchgereicht werden und dort zur Validierung und Nachvollziehbarkeit verwendet werden. Es wäre eine Anpassung am technischen UseCase (EEBUS) notwendig  
                 example: LF-2026-4711
 
               poenConfigProfile:
@@ -518,14 +552,14 @@ components:
                 items:
                   $ref: '#/components/schemas/FallbackSlot'
                 example:
-                  - duration: 900
-                    activepowerValue: 8000
-                  - duration: 900
-                    activepowerValue: 7500
-                  - duration: 900
-                    activepowerValue: 7000
-                  - duration: 900
-                    activepowerValue: 6500
+                  - duration: 27000
+                    activePowerValue: 8000
+                  - duration: 1800
+                    activePowerValue: 7500
+                  - duration: 1800
+                    activePowerValue: 7000
+                  - duration: 2700
+                    activePowerValue: 6500
 
     InitialStateRequest:
         allOf:
@@ -582,9 +616,6 @@ components:
               - state
               - responseCode
             properties:
-
-              poenContractId:
-                type: string
               state:
                 type: string
                 enum: [possible, unable]
@@ -605,7 +636,7 @@ components:
                 description: Freitext zur weiteren Fehlerbeschreibung
             
             example:
-                srId: C1234848431
+                locationId: C1234848431
                 state: possible
                 responseCode: succeeded 
                 reason: Flexband bzw. POEN-Residualprofil erfolgreich in der Steuerungseinrichtung aktiviet.
@@ -658,7 +689,7 @@ components:
       type: object
       required:
         - duration
-        - powerValue
+        - activePowerValue
       properties:
         duration:
           type: integer
