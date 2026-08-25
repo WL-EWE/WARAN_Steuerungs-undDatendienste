@@ -170,24 +170,26 @@
 
 
         .architecture-figure {
-            width: 100%;
-            margin: 36px 0 0;
-            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            margin: 0;
+            padding: 0;
         }
 
         .architecture-figure img {
             display: block;
             width: 100%;
-            max-width: 630px;
+            max-width: 170px;
             height: auto;
-            margin: 0 auto;
         }
 
         .api-grid {
             display: grid;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
+            grid-template-columns: minmax(150px, 190px) repeat(3, minmax(0, 1fr));
             gap: 22px;
             margin-top: 44px;
+            align-items: start;
         }
 
         .api-card {
@@ -468,11 +470,10 @@
 
 
 
-                <figure class="architecture-figure" aria-label="Schematische Darstellung der MSB-Dienstekette">
-                    <img src="Kette.png" alt="Schematische Darstellung der Kommunikation zwischen VNB beziehungsweise LF/VPP, MSB Backend, MSB Hardware und lokalen MSB-Diensten">
-                </figure>
-
                 <div class="api-grid" aria-label="API-Kapitel">
+                    <figure class="architecture-figure" aria-label="Schematische Darstellung der MSB-Dienstekette">
+                        <img src="Kette.png" alt="Schematische Darstellung der Kommunikation zwischen VNB beziehungsweise LF/VPP, MSB Backend, MSB Hardware und lokalen MSB-Diensten">
+                    </figure>
                     <a class="api-card" href="#adhoc" data-page="adhoc">
                         <span class="api-card-number">KURATIVE STEUERUNG</span>
                         <h2>Ad-hoc API</h2>
