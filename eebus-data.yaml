@@ -6,13 +6,15 @@ info:
   version: 0.3.0
   description: >
     API zur Bereitstellung von EEBUS-Daten durch einen Messstellenbetreiber (MSB)
-    an berechtigte Marktpartner. Aufbauend auf 
+    an berechtigte Marktpartner. 
+
 
     Unterstützte Anwendungsfälle:
     
-     - HEMS-Data-01: Delivery Configuration
-     - HEMS-Data-02: Monitoring of Power Consumption (MPC)
-     - HEMS-Data-03: Power Demand Forecast (PODF)
+      - EMS-DATA-01 -> Konfiguration der Datenlieferung (berchtigter Marktpartner)
+      - EMS-DATA-02 -> Antowrt auf die Konfigurationsanfrage
+      - EMS-DATA-03 -> Bereitstellung von MPC-Messwerten
+      - EMS-DATA-04 -> Bereitstellung von PODF-Prognosedaten
 
 
 servers:
@@ -30,7 +32,7 @@ tags:
 
 paths:
 
-  /to/MSB/eebus-data/delivery-config:
+  /to/MSB/eebus-data/delivery-config/v0:
     post:
       tags:
         - Anweisung Konfiguration
@@ -64,7 +66,7 @@ paths:
         '403':
           description: Nicht berechtigt
 
-  /from/MSB/eebus-data/config-response:
+  /from/MSB/eebus-data/config-response/v0:
     post:
       tags:
         - Antwort Konfiguration 
@@ -96,7 +98,7 @@ paths:
 
         '403':
           description: Nicht berechtigt
-  /from/MSB/eebus-data/measurements:
+  /from/MSB/eebus-data/measurements/v0:
     post:
       tags:
         - Bereitstellung der EEBUS Daten 
@@ -130,7 +132,7 @@ paths:
         '403':
           description: Nicht berechtigt
 
-  /from/MSB/eebus-data/forecast:
+  /from/MSB/eebus-data/forecast/v0:
     post:
       tags:
         - Bereitstellung der EEBUS Daten 
