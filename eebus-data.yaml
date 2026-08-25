@@ -1,0 +1,584 @@
+openapi: 3.0.3
+
+
+info:
+  title: EEBUS Data API
+  version: 0.3.0
+  description: >
+    API zur Bereitstellung von EEBUS-Daten durch einen Messstellenbetreiber (MSB)
+    an berechtigte Marktpartner. Aufbauend auf 
+
+    Unterstützte Anwendungsfälle:
+    
+     - HEMS-Data-01: Delivery Configuration
+     - HEMS-Data-02: Monitoring of Power Consumption (MPC)
+     - HEMS-Data-03: Power Demand Forecast (PODF)
+
+
+servers:
+  - url: https://api.msb.example.de/eebus/v1
+
+tags:
+  - name: Anweisung Konfiguration 
+    description: Anweisung zur Konfiguration der Datenbereitstellung (HEMS Konfiguration)
+  - name: Antwort Konfiguration 
+    description: Rückmeldung zur Konfiguration der Datenbereitstellung (HEMS Konfiguration)     
+  - name: Bereitstellung der EEBUS Daten 
+    description: Bereitstellung der konfigurierten EEBUS Daten      
+
+
+
+paths:
+
+  /to/MSB/eebus-data/delivery-config:
+    post:
+      tags:
+        - Anweisung Konfiguration
+      summary: EMS-DATA-01 -> Konfiguration der Datenlieferung
+      description: >
+        Aktiviert, deaktiviert oder parametrisiert die Ãœbermittlung
+        von MPC- und PODF-Daten an berechtigte Marktpartner.
+      operationId: createOrUpdateDeliveryConfig
+      parameters:
+        - $ref: '#/components/parameters/transactionId'
+        - $ref: '#/components/parameters/creationDateTime'
+        - $ref: '#/components/parameters/initialTransactionId'
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeliveryConfig'
+
+      responses:
+        '200':
+          description: Konfiguration gespeichert
+
+        '400':
+          description: Ungültige Anfrage
+
+        '401':
+          description: Nicht authentifiziert
+
+        '403':
+          description: Nicht berechtigt
+
+  /from/MSB/eebus-data/config-response:
+    post:
+      tags:
+        - Antwort Konfiguration 
+      summary: EMS-DATA-02 -> Antowrt auf die Konfigurationsanfrage
+      description: >
+        Rückmeldung zur positiven oder negativen Konfiguration 
+      operationId: deliveryConfigRespponse
+      parameters:
+        - $ref: '#/components/parameters/transactionId'
+        - $ref: '#/components/parameters/creationDateTime'
+        - $ref: '#/components/parameters/initialTransactionId'
+        - $ref: '#/components/parameters/referenceId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeliveryConfigResponse'
+
+      responses:
+        '200':
+          description: Konfiguration gespeichert
+
+        '400':
+          description: Ungültige Anfrage
+
+        '401':
+          description: Nicht authentifiziert
+
+        '403':
+          description: Nicht berechtigt
+  /from/MSB/eebus-data/measurements:
+    post:
+      tags:
+        - Bereitstellung der EEBUS Daten 
+      summary: EMS-DATA-03 -> Bereitstellung von MPC-Messwerten
+      description: >
+        Bereitstellung von Messwerten steuerbarer Anlagen oder aggregierter EMS-Werte.
+        Aggregierte EMS-Werte können mittels der EEBUS-Surrogate-Funktion gekennzeichnet werden.
+      operationId: submitPowerValues
+      parameters:
+        - $ref: '#/components/parameters/transactionId'
+        - $ref: '#/components/parameters/creationDateTime'
+        - $ref: '#/components/parameters/initialTransactionId'
+       # - $ref: '#/components/parameters/referenceId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PowerValuesEvent'
+
+      responses:
+        '202':
+          description: Messwerte akzeptiert
+
+        '400':
+          description: Ungültige Anfrage
+
+        '401':
+          description: Nicht authentifiziert
+
+        '403':
+          description: Nicht berechtigt
+
+  /from/MSB/eebus-data/forecast:
+    post:
+      tags:
+        - Bereitstellung der EEBUS Daten 
+      summary: EMS-DATA-04 -> Bereitstellung von PODF-Prognosedaten
+      description: >
+        Ãœbermittlung von Leistungsprognosen eines EMS.
+        Enthalten sind erwartete, minimale und maximale Leistungswerte
+        für zukünftige Zeitslots.
+      operationId: submitForecastValues
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ForecastValuesEvent'
+
+      responses:
+        '202':
+          description: Prognosedaten akzeptiert
+
+        '400':
+          description: Ungültige Anfrage
+
+        '401':
+          description: Nicht authentifiziert
+
+        '403':
+          description: Nicht berechtigt
+
+
+
+components:
+ 
+  parameters: 
+    transactionId:
+      name: transactionId
+      in: header
+      description: Externe Transaktions-Id zur eindeutigen Identifikation des Aufrufs des sendenden Marktpartners.
+      required: true
+      schema:
+        type: string
+        format: uuid
+        example: de14872e-71e7-407f-916f-da8dbde05176
+ 
+    referenceId:
+      name: referenceId
+      in: header
+      description: Externe Vorgangsreferenz zur eindeutigen Identifikation des ursprünglichen Befehls (transactionId aus vorlegleagerten Request "Anweisung AdHoc Steuerungshandlung").
+      required: true
+      schema:
+        type: string
+        format: uuid
+        example: de14872e-71e7-407f-916f-da8dbde05177
+
+    creationDateTime:
+      name: creationDateTime
+      in: header
+      description: Zeitpunkt an dem der Aufruf erstellt wurde
+      required: true
+      schema:
+        type: string
+        format: date-time
+        example: 2026-07-07T06:58:27.384Z
+
+    initialTransactionId:
+      name: initialTransactionId
+      in: header
+      description: Zur Angabe des Idempotenzschlüssels im Falle eines Retry.
+      required: false
+      schema:
+        type: string
+        format: uuid
+
+  schemas:
+
+    ###########################################################
+    # HEMS-Data-03
+    ###########################################################
+
+    PowerValuesEvent:
+      type: object
+      required:
+        - locationId
+        - data
+
+      properties:
+
+        locationId:
+          type: string
+          examples: 
+            - "C9876543210"
+       
+        messageId:
+          type: string
+          format: uuid
+      
+        receivingTimeUTC:
+          type: string
+          format: date-time
+
+        eebusSource:
+          type: string
+          examples: 
+            - "EMS-SHIP-ID-123456"
+        sourceTimestamp:
+          type: integer
+          format: int64
+          description: Unix Timestamp
+          examples:
+            - 1783682463
+
+        data:
+          $ref: '#/components/schemas/MeasurementData'
+
+    MeasurementData:
+      type: object
+      required:
+        - measurements
+
+      properties:
+
+
+        meterId:
+          type: string 
+          examples:
+              - "1EMH0012345678"
+        idType:
+          type: string
+          examples: 
+            - "DIN-43863-5"
+
+        meterTyp:
+          type: string
+          enum:
+            - ems
+            - controllable
+            - meter
+            - gcp
+
+        surrogate:
+          type: boolean
+          examples: 
+            - false
+          
+          description: >
+            Kennzeichnung eines aggregierten MPC-Wertes gemÃ¤ÃŸ EEBUS Surrogate.
+          
+
+        measurements:
+          type: array
+          items:
+            $ref: '#/components/schemas/Measurement'
+
+    Measurement:
+      type: object
+
+      required:
+        - id
+        - source
+
+      properties:
+
+        frequency:
+          $ref: '#/components/schemas/MeasurementValueContainer'
+
+        energy:
+          $ref: '#/components/schemas/EnergyMeasurement'
+
+        voltage:
+          $ref: '#/components/schemas/VoltageMeasurement'
+
+        current:
+          $ref: '#/components/schemas/CurrentMeasurement'
+
+        power:
+          $ref: '#/components/schemas/PowerMeasurement'
+
+    EnergyMeasurement:
+      type: object
+
+      properties:
+
+        consumed:
+          $ref: '#/components/schemas/MeasurementValueContainer'
+
+        produced:
+          $ref: '#/components/schemas/MeasurementValueContainer'
+
+    VoltageMeasurement:
+      type: object
+
+      properties:
+
+        a-n:
+          $ref: '#/components/schemas/MeasurementValueContainer'
+
+        b-n:
+          $ref: '#/components/schemas/MeasurementValueContainer'
+
+        c-n:
+          $ref: '#/components/schemas/MeasurementValueContainer'
+
+    CurrentMeasurement:
+      type: object
+
+      properties:
+
+        a:
+          $ref: '#/components/schemas/MeasurementValueContainer'
+
+        b:
+          $ref: '#/components/schemas/MeasurementValueContainer'
+
+        c:
+          $ref: '#/components/schemas/MeasurementValueContainer'
+
+    PowerMeasurement:
+      type: object
+
+      properties:
+
+        total:
+          $ref: '#/components/schemas/MeasurementValueContainer'
+
+        phases:
+          type: object
+
+          properties:
+
+            a:
+              $ref: '#/components/schemas/MeasurementValueContainer'
+
+            b:
+              $ref: '#/components/schemas/MeasurementValueContainer'
+
+            c:
+              $ref: '#/components/schemas/MeasurementValueContainer'
+
+    MeasurementValueContainer:
+      type: object
+
+      properties:
+
+        value:
+          $ref: '#/components/schemas/ScaledValue'
+
+    ScaledValue:
+      type: object
+
+      required:
+        - number
+        - scale
+
+      properties:
+
+        number:
+          type: integer
+
+        scale:
+          type: integer
+
+    ###########################################################
+    # HEMS-Data-04
+    ###########################################################
+
+    ForecastValuesEvent:
+      type: object
+
+      required:
+        - locationId
+        - data
+
+      properties:
+
+        locationId:
+          type: string
+          examples: 
+            - "C1234567897"
+
+        messageId:
+          type: string
+          format: uuid
+      
+        receivingTimeUTC:
+          type: string
+          format: date-time
+
+        eebusSource:
+          type: string
+          examples: 
+            - "EMS-SHIP-ID-123456"
+        sourceTimestampUTC:
+          type: integer
+          format: int64
+          description: Unix Timestamp
+          examples:
+            - 1783682463
+        data:
+          $ref: '#/components/schemas/ForecastData'
+
+    ForecastData:
+      type: object
+
+      required:
+        - demands
+
+      properties:
+
+
+
+        demands:
+          $ref: '#/components/schemas/Demands'
+
+    Demands:
+      type: object
+
+      properties:
+
+        power:
+          $ref: '#/components/schemas/PowerDemand'
+
+    PowerDemand:
+      type: object
+
+      properties:
+
+        active:
+          $ref: '#/components/schemas/ActivePowerForecast'
+
+    ActivePowerForecast:
+      type: object
+
+      required:
+        - startTime
+        - slots
+
+      properties:
+
+        startTime:
+          type: integer
+          format: int64
+          description: Unix Timestamp
+          examples:
+            - 1783690000
+
+        slots:
+          type: array
+          items:
+            $ref: '#/components/schemas/ForecastSlot'
+
+    ForecastSlot:
+      type: object
+
+      properties:
+
+        duration:
+          type: integer
+          description: Dauer in Sekunden
+          examples: 
+            - 900
+
+        pMin:
+          type: number
+          description: Minimale prognostizierte Leistung [W]
+          examples: 
+            - 2000
+
+        pMax:
+          type: number
+          description: Maximale prognostizierte Leistung [W]
+          examples: 
+            - 6000
+
+        pExp:
+          type: number
+          description: Erwartete Leistung [W]
+          examples: 
+            - 4200
+
+    ###########################################################
+    # HEMS-Data-01/02
+    ###########################################################
+    DeliveryConfigResponse:
+      type: object
+      example:
+          locationId: C1234848431
+          ConfigState: possible
+          ConfigReason: Fahrplan erfolgreich in der Steuerungseinrichtung aktiviet.
+          
+      properties:
+        locationId:
+          type: string
+        ConfigState:
+          type: string
+          enum:
+            - possible
+            - unable
+        ConfigReason:
+          type: string
+
+    DeliveryConfig:
+      type: object
+
+      required:
+        - locationId
+
+      properties:
+
+        locationId:
+          type: string
+          description: Eindeutige Kennung der Marktlokation
+
+        measurements:
+          type: object
+
+          properties:
+
+            readNow:
+              type: boolean
+              description: Sofortige Ãœbermittlung aktueller Messwerte
+
+            interval:
+              type: integer
+              description: Ãœbertragungsintervall in Sekunden
+              minimum: 60
+
+            validFrom:
+              type: string
+              format: date-time
+
+            validTo:
+              type: string
+              format: date-time
+
+        forecast:
+          type: object
+
+          properties:
+
+            readNow:
+              type: boolean
+              description: Sofortige Ãœbermittlung der aktuellen Prognose
+
+            validFrom:
+              type: string
+              format: date-time
+
+            validTo:
+              type: string
+              format: date-time
