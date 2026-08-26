@@ -159,15 +159,22 @@
             letter-spacing: -0.03em;
         }
 
+        .intro-row {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 220px;
+            gap: 32px;
+            align-items: start;
+            margin-top: 22px;
+        }
+
         .intro {
             width: 100%;
             max-width: none;
-            margin: 22px 0 0;
+            margin: 0;
             color: var(--muted);
             font-size: 17px;
             line-height: 1.6;
         }
-
 
         .architecture-figure {
             display: flex;
@@ -198,7 +205,7 @@
 
         .api-grid {
             display: grid;
-            grid-template-columns: minmax(190px, 220px) repeat(3, minmax(0, 1fr));
+            grid-template-columns: repeat(3, minmax(0, 1fr));
             gap: 22px;
             margin-top: 44px;
             align-items: start;
@@ -413,6 +420,8 @@
         @media (max-width: 1120px) {
             :root { --logo-column-width: 191px; --sidebar-width: 220px; }
             .overview { padding: 29px 32px 50px; }
+            .intro-row { grid-template-columns: minmax(0, 1fr) 190px; gap: 24px; }
+            .architecture-figure img { height: 210px; }
             .api-grid { grid-template-columns: 1fr; }
             .api-card { min-height: 220px; }
         }
@@ -432,6 +441,9 @@
             .navigation-link.active { border-bottom-color: var(--accent); }
             .page-main { margin: 0; }
             .overview { padding: 21px 20px 42px; }
+            .intro-row { grid-template-columns: 1fr; gap: 24px; }
+            .architecture-figure { min-height: 0; }
+            .architecture-figure img { height: 242px; }
             .swagger-view { padding: 8px 6px 40px; }
         }
     </style>
@@ -472,21 +484,21 @@
             <div class="overview-inner">
                 <p class="eyebrow">WARAN · MSB-Dienste</p>
                 <h1 id="overview-title">API-Dokumentation für Steuerungs- und Statusdienste</h1>
-                <p class="intro">
-                    Im Förderprojekt <a href="https://www.ppc-ag.de/de/innovation/innovationsprojekte/waran-waerme-anbinden-und-netzdienlich-nutzen/" target="_blank" rel="noopener noreferrer">WARAN</a> hat das Konsortium verschiedene wärmebezogene Anwendungsfälle unter Einbindung des intelligenten Messsystems (iMSys) untersucht. Die betrachteten Anwendungsfälle und die dazugehörigen Systemarchitekturen sind <a href="https://waran-sysarc.ffe.de/" target="_blank" rel="noopener noreferrer">hier</a> aufgeführt und beschrieben. Für die Umsetzung der Hüllkurve/des Flexbands wurde zudem ein <a href="https://www.ppc-ag.de/de/blog/vorausschauen-statt-nachbessern-steuerung-nach-huellkurve/" target="_blank" rel="noopener noreferrer">Impulspapier</a> veröffentlicht, das das angestrebte Zielbild beschreibt.
-                    <br><br>
-                    Für die praktische Umsetzung und branchenweite Akzeptanz vieler dieser Anwendungsfälle ist eine standardisierte API zwischen dem Messstellenbetreiber und weiteren beteiligten Akteuren erforderlich. Das Konsortium hat hierzu Vorschläge erarbeitet, die auf dieser Seite mit der Branche geteilt und zur Diskussion gestellt werden.
-                    <br><br>
-                    In einem ersten Schritt wurden Vorschläge für die Dienste „Ad-hoc API XXX“, „Flexband“ und „SR-Statuskonfigurationen“ entwickelt. Darüber hinaus wurde anhand einer Demonstration veranschaulicht, wie die Hüllkurve beziehungsweise das Flexband mit weiteren Steuerungseingriffen, beispielsweise nach § 14a EnWG, zusammenspielt.
-                </p>
-
-
-
-                <div class="api-grid" aria-label="API-Kapitel">
+                <div class="intro-row">
+                    <p class="intro">
+                        Im Förderprojekt <a href="https://www.ppc-ag.de/de/innovation/innovationsprojekte/waran-waerme-anbinden-und-netzdienlich-nutzen/" target="_blank" rel="noopener noreferrer">WARAN</a> hat das Konsortium verschiedene wärmebezogene Anwendungsfälle unter Einbindung des intelligenten Messsystems (iMSys) untersucht. Die betrachteten Anwendungsfälle und die dazugehörigen Systemarchitekturen sind <a href="https://waran-sysarc.ffe.de/" target="_blank" rel="noopener noreferrer">hier</a> aufgeführt und beschrieben. Für die Umsetzung der Hüllkurve/des Flexbands wurde zudem ein <a href="https://www.ppc-ag.de/de/blog/vorausschauen-statt-nachbessern-steuerung-nach-huellkurve/" target="_blank" rel="noopener noreferrer">Impulspapier</a> veröffentlicht, das das angestrebte Zielbild beschreibt.
+                        <br><br>
+                        Für die praktische Umsetzung und branchenweite Akzeptanz vieler dieser Anwendungsfälle ist eine standardisierte API zwischen dem Messstellenbetreiber und weiteren beteiligten Akteuren erforderlich. Das Konsortium hat hierzu Vorschläge erarbeitet, die auf dieser Seite mit der Branche geteilt und zur Diskussion gestellt werden.
+                        <br><br>
+                        In einem ersten Schritt wurden Vorschläge für die Dienste „Ad-hoc API XXX“, „Flexband“ und „SR-Statuskonfigurationen“ entwickelt. Darüber hinaus wurde anhand einer Demonstration veranschaulicht, wie die Hüllkurve beziehungsweise das Flexband mit weiteren Steuerungseingriffen, beispielsweise nach § 14a EnWG, zusammenspielt.
+                    </p>
                     <figure class="architecture-figure" aria-label="Schematische Darstellung der MSB-Dienstekette">
                         <img src="Kette.png" alt="Schematische Darstellung der Kommunikation zwischen VNB beziehungsweise LF/VPP, MSB Backend, MSB Hardware und lokalen MSB-Diensten">
                         <figcaption>Symbolbild Steuerungskette</figcaption>
                     </figure>
+                </div>
+
+                <div class="api-grid" aria-label="API-Kapitel">
                     <a class="api-card" href="#adhoc" data-page="adhoc">
                         <span class="api-card-number">KURATIVE STEUERUNG</span>
                         <h2>Ad-hoc API</h2>
