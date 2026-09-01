@@ -2,7 +2,7 @@ openapi: 3.0.3
 
 info:
   title: WARAN - Impuls zur Erstellung einer Status API zur steuerbaren Ressource (SR)
-  version: 0.7.0
+  version: 0.7.1
   description: >
     API zur Abfrage aktueller und historischer Steuerungsvorgaben,
     Betriebszustände sowie Steuerbarkeitsnachweise für steuerbare
@@ -14,8 +14,8 @@ info:
 
     Folgende Dienste werden bereitgestellt:
 
-    - Status-01 "activeLimits":
-      Aktive Steuerungsvorgaben der nächsten 48 Stunden.
+    - Status-01 "residualLimits":
+      Konsolidierte Steuerungsvorgaben der nächsten 48 Stunden.
 
     - Status-02 "limitsHistory":
       Historische Steuerungsvorgaben inklusive tatsächlich ausgeführter
@@ -34,41 +34,60 @@ tags:
 
 paths:
 
-  /status/limits:
+  /status/residualLimits:
     get:
       tags:
         - Status Abfrage API
 
-      summary: Status-01 - Aktive Steuerungshandlungen abrufen
+      summary: Status-01 - Aktuelle resultierdne Steuerungshandlungen abrufen (Residualprofile)
       operationId: getActiveLimits
 
       description: >
-        Liefert alle aktuell aktiven sowie zukünftigen Steuerungsvorgaben
-        für die nächsten 48 Stunden.
+        Liefert alle aktuellen sowie zukünftigen Steuerungsvorgaben als konsolidiertes Profil (Residualprofil) für die nächsten 48 Stunden.
 
         Enthalten sind:
 
-        - Ad-Hoc-Steuerungen (LPC/LPP)
-        - Flexbandvorgaben (POEN)
+        - Residualprofil Ad-Hoc-Steuerungen (LPC/LPP)
 
-        Die zurückgegebenen Werte entsprechen den aktuell wirksamen
-        Leistungsgrenzen der steuerbaren Ressource.
 
+        - Residualprofil Flexbandvorgaben (POEN)
+
+
+        Die zurückgegebenen Werte entsprechen den aktuell gültigen
+        Leistungsgrenzen der steuerbaren Ressource. Es handelt sich um die vom MSB verarbeiteten und konsolidierten Steuerungshandlungen, wie sie auch an die lokale Steuerungseinheit weitergegeben werden. 
       parameters:
         - $ref: '#/components/parameters/TransactionId'
         - $ref: '#/components/parameters/CreationDateTime'
-        - $ref: '#/components/parameters/ControlActor'
         - $ref: '#/components/parameters/LocationId'
 
       responses:
-        '200':
-          description: Aktive Steuerungsvorgaben
+        '202':
+          description: accepted - Konsolidierte Steuerungsvhandlungen der nächsten 48 Stunden.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ActiveControlLimitsResponse'
-
-  /status/limits-history:
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+        '405':
+          description: Method not allowed
+        '415':
+          description: Unsupported Media Type
+        '422': 
+          description: Unprocessable Entity
+        '429':
+          description: Too Many Requests
+        '500':
+          description: Internal Server Error
+        '503':
+          description: Service Unavailable
+        '504':
+          description: Gateway Timeout
+  /status/historicalLimits:
     get:
       tags:
         - Status Abfrage API
@@ -83,7 +102,7 @@ paths:
       parameters:
         - $ref: '#/components/parameters/TransactionId'
         - $ref: '#/components/parameters/CreationDateTime'
-        - $ref: '#/components/parameters/ControlActor'
+
         - $ref: '#/components/parameters/LocationId'
 
         - name: from
@@ -103,14 +122,34 @@ paths:
             format: date-time
 
       responses:
-        '200':
-          description: Historische Steuerungsvorgaben
+        '202':
+          description: accepted - Historische Steuerungsvorgaben
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/HistoricControlLimitsResponse'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+        '405':
+          description: Method not allowed
+        '415':
+          description: Unsupported Media Type
+        '422': 
+          description: Unprocessable Entity
+        '429':
+          description: Too Many Requests
+        '500':
+          description: Internal Server Error
+        '503':
+          description: Service Unavailable
+        '504':
+          description: Gateway Timeout
 
-  /status/operating-status:
+  /status/operatingState:
     get:
       tags:
         - Status Abfrage API
@@ -126,16 +165,35 @@ paths:
       parameters:
         - $ref: '#/components/parameters/TransactionId'
         - $ref: '#/components/parameters/CreationDateTime'
-        - $ref: '#/components/parameters/ControlActor'
         - $ref: '#/components/parameters/LocationId'
 
       responses:
-        '200':
-          description: Aktueller Betriebsstatus
+        '202':
+          description: accepted - Aktueller Betriebsstatus
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ResourceStatusResponse'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+        '405':
+          description: Method not allowed
+        '415':
+          description: Unsupported Media Type
+        '422': 
+          description: Unprocessable Entity
+        '429':
+          description: Too Many Requests
+        '500':
+          description: Internal Server Error
+        '503':
+          description: Service Unavailable
+        '504':
+          description: Gateway Timeout
 
 components:
 
@@ -161,20 +219,16 @@ components:
         format: date-time
         example: "2026-07-09T06:56:21Z"
 
-    ControlActor:
-      name: controlActor
-      in: query
-      required: false
-      description: Marktakteur, für den die Informationen angefordert werden.
-      schema:
-        type: string
-        example: MSB
+
 
     LocationId:
       name: locationId
       in: query
       required: true
-      description: Eine oder mehrere Lokationskennungen.
+      example: 
+        - C1234567897
+        - C1234848431
+      description: Eine oder mehrere Lokationskennungen (SR-ID's).
       style: form
       explode: true
       schema:
@@ -196,6 +250,7 @@ components:
 
         activePowerValue:
           type: number
+          example: 4.2
           format: double
           description: Wirkleistungswert in kW
 
@@ -213,38 +268,14 @@ components:
         - type: object
           properties:
 
-            commandId:
-              type: string
-
-            useCase:
-              type: string
-              enum:
-                - LPC
-                - LPP
-                - POEN
-
-            receivedAt:
-              type: string
-              format: date-time
-
-            executedAt:
-              type: string
-              format: date-time
-
             executionStatus:
               type: string
               enum:
-                - received
+                - confirmed
                 - accepted
                 - rejected
-                - executed
-                - cancelled
+                - unknown
 
-            source:
-              type: string
-
-            comment:
-              type: string
 
     ActiveControlLimits:
       type: object
@@ -253,37 +284,35 @@ components:
 
         locationId:
           type: string
+          example: C1234567897
 
-        partnerId:
-          type: integer
-          format: int64
-
-        adHocValuesMaxConsumption:
+        adHocResidualMaxConsumption:
           type: array
           items:
             $ref: '#/components/schemas/PowerLimit'
 
-        adHocValuesMaxFeedIn:
+        adHocResidualMaxFeedIn:
           type: array
           items:
             $ref: '#/components/schemas/PowerLimit'
 
-        poenValuesMinConsumption:
+
+        poenResidualMinConsumption:
           type: array
           items:
             $ref: '#/components/schemas/PowerLimit'
 
-        poenValuesMaxConsumption:
+        poenResidualMaxConsumption:
           type: array
           items:
             $ref: '#/components/schemas/PowerLimit'
 
-        poenValuesMinFeedIn:
+        poenResidualMinFeedIn:
           type: array
           items:
             $ref: '#/components/schemas/PowerLimit'
 
-        poenValuesMaxFeedIn:
+        poenResidualMaxFeedIn:
           type: array
           items:
             $ref: '#/components/schemas/PowerLimit'
@@ -295,10 +324,8 @@ components:
 
         locationId:
           type: string
+          example: C1234567897
 
-        partnerId:
-          type: integer
-          format: int64
 
         periodStart:
           type: string
@@ -337,6 +364,14 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/HistoricPowerLimit'
+        softstartConsumption:
+          type: array
+          items:
+            $ref: '#/components/schemas/HistoricPowerLimit'
+        softstartProducction:
+              type: array
+              items:
+                $ref: '#/components/schemas/HistoricPowerLimit'
 
     ActiveControlLimitsResponse:
       type: object
@@ -347,18 +382,21 @@ components:
         - limits
 
       properties:
-
         transactionId:
           type: string
+          maxLength: 64
+          example: 754ce569-3d95-4d7b-87cc-1d8f22289a00 
+          description: transactionId wird aus dem GET-Request übernommen und zurückgegeben
 
         creationDateTime:
           type: string
           format: date-time
+          description: transactionId wird aus dem GET-Request übernommen und zurückgegeben
 
-        controlActor:
-          type: string
 
-        limits:
+      #    type: string
+
+        residualLimits:
           type: array
           items:
             $ref: '#/components/schemas/ActiveControlLimits'
@@ -375,26 +413,30 @@ components:
 
         transactionId:
           type: string
+          maxLength: 64
+          example: 754ce569-3d95-4d7b-87cc-1d8f22289a00 
+          description: transactionId wird aus dem GET-Request übernommen und zurückgegeben
 
         creationDateTime:
           type: string
           format: date-time
+          description: transactionId wird aus dem GET-Request übernommen und zurückgegeben
 
-        controlActor:
-          type: string
-
-        limits:
+        historicalLimits:
           type: array
           items:
             $ref: '#/components/schemas/HistoricControlLimits'
 
     ResourceOperatingStatus:
       type: object
-
+      required:
+        - operatingState
+        - lastConnectionTimestamp
       properties:
 
         operatingState:
           type: string
+          example: active
           description: Aktueller Betriebszustand der Ressource.
           enum:
             - active
@@ -403,14 +445,18 @@ components:
 
         description:
           type: string
+          example: "Normalbetrieb, keine Störungen bekannt"
 
         lastConnectionTimestamp:
+          description: "Letzter Kommunikationszeitpunkt"
           type: string
           format: date-time
+
 
         lastLocalConnectionFailure:
           type: string
           format: date-time
+          description: "Lokale Kommunikationsstörung für mehr als 2 Stunden (Missing Heartbeats)"
 
     SupportedLocalUseCases:
       type: object
@@ -419,10 +465,12 @@ components:
 
         relayConsumption:
           type: boolean
+          example: false
           description: Lokale Verbrauchssteuerung über Relais.
 
         relayFeedIn:
           type: boolean
+          example: false
           description: Lokale Einspeisesteuerung über Relais.
 
         EEBUS_LPC:
@@ -477,23 +525,21 @@ components:
 
       required:
         - locationId
-        - statusSR
+        - state
 
       properties:
 
         locationId:
           type: string
+          example: C1234567897
 
-        statusSR:
+        state:
           $ref: '#/components/schemas/ResourceOperatingStatus'
 
         supportedLocalUseCases:
           $ref: '#/components/schemas/SupportedLocalUseCases'
 
-        apiPermissions:
-          type: array
-          items:
-            $ref: '#/components/schemas/ApiPermission'
+
 
     ResourceStatusResponse:
       type: object
@@ -507,13 +553,14 @@ components:
 
         transactionId:
           type: string
+          maxLength: 64
+          example: 754ce569-3d95-4d7b-87cc-1d8f22289a00 
+          description: transactionId wird aus dem GET-Request übernommen und zurückgegeben
 
         creationDateTime:
           type: string
           format: date-time
-
-        controlActor:
-          type: string
+          description: transactionId wird aus dem GET-Request übernommen und zurückgegeben
 
         resources:
           type: array
