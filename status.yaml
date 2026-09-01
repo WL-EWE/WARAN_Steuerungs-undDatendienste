@@ -439,23 +439,29 @@ components:
           description: Aktueller Betriebszustand der Ressource.
           enum:
             - active
-            - maintenance
-            - fault
+            - disturbance
+            - transientCommunicationFailure 
+            - localConnectionError
+          decription: "active = Normaler Betriebsmodus; disturbance=Allgemeine Störung; transientCommunicationFailure = temporäre Kommunikationsstörug (bspw. < 24 Stunden); localConnectionError = Verbindung zur lokalen Gegenstelle verloren (bspw. Missing Heartbeats seit mehr als 2 Stunden)"
 
         description:
           type: string
           example: "Normalbetrieb, keine Störungen bekannt"
 
-        lastConnectionTimestamp:
-          description: "Letzter Kommunikationszeitpunkt"
+        connectedLocalDevice:
+          description: "Verbundenes EEBUS Gerät (bspw. HEMS)"
+          type: string
+          example: i:983327_u:C8277H008F-3
+
+        lastManagementConnectionTimestamp:
+          description: "Letzte Kommunikation mit der MSB Steuereinheit"
           type: string
           format: date-time
 
-
-        lastLocalConnectionFailure:
+        failureTimestamp:
           type: string
           format: date-time
-          description: "Lokale Kommunikationsstörung für mehr als 2 Stunden (Missing Heartbeats)"
+          description: "Zeitpunkt seit dem eine Störung bekannt ist - also seitdem der 'operatingState' nicht mehr 'active' ist"
 
     SupportedLocalUseCases:
       type: object
