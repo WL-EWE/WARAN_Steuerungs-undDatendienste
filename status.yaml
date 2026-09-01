@@ -2,7 +2,7 @@ openapi: 3.0.3
 
 info:
   title: WARAN - Impuls zur Erstellung einer Status API zur steuerbaren Ressource (SR)
-  version: 0.7.2
+  version: 0.5.2
   description: >
     API zur Abfrage aktueller und historischer Steuerungsvorgaben,
     Betriebszustände sowie Steuerbarkeitsnachweise für steuerbare
