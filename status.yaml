@@ -2,7 +2,7 @@ openapi: 3.0.3
 
 info:
   title: WARAN - Impuls zur Erstellung einer Status API zur steuerbaren Ressource (SR)
-  version: 0.7.1
+  version: 0.7.2
   description: >
     API zur Abfrage aktueller und historischer Steuerungsvorgaben,
     Betriebszustände sowie Steuerbarkeitsnachweise für steuerbare
@@ -18,12 +18,11 @@ info:
       Konsolidierte Steuerungsvorgaben der nächsten 48 Stunden.
 
     - Status-02 "limitsHistory":
-      Historische Steuerungsvorgaben inklusive tatsächlich ausgeführter
-      Steuerungshandlungen.
+      Historische Steuerungsvorgaben inklusive Status zur Ausführung
 
     - Status-03 "operatingStatus":
-      Betriebs- und Kommunikationsstatus der steuerbaren Ressource,
-      unterstützte lokale Use-Cases sowie API-Berechtigungen.
+      Betriebs- und Kommunikationsstatus der steuerbaren Ressource und
+      unterstützte lokale Use-Case
 
 servers:
   - url: https://api.example.com/v1
@@ -34,7 +33,7 @@ tags:
 
 paths:
 
-  /status/residualLimits:
+  /from/MSB/status/residualLimits/v0:
     get:
       tags:
         - Status Abfrage API
@@ -87,7 +86,7 @@ paths:
           description: Service Unavailable
         '504':
           description: Gateway Timeout
-  /status/historicalLimits:
+  /from/MSB/status/historicalLimits/v0:
     get:
       tags:
         - Status Abfrage API
@@ -149,7 +148,7 @@ paths:
         '504':
           description: Gateway Timeout
 
-  /status/operatingState:
+  /from/MSB/status/operatingState/v0:
     get:
       tags:
         - Status Abfrage API
