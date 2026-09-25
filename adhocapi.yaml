@@ -2,7 +2,7 @@ openapi: 3.0.3
 
 info:
   title: WARAN - Impuls zur Anpassung der Ad-Hoc-Steuerungs-API
-  version: 0.9.1
+  version: 0.9.2
   description: >
     Aufbauend auf dem bereits existierenden API-Webdienst zur prozessualen Abwicklung von Steuerungshandlungen (https://edi-energy.github.io/api-electricity/aktuell-gueltig/#/), werden im vorliegenden Abschnitt Erweiterungen vorgeschlagen, die es den Marktakteuren ermöglichen das volle Potential der Ad-hoc Steuerung zu nutzen. 
     
@@ -19,15 +19,18 @@ info:
 
 
 
-    *Fokus liegt auf der digitalen Schnittstelle. Insbesondere im Falle von Steuerungsdiensten wird angenommen, dass die „Relaissteuerung“ eine Übergangslösung darstellt. Die fachliche Ausprägung der Prozesse und API-Dienste sollte daher stets mit Fokus auf die digitale Steuerung gemäß der VDE-2829-6-1 erfolgen. Eine Abwärtskompatibilität zum Relais kann in der Regel gewährleistet werden, ist aber nicht Fokus der vorliegenden Spezifikation. 
+    *Fokus liegt auf der digitalen Schnittstelle. Insbesondere im Falle von Steuerungsdiensten wird angenommen. Die fachliche Ausprägung der Prozesse und API-Dienste sollte daher stets mit Fokus auf die digitale Steuerung gemäß der VDE-2829-6-1 erfolgen. Eine Abwärtskompatibilität zum Relais kann in der Regel gewährleistet werden, ist aber nicht Fokus der vorliegenden Spezifikation. 
 
 servers:
   - url: https://api.example.de
 
 tags:
   - name: Anweisung AdHoc Steuerungshandlung
+    description: MSB = API-Anbieter (Server)
   - name: Antwort AdHoc Steuerungshandlung
+    description: MSB = API-Nutzer (Client)
   - name: Mitteilung AdHoc Steuerungshandlung an Berechtigte
+    description: MSB = API-Nutzer (Client)
 
 paths:
 
@@ -718,15 +721,27 @@ components:
             example:
                 locationId: C1234848431
                 adHocState: possible
-                adHocReason: Fahrplan erfolgreich in der Steuerungseinrichtung aktiviet.
+                adHocResponseCode: succeeded 
+                adHocReason: AdHoc-Residualprofil erfolgreich in der Steuerungseinrichtung aktiviet.
             properties:
               adHocState:
                 type: string
-                enum:
-                  - possible
-                  - unable
+                enum: [possible, unable]
+              adHocResponseCode:
+                type: string
+                enum: [succeeded, communicationFailure, overload, maintanance, missing contract, invalid message, unable]
+                description: >
+                  succeeded = erfolgreiche Verarbeitung; 
+                  communicationFailure = temporäre Störung in der Gerätekommunikation; 
+                  localFailure = Gerät(e) Störung - wird durch Außendienst behoben;
+                  customerInteractionRequired = Mitwirkung durch den Betreiber notwendig (bspw. SHIP Pairing);
+                  overload = Überlastung der Kommunikationsstrecke;
+                  missing contract = Keine gültige Berechtigung;
+                  invalid message = Nachricht enthält fachliche Fehler;
+                  unable = Sonstiger Fehler, siehe weitere Fehlerbeschreibung.
               adHocReason:
                 type: string
+                description: Freitext zur weiteren Fehlerbeschreibung
 
     InformationRequest:
       allOf:
