@@ -2,11 +2,11 @@ openapi: 3.0.3
 
 
 info:
-  title: EEBUS Data API
-  version: 0.3.0
+  title: EMS Data API
+  version: 0.3.1
   description: >
-    API zur Bereitstellung von EEBUS-Daten durch einen Messstellenbetreiber (MSB)
-    an berechtigte Marktpartner. 
+    
+    Aufbauend auf dem bereits existierenden API-Webdienst zur prozessualen Abwicklung von Steuerungshandlungen (https://edi-energy.github.io/api-electricity/aktuell-gueltig/#/) und den vorgeschlagenen Erweiterungen zur AdHoc API und zur Flexband-API, werden im vorliegenden Abschnitt neue API Dienste vorgeschlagen. Die API zur Bereitstellung von EMS-Daten durch einen Messstellenbetreiber (MSB) an berechtigte Marktpartner. Konkret soll im ersten Entwurf eine Möglichkeit aufgezeigt werden, die Anwendungsfälle EEBUS MPC (Monitoring of Power Consumption) und EEBUS PODF (Power Demand Forecast) über die sicher iMs Infrastruktur für berechtiget Akteure zugänglich zu machen. 
 
 
     Unterstützte Anwendungsfälle:
@@ -22,11 +22,11 @@ servers:
 
 tags:
   - name: Anweisung Konfiguration 
-    description: Anweisung zur Konfiguration der Datenbereitstellung (HEMS Konfiguration)
+    description: MSB = API-Anbieter (Server)
   - name: Antwort Konfiguration 
-    description: Rückmeldung zur Konfiguration der Datenbereitstellung (HEMS Konfiguration)     
+    description: MSB = API-Nutzer (Client)   
   - name: Bereitstellung der EEBUS Daten 
-    description: Bereitstellung der konfigurierten EEBUS Daten      
+    description: MSB = API-Nutzer (Client)
 
 
 
@@ -38,8 +38,8 @@ paths:
         - Anweisung Konfiguration
       summary: EMS-DATA-01 -> Konfiguration der Datenlieferung
       description: >
-        Aktiviert, deaktiviert oder parametrisiert die Ãœbermittlung
-        von MPC- und PODF-Daten an berechtigte Marktpartner.
+        Anweisung zur Konfiguration der Datenbereitstellung (HEMS Konfiguration).
+        Aktiviert, deaktiviert oder parametrisiert die Bereitstellung von MPC- und PODF-Daten an berechtigte Marktpartner.
       operationId: createOrUpdateDeliveryConfig
       parameters:
         - $ref: '#/components/parameters/transactionId'
@@ -72,7 +72,7 @@ paths:
         - Antwort Konfiguration 
       summary: EMS-DATA-02 -> Antowrt auf die Konfigurationsanfrage
       description: >
-        Rückmeldung zur positiven oder negativen Konfiguration 
+        Rückmeldung zur Konfiguration der Datenbereitstellung (HEMS Konfiguration), also zur positiven oder negativen Konfiguration. 
       operationId: deliveryConfigRespponse
       parameters:
         - $ref: '#/components/parameters/transactionId'
@@ -138,7 +138,7 @@ paths:
         - Bereitstellung der EEBUS Daten 
       summary: EMS-DATA-04 -> Bereitstellung von PODF-Prognosedaten
       description: >
-        Ãœbermittlung von Leistungsprognosen eines EMS.
+        Bereitstellung von Leistungsprognosen eines EMS.
         Enthalten sind erwartete, minimale und maximale Leistungswerte
         für zukünftige Zeitslots.
       operationId: submitForecastValues
