@@ -19,7 +19,7 @@ info:
 
 
 
-    *Fokus liegt auf der digitalen Schnittstelle. Insbesondere im Falle von Steuerungsdiensten wird angenommen. Die fachliche Ausprägung der Prozesse und API-Dienste sollte daher stets mit Fokus auf die digitale Steuerung gemäß der VDE-2829-6-1 erfolgen. Eine Abwärtskompatibilität zum Relais kann in der Regel gewährleistet werden, ist aber nicht Fokus der vorliegenden Spezifikation. 
+    *Fokus liegt auf der digitalen Schnittstelle. Insbesondere im Falle von Steuerungsdiensten ist zu erwarten, dass diese das Zielbild und den zukünftigen Standard abdeckt. Die fachliche Ausprägung der Prozesse und API-Dienste sollte daher stets mit Fokus auf die digitale Steuerung gemäß der VDE-2829-6-1 erfolgen. Eine Abwärtskompatibilität zum Relais kann in der Regel gewährleistet werden, ist aber nicht Fokus der vorliegenden Spezifikation. 
 
 servers:
   - url: https://api.example.de
