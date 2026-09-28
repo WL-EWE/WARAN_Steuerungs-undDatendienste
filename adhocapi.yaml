@@ -2,7 +2,7 @@ openapi: 3.0.3
 
 info:
   title: WARAN - Impuls zur Anpassung der Ad-Hoc-Steuerungs-API
-  version: 0.9.2
+  version: 0.9.3
   description: >
     Aufbauend auf dem bereits existierenden API-Webdienst zur prozessualen Abwicklung von Steuerungshandlungen (https://edi-energy.github.io/api-electricity/aktuell-gueltig/#/), werden im vorliegenden Abschnitt Erweiterungen vorgeschlagen, die es den Marktakteuren ermöglichen das volle Potential der Ad-hoc Steuerung zu nutzen. 
     
@@ -19,7 +19,7 @@ info:
 
 
 
-    *Fokus liegt auf der digitalen Schnittstelle. Insbesondere im Falle von Steuerungsdiensten ist zu erwarten, dass diese das Zielbild und den zukünftigen Standard abdeckt. Die fachliche Ausprägung der Prozesse und API-Dienste sollte daher stets mit Fokus auf die digitale Steuerung gemäß der VDE-2829-6-1 erfolgen. Eine Abwärtskompatibilität zum Relais kann in der Regel gewährleistet werden, ist aber nicht Fokus der vorliegenden Spezifikation. 
+    *Fokus liegt auf der digitalen Schnittstelle. Insbesondere im Falle von Steuerungsdiensten ist zu erwarten, dass diese das Zielbild und den zukünftigen Standard abdeckt. Die fachliche Ausprägung der Prozesse und API-Dienste sollte daher stets mit Fokus auf die digitale Steuerung gemäß der VDE-AR-E-2829-6-1 erfolgen. Eine Abwärtskompatibilität zum Relais kann für die einfachen Steuersignale in der Regel gewährleistet werden, ist aber nicht Fokus der vorliegenden Spezifikation. 
 
 servers:
   - url: https://api.example.de
@@ -34,7 +34,7 @@ tags:
 
 paths:
 
-  /to/MSB/adHoc/command/adhocPrio/v0:
+  /adHoc/command/adhocPrio/v0:
     post:
       tags: [Anweisung AdHoc Steuerungshandlung]
       summary: AdHoc-01 -> Priorisierte Ad-hoc-Steuerung
@@ -89,7 +89,7 @@ paths:
         '504':
           description: Gateway Timeout
 
-  /to/MSB/adHoc/command/adhocCyclic/v0:
+  /adHoc/command/adhocCyclic/v0:
     post:
       tags: [Anweisung AdHoc Steuerungshandlung]
       summary: AdHoc-02 -> Zyklische AdHoc Steuerung 
@@ -140,7 +140,7 @@ paths:
         '504':
           description: Gateway Timeout
 
-  /to/MSB/adHoc/parameter/softstart/v0:
+  /adHoc/parameter/softstart/v0:
     post:
       tags: [Anweisung AdHoc Steuerungshandlung]
       summary: AdHoc-03 -> Softstartprofil
@@ -189,7 +189,7 @@ paths:
         '504':
           description: Gateway Timeout
 
-  /to/MSB/adHoc/parameter/failsafe/v0:
+  /adHoc/parameter/failsafe/v0:
     post:
       tags: [Anweisung AdHoc Steuerungshandlung]
       summary: AdHoc-04 -> Failsafe-Konfiguration
@@ -240,7 +240,7 @@ paths:
         '504':
           description: Gateway Timeout
 
-  /to/MSB/adHoc/reset/v0:
+  /adHoc/reset/v0:
     post:
       tags: [Anweisung AdHoc Steuerungshandlung]
       summary: AdHoc-05 -> Reset vorhandener Ad-hoc-Steuerungen
@@ -282,7 +282,7 @@ paths:
         '504':
           description: Gateway Timeout
 
-  /from/MSB/adHoc/preliminaryResponse/v0:
+  /adHoc/preliminaryResponse/v0:
     post:
       tags: [Antwort AdHoc Steuerungshandlung]
       summary: AdHoc-06 -> Vorläufige Antwort
@@ -328,7 +328,7 @@ paths:
         '504':
           description: Gateway Timeout
 
-  /from/MSB/adHoc/finalResponse/v0:
+  /adHoc/finalResponse/v0:
     post:
       tags: [Antwort AdHoc Steuerungshandlung]
       summary: AdHoc-07 -> Finale Antwort
@@ -376,7 +376,7 @@ paths:
         '504':
           description: Gateway Timeout
 
-  /from/MSB/adHoc/information/v0:
+  /adHoc/information/v0:
     post:
       tags: [Mitteilung AdHoc Steuerungshandlung an Berechtigte]
       summary: AdHoc-08 -> Information über AdHoc Steuerungshandlungen
