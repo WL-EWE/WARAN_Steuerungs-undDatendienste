@@ -3,7 +3,7 @@ openapi: 3.0.3
 
 info:
   title: EMS Data API
-  version: 0.3.1
+  version: 0.3.2
   description: >
     
     Aufbauend auf dem bereits existierenden API-Webdienst zur prozessualen Abwicklung von Steuerungshandlungen (https://edi-energy.github.io/api-electricity/aktuell-gueltig/#/) und den vorgeschlagenen Erweiterungen zur AdHoc API und zur Flexband-API, werden im vorliegenden Abschnitt neue API Dienste vorgeschlagen. Die API zur Bereitstellung von EMS-Daten durch einen Messstellenbetreiber (MSB) an berechtigte Marktpartner. Konkret soll im ersten Entwurf eine Möglichkeit aufgezeigt werden, die Anwendungsfälle EEBUS MPC (Monitoring of Power Consumption) und EEBUS PODF (Power Demand Forecast) über die sicher iMs Infrastruktur für berechtiget Akteure zugänglich zu machen. 
@@ -32,7 +32,7 @@ tags:
 
 paths:
 
-  /to/MSB/eebus-data/delivery-config/v0:
+  /ems-data/delivery-config/v0:
     post:
       tags:
         - Anweisung Konfiguration
@@ -66,7 +66,7 @@ paths:
         '403':
           description: Nicht berechtigt
 
-  /from/MSB/eebus-data/config-response/v0:
+  /ems-data/config-response/v0:
     post:
       tags:
         - Antwort Konfiguration 
@@ -98,7 +98,7 @@ paths:
 
         '403':
           description: Nicht berechtigt
-  /from/MSB/eebus-data/measurements/v0:
+  /ems-data/measurements/v0:
     post:
       tags:
         - Bereitstellung der EEBUS Daten 
@@ -132,7 +132,7 @@ paths:
         '403':
           description: Nicht berechtigt
 
-  /from/MSB/eebus-data/forecast/v0:
+  /ems-data/forecast/v0:
     post:
       tags:
         - Bereitstellung der EEBUS Daten 
