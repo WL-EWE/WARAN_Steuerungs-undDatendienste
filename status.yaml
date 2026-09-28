@@ -2,7 +2,7 @@ openapi: 3.0.3
 
 info:
   title: WARAN - Impuls zur Erstellung einer Status API zur steuerbaren Ressource (SR)
-  version: 0.5.3
+  version: 0.5.4
   description: >
     Aufbauend auf dem bereits existierenden API-Webdienst zur prozessualen Abwicklung von Steuerungshandlungen (https://edi-energy.github.io/api-electricity/aktuell-gueltig/#/) und den vorgeschlagenen Erweiterungen zur AdHoc API, werden im vorliegenden Abschnitt neue API Dienste vorgeschlagen. Die Status API dient zur Abfrage aktueller und historischer Steuerungsvorgaben, Betriebszustände sowie Steuerbarkeitsnachweise für steuerbare Ressourcen. Über diese API kann der Status und der Funktionsumfang einer bzw. mehrerer steuerbaren Ressourcen abgefragt werden. Ziel ist es berechtigten Akteuren transparent darzustellen, ob und welche Handlungsoptionen hinsichtlich der Anlage bestehen. Darüber hinaus soll jederzeit transparent gemacht werden, welche Steuerungsmaßnahmen erfolgreich durch die Liegenschaft umgesetzt werden konnten und welche Steuerungshandlungen für die Zukunft konkret geplant sind. 
 
@@ -28,7 +28,7 @@ tags:
 
 paths:
 
-  /from/MSB/status/residualLimits/v0:
+  /status/residualLimits/v0:
     get:
       tags:
         - Status Abfrage API
@@ -81,7 +81,7 @@ paths:
           description: Service Unavailable
         '504':
           description: Gateway Timeout
-  /from/MSB/status/historicalLimits/v0:
+  /status/historicalLimits/v0:
     get:
       tags:
         - Status Abfrage API
@@ -143,7 +143,7 @@ paths:
         '504':
           description: Gateway Timeout
 
-  /from/MSB/status/operatingState/v0:
+  /status/operatingState/v0:
     get:
       tags:
         - Status Abfrage API
