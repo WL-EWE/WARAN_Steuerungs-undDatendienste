@@ -500,7 +500,7 @@ components:
 
     AdHocReason:
       type: string
-      example: Test
+      example: Legal/Regulatory
       description: >
        Die Angabe eines AdHocReason sorgt für eine Transparenz und kann u.a. für Dokumentationen und Veröffentlichungspflichten genutzt werden. Neben gesezlich vorschegeschriebenen Gründen (bspw. §14a EnWG) kann es eine vertragliche Basis geben (bspw. bei marktlichen Akteuren). Außerdem kann "Test" als Grund angegeben werden und explizit für Teststeuerungen eingesetzt werden.
       enum:
