@@ -53,6 +53,7 @@ paths:
 
         **„Marktliche Steuerung“ durch bspw. Direktvermarkter ist grundsätzlich auch mit Ad-hoc Steuerungssignalen umsetzbar. Es gilt zu beachten, dass der technische Use Case (LPC/LPP) nicht für die marktliche Anwendung bestimmt ist. Missverständnisse bei der Umsetzung, aufgrund der Darstellung als Netzengpasssignal auf der Kundenseite sind zu erwarten. Für die marktlichen Steuerung wird daher der Flexband bzw. Hüllkurven Anwendungsfall empfohlen.
 
+        
         **Einschränkung:** "excecutionTimeUntil" darf maximal 24h in der Zukunft liegen
         
       operationId: postAdHocPrio
