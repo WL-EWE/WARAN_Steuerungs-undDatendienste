@@ -1,9 +1,9 @@
 openapi: 3.0.3
 info:
   title: WARAN - Impuls zur Erstellung einer Flexband API
-  version: 0.8.3
+  version: 0.8.4
   description: >
-    Aufbauend auf dem bereits existierenden API-Webdienst zur prozessualen Abwicklung von Steuerungshandlungen (https://edi-energy.github.io/api-electricity/aktuell-gueltig/#/) und den vorgeschlagenen Erweiterungen zur AdHoc API, werden im vorliegenden Abschnitt neue API Dienste vorgeschlagen. Die Flexband-API bietet erweiterte Möglichkeiten Steurungshandlungen über die MSB-Infrastruktur umzusetzen. Basis hierfür ist der EEBUS Anwendungsfall Power Envelope (POEN), welcher auch unter dem Begriff Hüllkurve oder Flexband bekannt ist. In Abgrenzung zur kurativen Ad-hoc Steuerung, bietet die Hüllkurve dabei die Chance eine proaktive Wirkung, sowie eine bessere Verzahnung von Markt- und Netzinteressen zu gewährleisten. In einem Ampelmodell (siehe Hinweise vom FNN zum Netzbetrieb mit Flexibilitäten) kann die Hüllkurve als Netzbetreiber-Instrument für die grüne und gelbe Ampelphase eingeordnet werden. Als übergeordnetes Ziel aus VNB Perspektive steht die effizientere Auslastung der Infrastruktur und die kostengünstige Integration von steuerbaren Anlagen ("Energiewendeanlagen") in die Niederspannungsnetze. Das generische Flexbandkonzept ermöglicht dabei eine Vielzahl von energiewirtschaftlichen Anwendungsmöglichkeiten. Bei unterschielichen Akteuren (bspw. Netzbetreiber und Lieferant), bildet der MSB ein kosolidiertes Profil. Analog zum Ad-hoc Residualprofil, wird hier das sogenannte "POEN-Residualprofil gebildet. Weitere Details zur Verwendung und Einordnung finden sich in den folgenden Veröffentlichungen: 
+    Aufbauend auf dem bereits existierenden API-Webdienst zur prozessualen Abwicklung von Steuerungshandlungen (https://edi-energy.github.io/api-electricity/aktuell-gueltig/#/) und den vorgeschlagenen Erweiterungen zur AdHoc API, werden im vorliegenden Abschnitt neue API Dienste vorgeschlagen. Die Flexband-API bietet erweiterte Möglichkeiten Steurungshandlungen über die MSB-Infrastruktur umzusetzen. Basis hierfür ist der EEBUS Anwendungsfall Power Envelope (POEN), welcher auch unter dem Begriff Hüllkurve oder Flexband bekannt ist. In Abgrenzung zur kurativen Ad-hoc Steuerung, bietet die Hüllkurve dabei die Chance eine proaktive Wirkung, sowie eine bessere Verzahnung von Markt- und Netzinteressen zu gewährleisten. In einem Ampelmodell (siehe Hinweise vom FNN zum Netzbetrieb mit Flexibilitäten) kann die Hüllkurve als Netzbetreiber-Instrument für die grüne und gelbe Ampelphase eingeordnet werden. Als übergeordnetes Ziel aus VNB Perspektive steht die effizientere Auslastung der Infrastruktur und die kostengünstige Integration von steuerbaren Anlagen ("Energiewendeanlagen") in die Niederspannungsnetze. Aus marktlicher Perspektive stellt das Flexband eine mögliche Alternative zur Steuerung über die zweite WAN dar, die abhängig vom Anwendungsfall sinnvoll sein kann. Das generische Flexbandkonzept ermöglicht also eine Vielzahl von energiewirtschaftlichen Anwendungsmöglichkeiten. Bei unterschielichen Akteuren (bspw. Netzbetreiber und Lieferant), bildet der MSB ein kosolidiertes Profil. Analog zum Ad-hoc Residualprofil, wird hier das sogenannte "POEN-Residualprofil" gebildet. Die Konsolidierung mehrerer Hüllkurven ist allerdings nicht trivial, da hier die Interessen von verschiedenen externen Akteuren mit den Komfortansprüchen des Anlagenbetreibers vereinigt werden müssen. Dies soll daher in einer separaten Veröffentlichung diskutiert werden. Weitere Details zur Verwendung und Einordnung des Flexbandes finden sich in den folgenden Veröffentlichungen: 
 
     - https://www.ppc-ag.de/de/blog/vorausschauen-statt-nachbessern-steuerung-nach-huellkurve/
 
@@ -15,7 +15,7 @@ info:
 
       -  Flex-02 - TBD: "Übermittlung statisches Flexband"  Vorgabe eines zyklischen, sich täglich wiederholenden Flexbandes. Sofern die Steuerungseinrichtung den statischen Anwendungsfall unterstützt, kann das Profil lokal hinterlegt und autonom ausgeführt werden. Andernfalls sorgt der MSB dafür, dass Flex-01 und Flex-02 zu einem gemeinsamen POEN-Residualprofil verarbeitet und regelmäßig übermittelt werden.
 
-      - Flex-03 - "Übermittlung Fallback" - Vorgabe einer Fallbackkurve (POEN Szenario 3). Es können maximale und minimale Leistungslimits für beide Energierichtungen definiert werden. Die Vorgaben haben einen zeitlichen Bezug (0-24h), aber keine Datumsangabe. Die Fallbackwerte werden temporär bei lokalen Kommunikationsstörungen oder Lücken im POEN-Residualprofil aktiviert. Der MSB sorgt für ein konsolidiertes Fallbackprofil, dieses entspricht dem Steuerungsanwendungsfällen 9 gemäß Implementierungshinweis des BSI (SAF9)
+      - Flex-03 - "Übermittlung Fallback" - Vorgabe einer Fallbackkurve (POEN Szenario 3). Es können maximale Leistungslimits für beide Energierichtungen definiert werden. Die Vorgaben haben einen zeitlichen Bezug (0-24h), aber keine Datumsangabe. Die Fallbackwerte werden temporär bei lokalen Kommunikationsstörungen oder Lücken im POEN-Residualprofil aktiviert. Der MSB sorgt für ein konsolidiertes Fallbackprofil, dieses entspricht dem Steuerungsanwendungsfällen 9 gemäß Implementierungshinweis des BSI (SAF9)
 
       - Flex-04 - "Löschen von Hülllkurven" - Erlaubt die Löschung von zuvor übermittelten Hüllkurven. Die ausgewählten Profile des jeweiligen Absenders werden gelöscht und das POEN-Residualprofil aktualisiert.
 
@@ -431,13 +431,13 @@ components:
                   $ref: '#/components/schemas/ControlSlot'
                 example:
                   - duration: 900
-                    activePowerValue: 11000
+                    activePowerValue: 11
                   - duration: 900
-                    activePowerValue: 9000
+                    activePowerValue: 9
                   - duration: 900
-                    activePowerValue: 7000
+                    activePowerValue: 7
                   - duration: 900
-                    activePowerValue: 5000
+                    activePowerValue: 5
 
               poenControlSlotsMin:
                 type: array
@@ -446,13 +446,13 @@ components:
                   $ref: '#/components/schemas/ControlSlot'
                 example:
                   - duration: 900
-                    activePowerValue: 2000
+                    activePowerValue: 2
                   - duration: 900
-                    activePowerValue: 2000
+                    activePowerValue: 2
                   - duration: 900
-                    activePowerValue: 3000
+                    activePowerValue: 3
                   - duration: 900
-                    activePowerValue: 4000
+                    activePowerValue: 4
 
     FlexbandStaticRequest:
       allOf:
@@ -506,13 +506,13 @@ components:
                   $ref: '#/components/schemas/ControlSlot'
                 example:
                   - duration: 900
-                    activePowerValue: 11000
+                    activePowerValue: 11
                   - duration: 900
-                    activePowerValue: 9000
+                    activePowerValue: 9
                   - duration: 900
-                    activePowerValue: 7000
+                    activePowerValue: 7
                   - duration: 900
-                    activePowerValue: 5000
+                    activePowerValue: 5
               poenControlSlotsMin:
                 type: array
                 maxItems: 96
@@ -520,13 +520,13 @@ components:
                   $ref: '#/components/schemas/ControlSlot'
                 example:
                   - duration: 900
-                    activePowerValue: 2000
+                    activePowerValue: 2
                   - duration: 900
-                    activePowerValue: 2000
+                    activePowerValue: 2
                   - duration: 900
-                    activePowerValue: 3000
+                    activePowerValue: 3
                   - duration: 900
-                    activePowerValue: 4000
+                    activePowerValue: 4
 
     FallbackRequest:
       allOf:
@@ -556,13 +556,13 @@ components:
                   $ref: '#/components/schemas/FallbackSlot'
                 example:
                   - duration: 27000
-                    activePowerValue: 8000
+                    activePowerValue: 8
                   - duration: 1800
-                    activePowerValue: 7500
+                    activePowerValue: 7
                   - duration: 1800
-                    activePowerValue: 7000
+                    activePowerValue: 7
                   - duration: 2700
-                    activePowerValue: 6500
+                    activePowerValue: 6.5
 
     InitialStateRequest:
         allOf:
