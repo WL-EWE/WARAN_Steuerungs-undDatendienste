@@ -1,0 +1,518 @@
+openapi: 3.0.3
+
+info:
+  title: Multi-Sector-API
+  version: 0.1.1
+  description: |
+    Im Förderprojekt WARAN hat das Konsortium verschiedene Anwendungsfälle in Wärmenetzen unter Einbindung des intelligenten Messsystems (iMSys) untersucht. In diesem Kontext wurde auch betrachtet, wie die heutige Struktur erweitert werden könnte, damit eine standardisierte Möglichkeit entsteht das der MSB der Sparte Strom die Zähler aus anderen Sparten und somit von anderen energiewirtschatlichen Akteuren erfassen und die Daten bereitstellen kann. Die größte Hürde besteht darin, dass andere Sparten weniger Rollen keine umfangreiche Marktkommunikation ausgeprägt habe und somit nicht ohne weiteres Dienste beim MSB bestellen können. 
+
+
+    Der angedachte Lösungsweg im Projekt WARAN beruht darauf, das andere Sparten als sogenannter Energieserviceanbieter (ESA) Teilnehemer der Marktkommunikation Strom bzw. der SM-PKI werden. Perspektivisch könnte eine eigene Rolle wie bspw. "MSB-Fremdsektor" (MSB-FS) eingeführt werden Ein möglicher Ablauf zum Bestellen von Messwerten sieht dabei wie folgt aus:
+
+      - Akteur der Fremdsparte (bspw. Wärmenetzbetreiber) möchte iMs Infrastruktur nutzen
+      - Akteur der Fremdsparte registriert sich als ESA bei BDEW Codes und Services und beantragt Zertifikate aus der SM-PKI 
+      - Akteur der Fremdsparte hat eigene Zähler und muss zur Anbindung an ein iMs einen Bezug zu den relevanten Stammdaten des zuständigen MSB Strom herzustellen.
+        - Möglichkeit 1: Bilateral, durch internes Wissen oder durch vor Ort Kenntnisse
+        - Möglichkeit 2: Über den bestehenden MaLo-Ident Prozess. Anfrage beim VNB-Storm bzgl. Zuständigkeit MSB und bzgl. relevanter Identifier (MeLo, iMs, mMe-ID, etc.)
+      - Anhand der erhaltenen Informationen kann der Akteur der Fremdsparte den entsprechenden Dienst zur Datenerfassung über den Universalbestellprozess beim MSB bestellen und die Abrechnung der Leistung kann sichergestellt werden. (Bestellcodes müssten in der Codeliste vom BDEW entsprechend erweitert werden). Altertnativ kann eine bilaterale Klärung zur kaufmännischen Abwicklung des Dienstes erfolgen. Im Bestellprozess kann der gewünschte Empfangsweg für die Messwerte festgelegt werden:
+          1. Direktentgegennahme (Sternkommunikation): Der Akteure der Fremdsparte betriebt einn EMT-System und empfängt die Werte direkt vom SMGW
+          2.  API Empfang: Der Akteur der Drittsparte nimmt die Werte über die hier angedeuteten API Dienste entgegen.
+      - Akteur der Fremdsparte wird für den hier skizzierten API Dienst freigeschaltet und kann Zähler zur Anbindung bekannt machen und die Messwerte entgegen nehmen.
+
+      
+
+
+servers:
+  - url: https://api.msb.example.de/multi-sector-api/v0
+
+tags:
+  - name: Anweisung Konfiguration
+    description: MSB = API-Anbieter (Server)
+
+  - name: Antwort Konfiguration
+    description: MSB = API-Nutzer (Client)
+
+  - name: Bereitstellung der Messwerte
+    description: MSB = API-Nutzer (Client)
+
+paths:
+
+  /multiSector/delivery-config/v0:
+    post:
+      tags:
+        - Anweisung Konfiguration
+      summary: Multi-Sector-01 - Konfiguration der Datenlieferung
+      operationId: createOrUpdateDeliveryConfig
+
+      parameters:
+        - $ref: '#/components/parameters/transactionId'
+        - $ref: '#/components/parameters/creationDateTime'
+        - $ref: '#/components/parameters/initialTransactionId'
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeliveryConfig'
+
+      responses:
+        '200':
+          description: Konfiguration gespeichert
+
+        '400':
+          description: Ungültige Anfrage
+
+        '401':
+          description: Nicht authentifiziert
+
+        '403':
+          description: Nicht berechtigt
+
+  /multiSector/config-response/v0:
+    post:
+      tags:
+        - Antwort Konfiguration
+
+      summary: Multi-Sector-02 - Antwort auf die Konfigurationsanfrage
+      operationId: deliveryConfigResponse
+
+      parameters:
+        - $ref: '#/components/parameters/transactionId'
+        - $ref: '#/components/parameters/creationDateTime'
+        - $ref: '#/components/parameters/initialTransactionId'
+        - $ref: '#/components/parameters/referenceId'
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeliveryConfigResponse'
+
+      responses:
+        '200':
+          description: Antwort gespeichert
+
+        '400':
+          description: Ungültige Anfrage
+
+        '401':
+          description: Nicht authentifiziert
+
+        '403':
+          description: Nicht berechtigt
+
+  /multiSector/lmnMeasurements/v0:
+    post:
+      tags:
+        - Bereitstellung der Messwerte
+
+      summary: Multi-Sector-03 - Bereitstellung von LMN-Messdaten
+      operationId: submitPowerValues
+
+      parameters:
+        - $ref: '#/components/parameters/transactionId'
+        - $ref: '#/components/parameters/creationDateTime'
+        - $ref: '#/components/parameters/initialTransactionId'
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PowerValuesEvent'
+
+      responses:
+        '202':
+          description: Messwerte akzeptiert
+
+        '400':
+          description: Ungültige Anfrage
+
+        '401':
+          description: Nicht authentifiziert
+
+        '403':
+          description: Nicht berechtigt
+
+  /multiSector/clsMeasurements/v0:
+    post:
+      tags:
+        - Bereitstellung der Messwerte
+
+      summary: Multi-Sector-04 - Bereitstellung von CLS-Messwerten (Rohdaten)
+      operationId: submitForecastValues
+
+      parameters:
+        - $ref: '#/components/parameters/transactionId'
+        - $ref: '#/components/parameters/creationDateTime'
+        - $ref: '#/components/parameters/initialTransactionId'
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RawMeterValuesEvent'
+             
+
+      responses:
+        '202':
+          description: Prognosedaten akzeptiert
+
+        '400':
+          description: Ungültige Anfrage
+
+        '401':
+          description: Nicht authentifiziert
+
+        '403':
+          description: Nicht berechtigt
+components:
+
+  parameters:
+
+    transactionId:
+      name: transactionId
+      in: header
+      required: true
+      description: Externe Transaktions-ID des sendenden Marktpartners.
+      schema:
+        type: string
+        format: uuid
+        example: de14872e-71e7-407f-916f-da8dbde05176
+
+    referenceId:
+      name: referenceId
+      in: header
+      required: true
+      description: Referenz auf einen fachlich zusammenhängenden Vorgang.
+      schema:
+        type: string
+        format: uuid
+        example: de14872e-71e7-407f-916f-da8dbde05177
+
+    creationDateTime:
+      name: creationDateTime
+      in: header
+      required: true
+      description: Zeitpunkt der Nachrichtenerzeugung.
+      schema:
+        type: string
+        format: date-time
+        example: "2026-07-07T06:58:27.384Z"
+
+    initialTransactionId:
+      name: initialTransactionId
+      in: header
+      required: false
+      description: Idempotenzschlüssel bei Wiederholungen.
+      schema:
+        type: string
+        format: uuid
+
+  schemas:
+
+    #########################################################################
+    # Gemeinsame Datentypen
+    #########################################################################
+
+    MeasurementTimestamp:
+      type: string
+      format: date-time
+      example: "2026-07-07T06:58:27Z"
+
+    ObisCode:
+      type: string
+      description: Kennzeichnung des Messwerts.
+      example: "6-0:1.0.0"
+
+    MeasurementValue:
+      type: object
+      required:
+        - value
+        - scale
+        - unit
+
+      properties:
+
+        value:
+          type: integer
+          description: Unskalierter Messwert.
+          example: 160341
+
+        scale:
+          type: integer
+          description: Skalierungsfaktor.
+          example: 3
+
+        unit:
+          type: string
+          description: Einheit des Messwerts.
+          enum:
+            - W          # Leistung
+            - Wh         # Arbeit
+            - V          # Spannung
+            - A          # Strom
+            - Hz         # Frequenz
+            - VAr        # Blindleistung
+            - VArh       # Blindarbeit
+            - Celsius    # Temperatur
+            - K          # Temperaturdifferenz
+            - J          # Energie
+            - Wh_th      # thermische Arbeit
+            - m3         # Volumen
+            - L          # Volumen
+            - m3_h       # Volumenstrom
+            - Pa
+            - bar
+            - seconds
+            - minutes
+            - hours      
+            - count
+            - percentage    
+          example: Wh
+
+    #########################################################################
+    # LMN Messwertbereitstellung
+    #########################################################################
+
+    MeterReading:
+      type: object
+
+      required:
+        - measurementTime
+        - obisCode
+        - measuredValue
+
+      properties:
+
+        measurementTime:
+          $ref: '#/components/schemas/MeasurementTimestamp'
+
+        obisCode:
+          $ref: '#/components/schemas/ObisCode'
+
+        measuredValue:
+          $ref: '#/components/schemas/MeasurementValue'
+
+    MeterData:
+      type: object
+
+      required:
+        - meterId
+        - measuredValues
+
+      properties:
+
+        meterId:
+          type: string
+          description: Eindeutige Identifikation des Drittzählers.
+          example: "6LUG0472572729"
+
+        meterType:
+          type: string
+          description: Sparte des angebundenen Zählers.
+          enum:
+            - HEAT
+            - WATER
+            - GAS
+            - COOLING
+            - ELECTRICITY
+
+        productCode:
+          type: string
+          description: Bestelltes Messprodukt.
+          example: "9991000000359"
+
+        measuredValues:
+          type: array
+          minItems: 1
+
+          items:
+            $ref: '#/components/schemas/MeterReading'
+
+    PowerValuesEvent:
+      type: object
+
+      required:
+        - meters
+
+      properties:
+
+        meters:
+          type: array
+          description: Messwerte mehrerer Drittzähler innerhalb einer Transaktion.
+          minItems: 1
+
+          items:
+            $ref: '#/components/schemas/MeterData'
+
+    #########################################################################
+    # CLS Messwertbereitstellung
+    #########################################################################
+
+    RawMeterValuesEvent:
+      type: object
+
+      required:
+        - meters
+
+      properties:
+
+        meters:
+          type: array
+          minItems: 1
+          description: Rohdaten mehrerer Drittzähler innerhalb einer Nachricht.
+
+          items:
+            $ref: '#/components/schemas/RawMeterData'
+
+    RawMeterData:
+      type: object
+
+      required:
+        - meterId
+        - meterType
+        - productCode
+        - measuredRawValues
+
+      properties:
+
+        meterId:
+          type: string
+          description: Eindeutige Identifikation des Drittzählers.
+          example: "6LUG0472572729"
+
+        meterType:
+          type: string
+          description: Sparte des Zählers.
+          enum:
+            - ELECTRICITY
+            - HEAT
+            - WATER
+            - GAS
+            - COOLING
+
+        productCode:
+          type: string
+          description: Messprodukt-Code.
+          example: "9991000000359"
+
+        measuredRawValues:
+          type: string
+          description: >
+            Originale Rohdaten des Zählers bzw. der CLS-Kommunikation.
+            Das Format ist produktabhängig und wird unverändert übertragen.
+          example: "2F442D2C57684501078521436587A55CA2D54E8F91A4A99F5C7E5A102B4D88734FAD92C910EF11762B8DAC4F4B26D91A"
+
+    #########################################################################
+    # Konfigurationsantwort
+    #########################################################################
+
+    DeliveryConfigResponse:
+      type: object
+
+      properties:
+
+        deviceLocationMSB:
+          type: string
+          example: EPPC1234567890
+
+        configState:
+          type: string
+          enum:
+            - possible
+            - unable
+
+        configCode:
+          type: string
+          enum:
+            - succeeded
+            - communicationFailure
+            - overload
+            - maintenance
+            - missingContract
+            - invalidMessage
+            - unable
+
+        configReason:
+          type: string
+
+      example:
+        deviceLocationMSB: EPPC1234567890
+        configState: possible
+        configCode: succeeded
+        configReason: Profil erfolgreich eingerichtet.
+
+    #########################################################################
+    # Konfigurationsauftrag
+    #########################################################################
+
+    DeliveryConfig:
+      type: object
+
+      required:
+        - deviceLocationMSB
+        - meterId
+        - productCode
+        - aesKey
+
+      properties:
+
+        deviceLocationMSB:
+          description: Identifikation des Ziel-SMGW.
+
+          oneOf:
+
+            - type: object
+              required:
+                - smgwId
+
+              properties:
+                smgwId:
+                  type: string
+                  example: EPPC1234567890
+
+            - type: object
+              required:
+                - meloId
+
+              properties:
+                meloId:
+                  type: string
+                  example: DE00014545768S0000000000000003054
+
+            - type: object
+              required:
+                - mMeId
+
+              properties:
+                mMeId:
+                  type: string
+
+        meterId:
+          type: string
+          description: Identifikation des Drittzählers.
+          example: 6LUG0472572729
+
+        aesKey:
+          type: string
+          description: Optionaler AES-Schlüssel zur Kommunikation mit dem Drittzähler.
+          example: 0B40A22968134DA6957776AC6D681234
+
+        productCode:
+          type: string
+          description: Zu bestellendes Messprodukt.
+          example: "9991000000359"
+        deliveryModeApi:
+          type: string
+          enum:
+            - optimized
+            - lowLatency
+            - hourly
+            - daily
+          description: Konfiguration der Messwertbereitstellung
+          example: "hourly"
+
