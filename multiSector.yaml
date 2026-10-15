@@ -2,12 +2,12 @@ openapi: 3.0.3
 
 info:
   title: Multi-Sector-API
-  version: 0.1.1
+  version: 0.1.2
   description: |
     Im Förderprojekt WARAN hat das Konsortium verschiedene Anwendungsfälle in Wärmenetzen unter Einbindung des intelligenten Messsystems (iMSys) untersucht. In diesem Kontext wurde auch betrachtet, wie die heutige Struktur erweitert werden könnte, damit eine standardisierte Möglichkeit entsteht das der MSB der Sparte Strom die Zähler aus anderen Sparten und somit von anderen energiewirtschatlichen Akteuren erfassen und die Daten bereitstellen kann. Die größte Hürde besteht darin, dass andere Sparten weniger Rollen keine umfangreiche Marktkommunikation ausgeprägt habe und somit nicht ohne weiteres Dienste beim MSB bestellen können. 
 
 
-    Der angedachte Lösungsweg im Projekt WARAN beruht darauf, das andere Sparten als sogenannter Energieserviceanbieter (ESA) Teilnehemer der Marktkommunikation Strom bzw. der SM-PKI werden. Perspektivisch könnte eine eigene Rolle wie bspw. "MSB-Fremdsektor" (MSB-FS) eingeführt werden Ein möglicher Ablauf zum Bestellen von Messwerten sieht dabei wie folgt aus:
+    Der skizzierte Lösungsweg im Projekt WARAN beruht darauf, das andere Sparten als sogenannter Energieserviceanbieter (ESA) Teilnehemer der Marktkommunikation Strom bzw. der SM-PKI werden. Perspektivisch könnte eine eigene Rolle wie bspw. "MSB-Fremdsektor" (MSB-FS) eingeführt werden Ein möglicher Ablauf zum Bestellen von Messwerten sieht dabei wie folgt aus:
 
       - Akteur der Fremdsparte (bspw. Wärmenetzbetreiber) möchte iMs Infrastruktur nutzen
       - Akteur der Fremdsparte registriert sich als ESA bei BDEW Codes und Services und beantragt Zertifikate aus der SM-PKI 
@@ -15,7 +15,7 @@ info:
         - Möglichkeit 1: Bilateral, durch internes Wissen oder durch vor Ort Kenntnisse
         - Möglichkeit 2: Über den bestehenden MaLo-Ident Prozess. Anfrage beim VNB-Storm bzgl. Zuständigkeit MSB und bzgl. relevanter Identifier (MeLo, iMs, mMe-ID, etc.)
       - Anhand der erhaltenen Informationen kann der Akteur der Fremdsparte den entsprechenden Dienst zur Datenerfassung über den Universalbestellprozess beim MSB bestellen und die Abrechnung der Leistung kann sichergestellt werden. (Bestellcodes müssten in der Codeliste vom BDEW entsprechend erweitert werden). Altertnativ kann eine bilaterale Klärung zur kaufmännischen Abwicklung des Dienstes erfolgen. Im Bestellprozess kann der gewünschte Empfangsweg für die Messwerte festgelegt werden:
-          1. Direktentgegennahme (Sternkommunikation): Der Akteure der Fremdsparte betriebt einn EMT-System und empfängt die Werte direkt vom SMGW
+          1. Direktentgegennahme (Sternkommunikation): Der Akteure der Fremdsparte betriebt ein EMT-System und empfängt die Werte direkt vom SMGW.
           2.  API Empfang: Der Akteur der Drittsparte nimmt die Werte über die hier angedeuteten API Dienste entgegen.
       - Akteur der Fremdsparte wird für den hier skizzierten API Dienst freigeschaltet und kann Zähler zur Anbindung bekannt machen und die Messwerte entgegen nehmen.
 
@@ -32,7 +32,7 @@ tags:
   - name: Antwort Konfiguration
     description: MSB = API-Nutzer (Client)
 
-  - name: Bereitstellung der Messwerte
+  - name: Bereitstellung der Messwerte (Optional)
     description: MSB = API-Nutzer (Client)
 
 paths:
@@ -106,7 +106,7 @@ paths:
   /multiSector/lmnMeasurements/v0:
     post:
       tags:
-        - Bereitstellung der Messwerte
+        - Bereitstellung der Messwerte (Optional)
 
       summary: Multi-Sector-03 - Bereitstellung von LMN-Messdaten
       operationId: submitPowerValues
@@ -139,7 +139,7 @@ paths:
   /multiSector/clsMeasurements/v0:
     post:
       tags:
-        - Bereitstellung der Messwerte
+        - Bereitstellung der Messwerte (Optional)
 
       summary: Multi-Sector-04 - Bereitstellung von CLS-Messwerten (Rohdaten)
       operationId: submitForecastValues
@@ -318,13 +318,17 @@ components:
             - HEAT
             - WATER
             - GAS
-            - COOLING
             - ELECTRICITY
 
         productCode:
           type: string
           description: Bestelltes Messprodukt.
           example: "9991000000359"
+        
+        logicalName:
+          type: string
+          description: Hier kann optional die konfigurierte TAF-ID zurückgegeben werden
+          example: "taf079900599000001de000599782240000010000s000055642E000000001a"
 
         measuredValues:
           type: array
@@ -389,11 +393,11 @@ components:
           type: string
           description: Sparte des Zählers.
           enum:
-            - ELECTRICITY
             - HEAT
             - WATER
             - GAS
-            - COOLING
+            - ELECTRICITY
+
 
         productCode:
           type: string
@@ -439,12 +443,19 @@ components:
 
         configReason:
           type: string
+        
+        logicalName:
+          type: string
+          description: Hier kann optional die konfigurierte TAF-ID zurückgegeben werden
+          example: "taf079900599000001de000599782240000010000s000055642E000000001a"
+           
 
       example:
         deviceLocationMSB: EPPC1234567890
         configState: possible
         configCode: succeeded
         configReason: Profil erfolgreich eingerichtet.
+        logicalName: "taf079900599000001de000599782240000010000s000055642E000000001a"
 
     #########################################################################
     # Konfigurationsauftrag
@@ -496,7 +507,16 @@ components:
           type: string
           description: Identifikation des Drittzählers.
           example: 6LUG0472572729
-
+        
+        meterType:
+          type: string
+          description: Sparte des angebundenen Zählers.
+          enum:
+            - HEAT
+            - WATER
+            - GAS
+            - ELECTRICITY
+        
         aesKey:
           type: string
           description: Optionaler AES-Schlüssel zur Kommunikation mit dem Drittzähler.
@@ -506,13 +526,5 @@ components:
           type: string
           description: Zu bestellendes Messprodukt.
           example: "9991000000359"
-        deliveryModeApi:
-          type: string
-          enum:
-            - optimized
-            - lowLatency
-            - hourly
-            - daily
-          description: Konfiguration der Messwertbereitstellung
-          example: "hourly"
+
 
