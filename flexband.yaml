@@ -3,7 +3,7 @@ info:
   title: WARAN - Impuls zur Erstellung einer Flexband API
   version: 0.8.4
   description: >
-    Aufbauend auf dem bereits existierenden API-Webdienst zur prozessualen Abwicklung von Steuerungshandlungen (https://edi-energy.github.io/api-electricity/aktuell-gueltig/#/) und den vorgeschlagenen Erweiterungen zur AdHoc API, werden im vorliegenden Abschnitt neue API Dienste vorgeschlagen. Die Flexband-API bietet erweiterte Möglichkeiten Steurungshandlungen über die MSB-Infrastruktur umzusetzen. Basis hierfür ist der EEBUS Anwendungsfall Power Envelope (POEN), welcher auch unter dem Begriff Hüllkurve oder Flexband bekannt ist. In Abgrenzung zur kurativen Ad-hoc Steuerung, bietet die Hüllkurve dabei die Chance eine proaktive Wirkung, sowie eine bessere Verzahnung von Markt- und Netzinteressen zu gewährleisten. In einem Ampelmodell (siehe Hinweise vom FNN zum Netzbetrieb mit Flexibilitäten) kann die Hüllkurve als Netzbetreiber-Instrument für die grüne und gelbe Ampelphase eingeordnet werden. Als übergeordnetes Ziel aus VNB Perspektive steht die effizientere Auslastung der Infrastruktur und die kostengünstige Integration von steuerbaren Anlagen ("Energiewendeanlagen") in die Niederspannungsnetze. Aus marktlicher Perspektive stellt das Flexband eine mögliche Alternative zur Steuerung über die zweite WAN dar, die abhängig vom Anwendungsfall sinnvoll sein kann. Das generische Flexbandkonzept ermöglicht also eine Vielzahl von energiewirtschaftlichen Anwendungsmöglichkeiten. Bei unterschielichen Akteuren (bspw. Netzbetreiber und Lieferant), bildet der MSB ein kosolidiertes Profil. Analog zum Ad-hoc Residualprofil, wird hier das sogenannte "POEN-Residualprofil" gebildet. Die Konsolidierung mehrerer Hüllkurven ist allerdings nicht trivial, da hier die Interessen von verschiedenen externen Akteuren mit den Komfortansprüchen des Anlagenbetreibers vereinigt werden müssen. Dies soll daher in einer separaten Veröffentlichung diskutiert werden. Weitere Details zur Verwendung und Einordnung des Flexbandes finden sich in den folgenden Veröffentlichungen: 
+    Aufbauend auf dem bereits existierenden API-Webdienst zur prozessualen Abwicklung von Steuerungshandlungen (https://edi-energy.github.io/api-electricity/aktuell-gueltig/#/) und den vorgeschlagenen Erweiterungen zur AdHoc API, werden im vorliegenden Abschnitt neue API Dienste vorgeschlagen. Die Flexband-API bietet erweiterte Möglichkeiten Steuerungshandlungen über die MSB-Infrastruktur umzusetzen. Basis hierfür ist der EEBUS Anwendungsfall Power Envelope (POEN), welcher auch unter dem Begriff Hüllkurve oder Flexband bekannt ist. In Abgrenzung zur kurativen Ad-hoc Steuerung, bietet die Hüllkurve dabei die Chance eine proaktive Wirkung, sowie eine bessere Verzahnung von Markt- und Netzinteressen zu gewährleisten. In einem Ampelmodell (siehe Hinweise vom FNN zum Netzbetrieb mit Flexibilitäten) kann die Hüllkurve als Netzbetreiber-Instrument für die grüne und gelbe Ampelphase eingeordnet werden. Als übergeordnetes Ziel aus VNB Perspektive steht die effizientere Auslastung der Infrastruktur und die kostengünstige Integration von steuerbaren Anlagen ("Energiewendeanlagen") in die Niederspannungsnetze. Aus marktlicher Perspektive stellt das Flexband eine mögliche Alternative zur Steuerung über die zweite WAN dar, die abhängig vom Anwendungsfall sinnvoll sein kann. Das generische Flexbandkonzept ermöglicht also eine Vielzahl von energiewirtschaftlichen Anwendungsmöglichkeiten. Bei unterschiedlichen Akteuren (bspw. Netzbetreiber und Lieferant), bildet der MSB ein kosolidiertes Profil. Analog zum Ad-hoc Residualprofil, wird hier das sogenannte "POEN-Residualprofil" gebildet. Die Konsolidierung mehrerer Hüllkurven ist allerdings nicht trivial, da hier die Interessen von verschiedenen externen Akteuren mit den Komfortansprüchen des Anlagenbetreibers vereinigt werden müssen. Dies soll daher in einer separaten Veröffentlichung diskutiert werden. Weitere Details zur Verwendung und Einordnung des Flexbandes finden sich in den folgenden Veröffentlichungen: 
 
     - https://www.ppc-ag.de/de/blog/vorausschauen-statt-nachbessern-steuerung-nach-huellkurve/
 
@@ -15,7 +15,7 @@ info:
 
       -  Flex-02 - TBD: "Übermittlung statisches Flexband"  Vorgabe eines zyklischen, sich täglich wiederholenden Flexbandes. Sofern die Steuerungseinrichtung den statischen Anwendungsfall unterstützt, kann das Profil lokal hinterlegt und autonom ausgeführt werden. Andernfalls sorgt der MSB dafür, dass Flex-01 und Flex-02 zu einem gemeinsamen POEN-Residualprofil verarbeitet und regelmäßig übermittelt werden.
 
-      - Flex-03 - "Übermittlung Fallback" - Vorgabe einer Fallbackkurve (POEN Szenario 3). Es können maximale Leistungslimits für beide Energierichtungen definiert werden. Die Vorgaben haben einen zeitlichen Bezug (0-24h), aber keine Datumsangabe. Die Fallbackwerte werden temporär bei lokalen Kommunikationsstörungen oder Lücken im POEN-Residualprofil aktiviert. Der MSB sorgt für ein konsolidiertes Fallbackprofil, dieses entspricht dem Steuerungsanwendungsfällen 9 gemäß Implementierungshinweis des BSI (SAF9)
+      - Flex-03 - "Übermittlung Fallback" - Vorgabe einer Fallbackkurve (POEN Szenario 3). Es können maximale Leistungslimits für beide Energierichtungen definiert werden. Die Vorgaben haben einen zeitlichen Bezug (0-24h), aber keine Datumsangabe. Die Fallbackwerte werden temporär bei lokalen Kommunikationsstörungen oder Lücken im POEN-Residualprofil aktiviert. Der MSB sorgt für ein konsolidiertes Fallbackprofil, dieses entspricht dem Steuerungsanwendungsfall 9 gemäß Implementierungshinweis des BSI (SAF9).
 
       - Flex-04 - "Löschen von Hülllkurven" - Erlaubt die Löschung von zuvor übermittelten Hüllkurven. Die ausgewählten Profile des jeweiligen Absenders werden gelöscht und das POEN-Residualprofil aktualisiert.
 
@@ -58,7 +58,7 @@ paths:
         *Vorausschauende, prognosebasierte Steuerung, vgl. FNN Hinweis „Netzbetrieb mit Flexibilitäten“. Umsetzbar bspw. auf vertraglicher Basis (z.B. per FCA - flexibler Netzanschlussvereinbarung (§17 (2b) EnWG))
 
 
-        **Insbesondere die Option auch Leistung zu aktivieren und gezielt für Einspeisung bzw. Bezug aus dem Netz zu sorgen, kann eine wichtige Option sein, die optimierte Nutzung der Kleinstflexibilitäten über die iMs Infrastruktur zu realisieren. Gesetzlich/Regulatorische Themen stellen einen „Treiber“ für die marktlichen Steuerungsanwendungsfälle dar (u.a. §10b EEG, §34 (2) MsbG und MiSpeL).
+        **Insbesondere die Option auch Leistung zu aktivieren und gezielt für Einspeisung bzw. Bezug aus dem Netz zu sorgen, kann eine wichtige Option sein, die optimierte Nutzung der Kleinstflexibilitäten über die iMsys Infrastruktur zu realisieren. Gesetzlich/Regulatorische Themen stellen einen „Treiber“ für die marktlichen Steuerungsanwendungsfälle dar (u.a. §10b EEG, §34 (2) MsbG und MiSpeL).
 
 
       operationId: createFlexband
@@ -104,7 +104,7 @@ paths:
       tags: [Anweisung Flexband]
       summary: Flex-02 -> Übermittlung statisches Flexband
       description: >
-        Statisches, täglich wiederkehrendes Hüllkurvenprofil. Vorgabe der verbrauchsseitigen (POEN Szenario 1) oder der einspeiseseitigen Hüllkurve (POEN Szenario 2).  Es können je nach Berechtigung maximale und minimale Leistungslimits für 24 Stunden definiert werden. Der MSB bildet zusammen mit den dynamisch übermittelten Hüllkurven geeignete POEN-Residualprofil (POEN-RP) und sorgt damit für eine konfliktfreie Übertragung des Flexbandes.
+        Statisches, täglich wiederkehrendes Hüllkurvenprofil. Vorgabe der verbrauchsseitigen (POEN Szenario 1) oder der einspeiseseitigen Hüllkurve (POEN Szenario 2).  Es können je nach Berechtigung maximale und minimale Leistungslimits für 24 Stunden definiert werden. Der MSB bildet zusammen mit den dynamisch übermittelten Hüllkurven ein geeignetes POEN-Residualprofil (POEN-RP) und sorgt damit für eine konfliktfreie Übertragung des Flexbandes.
         Die POEN Residualprofile (POEN RP S1 und POEN RP S2) entsprechen dabei den Steuerungsanwendungsfällen 7 und 8 gemäß Implementierungshinweis des BSI (SAF7 / SAF8).
 
 
@@ -115,7 +115,7 @@ paths:
          - LF – Backup-Fahrplan für Kommunikationsstörung -> POEN RP S1/S2
 
 
-         **Hinweis:** Es gilt zu diskuttieren ob diese Art der Flexband Ausprägung notwendig ist. Eine Alternative könnte die Anpassung der technischen UseCase Spezifikation (EEBUS) sein, sodass stattdessen die Fallbackkurven für die fachlichen Szenarien eingesetzt werden können. Aktuell defineren diese lediglich das temporäre Verhalten bei lokalem Kommunikationsausfall und sind somit ungeeignet. Eine Anpassung, sodass diese auch dauerhaft gültig sind wenn keine dynamische Hüllkurve aktiviert ist, könnte ein Lösungsweg darstellen. 
+         **Hinweis:** Es gilt zu diskutieren ob diese Art der Flexband Ausprägung notwendig ist. Eine Alternative könnte die Anpassung der technischen UseCase Spezifikation (EEBUS) sein, sodass stattdessen die Fallbackkurven für die fachlichen Szenarien eingesetzt werden können. Aktuell definieren diese lediglich das temporäre Verhalten bei lokalem Kommunikationsausfall und sind somit ungeeignet. Eine Anpassung, sodass diese auch dauerhaft gültig sind wenn keine dynamische Hüllkurve aktiviert ist, könnte ein Lösungsweg darstellen. 
 
 
       operationId: createStaticFlexband
@@ -140,7 +140,7 @@ paths:
       tags: [Anweisung Flexband]
       summary: Flex-03 -> Konfiguration einer Fallback-Küllkurve
       description: >
-        Vorgabe einer Fallbackkurve (POEN Szenario 3). Es können maximale Leistungslimits für die jeweilige  Energierichtungen definiert werden. Die Vorgaben haben einen zeitlichen Bezug (0-24h), aber keine Datumsangabe. Die Fallbackwerte werden temporär bei lokalen Kommunikationsstörungen oder Lücken im POEN-Residualprofil aktiviert. Der MSB sorgt für ein konsolidiertes Fallbackprofil, dieses entspricht dem Steuerungsanwendungsfällen 9 gemäß Implementierungshinweis des BSI (SAF9)
+        Vorgabe einer Fallbackkurve (POEN Szenario 3). Es können maximale Leistungslimits für die jeweilige  Energierichtung definiert werden. Die Vorgaben haben einen zeitlichen Bezug (0-24h), aber keine Datumsangabe. Die Fallbackwerte werden temporär bei lokalen Kommunikationsstörungen oder Lücken im POEN-Residualprofil aktiviert. Der MSB sorgt für ein konsolidiertes Fallbackprofil, dieses entspricht dem Steuerungsanwendungsfall 9 gemäß Implementierungshinweis des BSI (SAF9).
       operationId: createFallback
       parameters:
         - $ref: '#/components/parameters/transactionId'
@@ -379,7 +379,7 @@ components:
       properties:
         locationId:
           type: string
-          description: Die ID wird durch den BDEW festgelegt. In der vorliegenden Spezifikation wird angenommen, dasss zukünftig ausschließlich über die SR-ID gesteuert wird.
+          description: Die ID wird durch den BDEW festgelegt. In der vorliegenden Spezifikation wird angenommen, dass zukünftig ausschließlich über die SR-ID gesteuert wird.
           pattern: '^C[A-Z0-9]{9}[0-9]$'
           example: C1234848431
         subLocationId:
@@ -387,7 +387,7 @@ components:
           #items:
           #  type: string
           example: "i:98765_u:238bfn2299vfb3"
-          description: Ausblick -> Optionale SubLocationId um zukünftig den Steuerbefehl auf einzelne Geräte unterhalb der SR-ID zu beschränken. Im Standard bezieht sich der Befehl auf den Netzanschlusspunkt (adressiert über die SR-ID). Sollen einzelne Geräte (oder Gerätegruppen) speziell Vermarktet und adressiert werden, kann die SubLocationId genutzt werden.  Es könnte bspw. eine spezifische EMS-ID adressiert werden, sodass eine EMS Hierachie abbildbar wäre inkl unterschiedlichewr Zuständikeit (bspw. im MFH).
+          description: Ausblick -> Optionale SubLocationId um zukünftig den Steuerbefehl auf einzelne Geräte unterhalb der SR-ID zu beschränken. Im Standard bezieht sich der Befehl auf den Netzanschlusspunkt (adressiert über die SR-ID). Sollen einzelne Geräte (oder Gerätegruppen) speziell vermarktet und adressiert werden, kann die SubLocationId genutzt werden.  Es könnte bspw. eine spezifische EMS-ID adressiert werden, sodass eine EMS Hierachie abbildbar wäre inkl unterschiedlichewr Zuständikeit (bspw. im MFH).
           
 
     FlexbandRequest:
@@ -401,7 +401,7 @@ components:
             properties:
               poenContractId:
                 type: string
-                description: Ausblick -> Optional und gff zielführned, sofern der POEN UseCase überwiegend auf vertraglicher Basiis eingesetzt wird. Die ID könnte zukünftig bis zu HEMS durchgereicht werden und dort zur Validierung und Nachvollziehbarkeit verwendet werden. Es wäre eine Anpassung am technischen UseCase (EEBUS) notwendig  
+                description: Ausblick -> Optional und ggf zielführend, sofern der POEN UseCase überwiegend auf vertraglicher Basis eingesetzt wird. Die ID könnte zukünftig bis zu einem HEMS durchgereicht werden und dort zur Validierung und Nachvollziehbarkeit verwendet werden. Es wäre eine Anpassung am technischen UseCase (EEBUS) notwendig.  
                 example: LF-2026-4711
               poenReason:
                 type: string
@@ -468,7 +468,7 @@ components:
             properties:
               poenContractId:
                 type: string
-                description: Ausblick -> Optional und gff zielführned, sofern der POEN UseCase überwiegend auf vertraglicher Basiis eingesetzt wird. Die ID könnte zukünftig bis zu HEMS durchgereicht werden und dort zur Validierung und Nachvollziehbarkeit verwendet werden. Es wäre eine Anpassung am technischen UseCase (EEBUS) notwendig  
+                description: Ausblick -> Optional und ggf zielführned, sofern der POEN UseCase überwiegend auf vertraglicher Basis eingesetzt wird. Die ID könnte zukünftig bis zu einem HEMS durchgereicht werden und dort zur Validierung und Nachvollziehbarkeit verwendet werden. Es wäre eine Anpassung am technischen UseCase (EEBUS) notwendig  
                 example: LF-2026-4711
               poenReason:
                 type: string
@@ -538,7 +538,7 @@ components:
             properties:
               poenContractId:
                 type: string
-                description: Ausblick -> Optional und gff zielführned, sofern der POEN UseCase überwiegend auf vertraglicher Basiis eingesetzt wird. Die ID könnte zukünftig bis zu HEMS durchgereicht werden und dort zur Validierung und Nachvollziehbarkeit verwendet werden. Es wäre eine Anpassung am technischen UseCase (EEBUS) notwendig  
+                description: Ausblick -> Optional und ggf zielführned, sofern der POEN UseCase überwiegend auf vertraglicher Basis eingesetzt wird. Die ID könnte zukünftig bis zu einem HEMS durchgereicht werden und dort zur Validierung und Nachvollziehbarkeit verwendet werden. Es wäre eine Anpassung am technischen UseCase (EEBUS) notwendig  
                 example: LF-2026-4711
 
               poenConfigProfile:
