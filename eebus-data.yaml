@@ -6,13 +6,13 @@ info:
   version: 0.3.2
   description: >
     
-    Aufbauend auf dem bereits existierenden API-Webdienst zur prozessualen Abwicklung von Steuerungshandlungen (https://edi-energy.github.io/api-electricity/aktuell-gueltig/#/) und den vorgeschlagenen Erweiterungen zur AdHoc API und zur Flexband-API, werden im vorliegenden Abschnitt neue API Dienste vorgeschlagen. Die API zur Bereitstellung von EMS-Daten durch einen Messstellenbetreiber (MSB) an berechtigte Marktpartner. Konkret soll im ersten Entwurf eine Möglichkeit aufgezeigt werden, die Anwendungsfälle EEBUS MPC (Monitoring of Power Consumption) und EEBUS PODF (Power Demand Forecast) über die sicher iMs Infrastruktur für berechtiget Akteure zugänglich zu machen. 
+    Aufbauend auf dem bereits existierenden API-Webdienst zur prozessualen Abwicklung von Steuerungshandlungen (https://edi-energy.github.io/api-electricity/aktuell-gueltig/#/) und den vorgeschlagenen Erweiterungen zur AdHoc API und zur Flexband-API, werden im vorliegenden Abschnitt neue API Dienste vorgeschlagen. Die API zur Bereitstellung von EMS-Daten durch einen Messstellenbetreiber (MSB) an berechtigte Marktpartner. Konkret soll im ersten Entwurf eine Möglichkeit aufgezeigt werden, die Anwendungsfälle EEBUS MPC (Monitoring of Power Consumption) und EEBUS PODF (Power Demand Forecast) über die sichere iMsys Infrastruktur für berechtigte Akteure zugänglich zu machen. 
 
 
     Unterstützte Anwendungsfälle:
     
-      - EMS-DATA-01 -> Konfiguration der Datenlieferung (berchtigter Marktpartner)
-      - EMS-DATA-02 -> Antowrt auf die Konfigurationsanfrage
+      - EMS-DATA-01 -> Konfiguration der Datenlieferung (berechtigter Marktpartner)
+      - EMS-DATA-02 -> Antwort auf die Konfigurationsanfrage
       - EMS-DATA-03 -> Bereitstellung von MPC-Messwerten
       - EMS-DATA-04 -> Bereitstellung von PODF-Prognosedaten
 
