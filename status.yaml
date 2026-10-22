@@ -33,7 +33,7 @@ paths:
       tags:
         - Status Abfrage API
 
-      summary: Status-01 - Aktuelle resultierdne Steuerungshandlungen abrufen (Residualprofile)
+      summary: Status-01 - Aktuelle resultierende Steuerungshandlungen abrufen (Residualprofile)
       operationId: getActiveLimits
 
       description: >
