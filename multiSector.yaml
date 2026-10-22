@@ -4,20 +4,20 @@ info:
   title: Multi-Sector-API
   version: 0.1.2
   description: |
-    Im Förderprojekt WARAN hat das Konsortium verschiedene Anwendungsfälle in Wärmenetzen unter Einbindung des intelligenten Messsystems (iMSys) untersucht. In diesem Kontext wurde auch betrachtet, wie die heutige Struktur erweitert werden könnte, damit eine standardisierte Möglichkeit entsteht das der MSB der Sparte Strom die Zähler aus anderen Sparten und somit von anderen energiewirtschatlichen Akteuren erfassen und die Daten bereitstellen kann. Die größte Hürde besteht darin, dass andere Sparten weniger Rollen keine umfangreiche Marktkommunikation ausgeprägt habe und somit nicht ohne weiteres Dienste beim MSB bestellen können. 
+    Im Förderprojekt WARAN hat das Konsortium verschiedene Anwendungsfälle in Wärmenetzen unter Einbindung des intelligenten Messsystems (iMSys) untersucht. In diesem Kontext wurde auch betrachtet, wie die heutige Struktur erweitert werden könnte, damit eine standardisierte Möglichkeit entsteht das der MSB der Sparte Strom die Zähler aus anderen Sparten und somit von anderen energiewirtschatlichen Akteuren erfassen und die Daten bereitstellen kann. Die größte Hürde besteht darin, dass andere Sparten weniger Rollen und keine umfangreiche Marktkommunikation ausgeprägt haben und somit nicht ohne weiteres Dienste beim MSB bestellen können. 
 
 
-    Der skizzierte Lösungsweg im Projekt WARAN beruht darauf, das andere Sparten als sogenannter Energieserviceanbieter (ESA) Teilnehemer der Marktkommunikation Strom bzw. der SM-PKI werden. Perspektivisch könnte eine eigene Rolle wie bspw. "MSB-Fremdsektor" (MSB-FS) eingeführt werden Ein möglicher Ablauf zum Bestellen von Messwerten sieht dabei wie folgt aus:
+    Der skizzierte Lösungsweg im Projekt WARAN beruht darauf, das andere Sparten als sogenannter Energieserviceanbieter (ESA) Teilnehmer der Marktkommunikation Strom bzw. der SM-PKI werden. Perspektivisch könnte eine eigene Rolle wie bspw. "MSB-Fremdsektor" (MSB-FS) eingeführt werden. Ein möglicher Ablauf zum Bestellen von Messwerten sieht dabei wie folgt aus:
 
-      - Akteur der Fremdsparte (bspw. Wärmenetzbetreiber) möchte iMs Infrastruktur nutzen
+      - Akteur der Fremdsparte (bspw. Wärmenetzbetreiber) möchte iMsys Infrastruktur nutzen
       - Akteur der Fremdsparte registriert sich als ESA bei BDEW Codes und Services und beantragt Zertifikate aus der SM-PKI 
-      - Akteur der Fremdsparte hat eigene Zähler und muss zur Anbindung an ein iMs einen Bezug zu den relevanten Stammdaten des zuständigen MSB Strom herzustellen.
+      - Akteur der Fremdsparte hat eigene Zähler und muss zur Anbindung an ein iMsys einen Bezug zu den relevanten Stammdaten des zuständigen MSB Strom herstellen.
         - Möglichkeit 1: Bilateral, durch internes Wissen oder durch vor Ort Kenntnisse
         - Möglichkeit 2: Über den bestehenden MaLo-Ident Prozess. Anfrage beim VNB-Storm bzgl. Zuständigkeit MSB und bzgl. relevanter Identifier (MeLo, iMs, mMe-ID, etc.)
       - Anhand der erhaltenen Informationen kann der Akteur der Fremdsparte den entsprechenden Dienst zur Datenerfassung über den Universalbestellprozess beim MSB bestellen und die Abrechnung der Leistung kann sichergestellt werden. (Bestellcodes müssten in der Codeliste vom BDEW entsprechend erweitert werden). Altertnativ kann eine bilaterale Klärung zur kaufmännischen Abwicklung des Dienstes erfolgen. Im Bestellprozess kann der gewünschte Empfangsweg für die Messwerte festgelegt werden:
-          1. Direktentgegennahme (Sternkommunikation): Der Akteure der Fremdsparte betriebt ein EMT-System und empfängt die Werte direkt vom SMGW.
-          2.  API Empfang: Der Akteur der Drittsparte nimmt die Werte über die hier angedeuteten API Dienste entgegen.
-      - Akteur der Fremdsparte wird für den hier skizzierten API Dienst freigeschaltet und kann Zähler zur Anbindung bekannt machen und die Messwerte entgegen nehmen.
+          1. Direktentgegennahme (Sternkommunikation): Der Akteur der Fremdsparte betreibt ein EMT-System und empfängt die Werte direkt vom SMGW.
+          2. API Empfang: Der Akteur der Drittsparte nimmt die Werte über die hier angedeuteten API Dienste entgegen.
+      - Akteur der Fremdsparte wird für den hier skizzierten API Dienst freigeschaltet und kann Zähler zur Anbindung bekannt machen und die Messwerte entgegennehmen.
 
       
 
