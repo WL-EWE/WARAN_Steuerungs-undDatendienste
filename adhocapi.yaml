@@ -1,21 +1,21 @@
-openapi: 3.0.3
-
+openapi: 3.1.3
 info:
-  title: WARAN - Impuls zur Anpassung der Ad-Hoc-Steuerungs-API
-  version: 0.9.4
+  title: WARAN - Impuls zur Anpassung der Ad-Hoc-Steuerungs-API (Variante 2)
+  version: 0.9.7
   description: >
+    WARAN - Variante 2 - Update 11.2026 
+    
     Aufbauend auf dem bereits existierenden API-Webdienst zur prozessualen Abwicklung von Steuerungshandlungen (https://edi-energy.github.io/api-electricity/aktuell-gueltig/#/), werden im vorliegenden Abschnitt Erweiterungen vorgeschlagen, die es den Marktakteuren ermöglichen das volle Potential der Ad-hoc Steuerung zu nutzen. Der Vorschlag orientiert sich an der bisherigen, gültigen Version, ist aber nicht kompatibel da neue Dienste und Strukturen bzw. Bezeichnungen verwendet werden. Es handelt sich somit um einen fachlichen Vorschlag für ein neues Major Release. 
     
 
     Zur eindeutigen fachlichen Zuordnung der Steuerungsdienste, soll zunächst präzisiert werden, dass die lokale Weitergabe der Ad-hoc Steuerungshandlungen verbrauchsseitig stets über den EEBUS UseCase LPC und einspeiseseitig stets über den EEBUS UseCase LPP erfolgt.* Neben dem kurativen Ad-hoc Eingriff des Netzbetreiber (bspw. nach §14a EnWG) ist es vorgesehen die Steuerungssignale auch im Kontext weiterer netzstabilisierender Maßnahmen zu verwenden. Dazu zählen u.a. Fallbackszenarien, um im Falle von Kommunikationsstörungen oder bei Spannungswiederkehr ein definiertes Verhalten der steuerbaren Anlagen zu gewährleisten. Damit die unterschiedlichen Szenarien konfliktfrei eingesetzt werden können, sind Definitionen und Prioritäten bei der Umsetzung zu berücksichtigen. Die Berücksichtigung der Prioritäten und die Weitergabe der Steuerungshandlungen an die Steuerungseinrichtung bzw. an die steuerbare Einrichtung orientiert sich dabei u.a. an dem VDE FNN Hinweis „Steuerungs-Administration“. Insbesondere das Konzept des Residualprofils wird aufgegriffen und als geeignete Möglichkeit identifiziert, die unterschiedlichen Signale im Backend des Messstellenbetreibers zu harmonisieren. Im aktuellen Abschnitt meint das Ad-hoc Residualprofil dabei die jeweiligen LPC und LPP Werte, die als auszuführendes Array an Werten auf die Steuerungseinrichtung übertragen werden. Die Werte können dabei einen zeitlichen Horizont von mehreren Stunden oder Tagen abdecken. Jeder neue Aufruf sorgt für eine Aktualisierung des Residualprofils.
 
-
     Ingesamt ergeben sich die folgenden API Dienste die mit der entsprechenden Berechtigung beim MSB bestellt und genutzt werden können:
-      - AdHoc-01 "Priorisierte Ad-hoc Steuerungen" wird ins Residualprofil übernommen und überschreibt zyklische bzw. ältere AdHoc Steuerungshandlungen
-      - AdHoc-02 "Zyklische AdHoc Steuerung" wird ins Residualprofil übernommen und täglich wiederkehrend ausgeführt. Kann durch neuere AdHoc Anweisungen übersteuert werden. 
-      - AdHoc-03 "Softstart" Wird unabhängig vom Residualprofil aktiviert, sobald es einen unerwarteten Neustart der Steuerungseinrictung gibt (Spannungswiederkehr). Wird mit höchster Priorität ausgeführt und übersteuert somit das Ad-hoc Residualprofil.
-      - AdHoc-04 "Failsafe-Konfiguration" Konfiguration der Failsafe Werte gemäß EEBUS LPC / LPP Szenario 2
-      - AdHoc-05 "Löschen vorhandener Ad-hoc Steuerungen" setzt die Anweisungen des jeweiligen Absenders auf den ursprünglichen Zustand (i.d.R. unbegrenzt bzw. 100%) zurück. Optional kann das entsprechende Profil zum Zurücksetzen angegeben werden.
+      - AdHoc-01 "Ad-hoc Steuerungen" wird ins Residualprofil übernommen und überschreibt ältere AdHoc Steuerungshandlungen ab den neuen Startzeitpunkt 
+      - AdHoc-02 "Softstart" Wird unabhängig vom Residualprofil aktiviert, sobald es einen unerwarteten Neustart der Steuerungseinrictung gibt (Spannungswiederkehr). Wird mit höchster Priorität ausgeführt und übersteuert somit das Ad-hoc Residualprofil.
+      - AdHoc-03 "Failsafe-Konfiguration" Konfiguration der Failsafe Werte gemäß EEBUS LPC / LPP Szenario 2
+      - AdHoc-04 "Kommunikationsausfall" die Konfiguration wird im Falle einer erkannten WAN Kommunikationsstörung als Steuerungsanweisung verwendet.
+      - AdHoc-05 "Ruecknahme Ad-hoc Steuerungen" setzt die Anweisungen (AdHoc-01 bis AdHoc-04) des jeweiligen Absenders auf den ursprünglichen Zustand (i.d.R. unbegrenzt bzw. 100%) zurück.
 
 
 
@@ -34,12 +34,12 @@ tags:
 
 paths:
 
-  /adHoc/command/adhocPrio/v0:
+  /anweisung/adHoc/steuerbefehl/v0:
     post:
       tags: [Anweisung AdHoc Steuerungshandlung]
-      summary: AdHoc-01 -> Priorisierte Ad-hoc-Steuerung
+      summary: AdHoc-01 ->  Ad-hoc-Steuerung
       description: >
-        Aufbauend auf dem bestehenden API-Webdienst zur Steuerung, werden inhaltliche Anpassungen bzw. Erweiterungen vorgeschlagen. Zu den Anpassungen zählen bspw. die Berücksichtigung der Energierichtung. Die Werte werden je Energierichtung in das jeweilige Ad-hoc Residualprofil übernommen und mit hoher Priorität umgesetzt. Die Ad-hoc Residualprofile (LPC-RP / LPP-RP) können im Backend des MSB gebildet und an die Steuerungseinrichtung weitergereicht werden. Sie entsprechen dabei den Steuerungsanwendungsfällen 1 und 2 gemäß Implementierungshinweis des BSI (SAF1 / SAF2).
+        Abweichend zum bisherigen AdHoc Steuerbefehl, können beide Energierichtung angegeben werden und es können mehrere Anweisungen in einem Aufruf übermittelt werden. Außerdem sind Start- (executionTimeFrom) und Enddatum (executionTimeUntil) beide verpflichtend.
         
 
         **Mögliche energiewirtschaftliche Szenarien:**
@@ -54,9 +54,9 @@ paths:
         **„Marktliche Steuerung“ durch bspw. Direktvermarkter ist grundsätzlich auch mit Ad-hoc Steuerungssignalen umsetzbar. Es gilt zu beachten, dass der technische Use Case (LPC/LPP) nicht für die marktliche Anwendung bestimmt ist. Missverständnisse bei der Umsetzung, aufgrund der Darstellung als Netzengpasssignal auf der Kundenseite sind zu erwarten. Für die marktliche Steuerung wird daher der Flexband bzw. Hüllkurven Anwendungsfall empfohlen.
 
         
-        **Einschränkung:** "excecutionTimeUntil" darf maximal 24h in der Zukunft liegen
+        **Einschränkung:** der frühste "excecutionTimeFrom" darf maximal 24h in der Zukunft liegen
         
-      operationId: postAdHocPrio
+      operationId: postAdHoc
       parameters:
         - $ref: '#/components/parameters/transactionId'
         - $ref: '#/components/parameters/creationDateTime'
@@ -67,7 +67,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AdHocPrioRequest'
+              $ref: '#/components/schemas/AdHocRequest'
       responses:
         '202':
           description: accepted
@@ -92,74 +92,22 @@ paths:
         '504':
           description: Gateway Timeout
 
-  /adHoc/command/adhocCyclic/v0:
+ 
+
+  /konfiguration/adHoc/softstart/v0:
     post:
       tags: [Anweisung AdHoc Steuerungshandlung]
-      summary: AdHoc-02 -> Zyklische AdHoc Steuerung 
+      summary: AdHoc-02 -> Softstartprofil
       description: >
-        Erweiterung auf einen zweiten Ad-hoc Steuerungsservice der eine zyklische (täglich wiederkehrender) Ausführung ermöglicht. Erhält eine niedrigere Priorität und ist somit durch AdHoc-01 übersteuerbar. Wird ebenfalls ins jeweilige Ad-hoc Residualprofil übernommen. Entspricht fachlich weitestgehend den heutigen langfristigen Steuerungshandlungen (bspw. Leistungskurvendefinition) und kann diese Anwendungsfälle ggf. zukünftig ersetzen.
-        
-
-        **Mögliche energiewirtschaftliche Szenarien:**
-          -	VNB - §14a EnWG „präventiv” (Bis Ende 2028) -> LPC RP
-          -	VNB – Backup-Fahrplan für Kommunikationsstörung -> LPC/LPP RP
-          -	LF – Backup-Fahrplan für Kommunikationsstörung -> LPC/LPP RP**
-
-         **„Marktliche Steuerung“ durch bspw. Direktvermarkter ist grundsätzlich auch mit Ad-hoc Steuerungssignalen umsetzbar. Es gilt zu beachten, dass der technische Use Case (LPC/LPP) nicht für die marktliche Anwendung bestimmt ist. Missverständnisse bei der Umsetzung, aufgrund der Darstellung als Netzengpasssignal auf der Kundenseite sind zu erwarten. Für die marktlichen Steuerung wird daher der Flexband bzw. Hüllkurven Anwendungsfall empfohlen.
-
-        **Einschränkung:** Es darf maximal eine zyklische Steuerung je Absender und Energierichtung zur Zeit geben. Ein neuer Aufruf überschreibt andernfalls ältere zyklische Anweisungen.
-
-      operationId: postAdHocZyklisch
-      parameters:
-        - $ref: '#/components/parameters/transactionId'
-        - $ref: '#/components/parameters/creationDateTime'
-        - $ref: '#/components/parameters/initialTransactionId'
-       # - $ref: '#/components/parameters/controlActor'
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/AdHocZyklischRequest'
-      responses:
-        '202':
-          description: accepted
-        '400':
-          description: Bad Request
-        '401':
-          description: Unauthorized
-        '404':
-          description: Not Found
-        '405':
-          description: Method not allowed
-        '415':
-          description: Unsupported Media Type
-        '422': 
-          description: Unprocessable Entity
-        '429':
-          description: Too Many Requests
-        '500':
-          description: Internal Server Error
-        '503':
-          description: Service Unavailable
-        '504':
-          description: Gateway Timeout
-
-  /adHoc/parameter/softstart/v0:
-    post:
-      tags: [Anweisung AdHoc Steuerungshandlung]
-      summary: AdHoc-03 -> Softstartprofil
-      description: >
-        Ein Softstart Ad-hoc Profil (LPC/LPP SSt) welches dediziert auf der Steuerungseinrichtung hinterlegt wird und nur bei einer lokalen Spannungsunterbrechung aktiviert wird. Wird mit höchster Priorität ausgeführt und übersteuert somit das Ad-hoc Residualprofil (LPC RP / LPP RP). Sofern die Verbindung zum Backend wieder hergestellt ist, wird ein aktiviertes Softstartprofil über den API Dienst "AdHoc-08" transparent gemacht und kann über den API Dienst "AdHoc-05" zurückgesetzt werden. Soll ein bereits hinterlegtes Softartprofil von der Steuerungseinrichtung entfernt werden, muss ein leeres Softstartprofil gesendet werden. 
-        Die Softstart Profile (LPC SSt / LPP SSt) entsprechen den Steuerungsanwendungsfällen 5 und 6 gemäß Implementierungshinweis des BSI (SAF5 / SAF6). 
+        Ein Softstart Ad-hoc Profil (LPC/LPP SSt) welches dediziert auf der Steuerungseinrichtung hinterlegt wird und nur bei einer lokalen Spannungsunterbrechung aktiviert wird. Wird mit höchster Priorität ausgeführt und übersteuert somit das Ad-hoc Residualprofil (LPC RP / LPP RP). Sofern die Verbindung zum Backend wieder hergestellt ist, wird ein aktiviertes Softstartprofil über den API Dienst "AdHoc-08" transparent gemacht und kann über den API Dienst "AdHoc-05" zurückgesetzt werden. 
+        Die Softstart Profile entsprechen den Steuerungsanwendungsfällen 5 und 6 gemäß Implementierungshinweis des BSI (SAF5 / SAF6). 
 
 
         **Mögliche energiewirtschaftliche Szenarien:**
           - VNB - Netzstabilität nach Spannungswiederkehr -> LPC/LPP SSt
 
         **Einschränkung:** Nur durch den VNB zulässig
-        
-      operationId: postSoftstart
+      
       parameters:
         - $ref: '#/components/parameters/transactionId'
         - $ref: '#/components/parameters/creationDateTime'
@@ -170,7 +118,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SoftstartRequest'
+              $ref: '#/components/schemas/SoftstartRequest'  
       responses:
         '202':
           description: accepted
@@ -193,12 +141,13 @@ paths:
         '503':
           description: Service Unavailable
         '504':
-          description: Gateway Timeout
+          description: Gateway Timeout        
 
-  /adHoc/parameter/failsafe/v0:
+
+  /konfiguration/adHoc/failsafe/v0:
     post:
       tags: [Anweisung AdHoc Steuerungshandlung]
-      summary: AdHoc-04 -> Failsafe-Konfiguration
+      summary: AdHoc-03 -> Failsafe-Konfiguration
       description: >
         Konfiguration des Failsafe Werte gemäß EEBUS LPC / LPP Szenario 2. Wird über die Infrastruktur bis zur steuerbaren Anlage durchgereicht und dort bei lokalem Kommunikationsausfall aktiviert.
         Die Failsafe Werte (LPC FS / LPP FS) entsprechen den Steuerungsanwendungsfällen 3 und 4 gemäß Implementierungshinweis des BSI (SAF3 / SAF4).
@@ -246,15 +195,64 @@ paths:
         '504':
           description: Gateway Timeout
 
-  /adHoc/reset/v0:
+  /konfiguration/adHoc/wanFailure/v0:
     post:
       tags: [Anweisung AdHoc Steuerungshandlung]
-      summary: AdHoc-05 -> Reset vorhandener Ad-hoc-Steuerungen
+      summary: AdHoc-04 -> Kommunikationsausfall (nur bei FNN Steuerbox)
       description: >
-        Erlaubt die Deaktivierung oder das Zurücksetzen von zuvor übermittelten AdHoc Steuerungsprofilen. Es werden alle betroffenen Einträge des Absenders, die nach dem gewünschten Änderungszeitpunkt liegen, im jeweiligen AdHoc Profil adressiert (also gelöscht oder zurückgesetzt). Für die Profile "AdHoc-01" und "AdHoc-02" bedeutet der Aufruf, dass alle Einträge nach der definierten "adHocStopTime" aus dem jeweiligen Residualprofil entfernt werden und somit nicht mehr bzw. nur verkürzt als bis zur Endzeit umgesetzt werden. Für das Softstart Profil "AdHoc-03" gilt eine Besonderheit, hier sorgt der Reset-Aufruf lediglich für ein Zurücksetzen des aktiven Softstartprofils zum gewünschten Zeitpunkt. Diese ist nur umsetzbar, sofern auch ein Softstart aktiviert wurde (diese Information wird über den entsprechenden Informationsdienst "AdHoc-08" transparent gemacht). Das grundsätzliche Softstartprofil bleibt also erhalten und wird nach der nächsten Spannungsunterbrechung erneut aktiviert. Soll das Softstartprofil von der Steuerungseinrichtung entfernt werden, muss über den entsprechnden Aufruf "AdHoc-03" ein leeres Softstartprofil gesendet werden.
+        TBA
+        
+        **Mögliche energiewirtscgaftliche Szenarien:**
+          - VNB – Definiertes Verhalten bei einer WAN-Kommunikationsstörung 
+          
+        **Einschränkung:** Nur durch den VNB zulässig
 
 
-        Wird keine "adHocStopTime" angegeben, wirkt der Befehl unverzüglich. Wenn kein "stopProfile" angegeben wird, wirkt der Befehl für alle aktiven Profile des Absenders. Betroffen sind immer beide Energierichtungen.
+      operationId: communicationFailure
+      parameters:
+        - $ref: '#/components/parameters/transactionId'
+        - $ref: '#/components/parameters/creationDateTime'
+        - $ref: '#/components/parameters/initialTransactionId'
+       # - $ref: '#/components/parameters/controlActor'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/communicationFailure'
+      responses:
+        '202':
+          description: accepted
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+        '405':
+          description: Method not allowed
+        '415':
+          description: Unsupported Media Type
+        '422': 
+          description: Unprocessable Entity
+        '429':
+          description: Too Many Requests
+        '500':
+          description: Internal Server Error
+        '503':
+          description: Service Unavailable
+        '504':
+          description: Gateway Timeout
+
+  /ruecknahme/adHoc/steuerbefehl/v0:
+    post:
+      tags: [Anweisung AdHoc Steuerungshandlung]
+      summary: AdHoc-05 -> Ruecknahme Ad-hoc-Steuerungen
+      description: >
+        Erlaubt die Deaktivierung oder das Zurücksetzen von zuvor übermittelten AdHoc Steuerungsprofilen. Es werden alle betroffenen Einträge des Absenders, die nach dem gewünschten Änderungszeitpunkt liegen, im jeweiligen AdHoc Profil adressiert (also gelöscht oder zurückgesetzt). Für die Profile "AdHoc-01" und "AdHoc-03" und "AdHoc-04" bedeutet der Aufruf, dass alle Einträge nach der definierten "adHocStopTime" entfernt werden und somit nicht mehr bzw. nur verkürzt also bis zur Endzeit umgesetzt werden. Für das Softstart Profil "AdHoc-02" gilt eine Besonderheit, hier muss zusätzlich angegeben werden, ob die Werte gelöscht werden sollen (deleteSoftstart=true) oder nur zurückgesetzt werden sollen (deleteSoftstart=false). Das Zuruecksetzen setzt voraus, das ein Softstart aktiviert wurde (diese Information wird über den entsprechenden Informationsdienst "AdHoc-08" transparent gemacht). Das grundsätzliche Softstartprofil bleibtn bei Zuruecksetzen also erhalten und wird nach der nächsten Spannungsunterbrechung erneut aktiviert. 
+
+
+        Wird keine "adHocStopTime" angegeben, wirkt der Befehl unverzüglich. Betroffen sind immer beide Energierichtungen.
 
       operationId: postInitialZustand
       parameters:
@@ -343,7 +341,7 @@ paths:
       tags: [Antwort AdHoc Steuerungshandlung]
       summary: AdHoc-07 -> Finale Antwort
       description: >
-       Anpassung und Erweiterung der finalen Rückmeldung. Unter anderem wurden zusätzliche ResponseCodes eingeführt, um eine möglichst präzise Rückmeldung an den auslösenden Akteur zu übermitteln.
+       Anpassung und Erweiterung der finalen Rückmeldung. Unter anderem wurde das aktuelle Residualprofil, sowie zusätzliche ResponseCodes eingeführt, um eine möglichst präzise Rückmeldung an den auslösenden Akteur zu übermitteln.
 
        Die finale Antwort wird unmittelbar nach erfolgreicher Konfiguration der Steuerungsanweisung versendet, d.h. sobald die Steuerungseinrichtung den Befehl erfolgreich entgegengenommen hat.
 
@@ -490,6 +488,68 @@ components:
        # example: 9900496000005
 
   schemas:
+    PowerLimits:
+      type: object
+      properties:
+        activePowerValue:
+          type: number
+          format: double
+          example: 4.123
+
+        executionTimeFrom:
+          type: string
+          format: date-time
+          example: "2026-08-01T12:30:00Z"
+
+        executionTimeUntil:
+          type: string
+          format: date-time
+          example: "2026-08-01T14:45:00Z"
+
+      required:
+        - activePowerValue
+        - executionTimeFrom
+        - executionTimeUntil
+    AdHocReason:
+      type: string
+      description: >
+        Der AdHocReason dient der Transparenz über den Anlass einer Ad-hoc-Steuerung.
+        Die Angabe kann für Dokumentations-, Nachweis- und Veröffentlichungspflichten
+        verwendet werden. Die Angabe ist zunächst optional/freiwillig.
+      enum:
+        - LEGAL_REGULATORY
+        - CONTRACT
+        - TEST
+      example: TEST
+
+    AdHocItem:
+      allOf:
+        - $ref: '#/components/schemas/LocationReference'       
+        - type: object
+          properties:
+            maximumPowerValuesConsumption:
+              type: array
+              minItems: 1
+              items:
+                $ref: '#/components/schemas/PowerLimits'
+
+            maximumPowerValuesProduction:
+              type: array
+              minItems: 1
+              description: Maximale Einspeiseleistung
+              items:
+                $ref: '#/components/schemas/PowerLimits'
+
+          anyOf:
+            - title: Verbrauchslimit (maximumPowerValuesConsumption)
+              required:
+                - maximumPowerValuesConsumption
+            - title: Einspeiselimit (maximumPowerValuesProduction)
+              required:
+               - maximumPowerValuesProduction
+
+    AdHocRequest:
+      $ref: '#/components/schemas/AdHocItem'
 
     LocationReference:
       type: object
@@ -502,20 +562,8 @@ components:
           pattern: '^C[A-Z0-9]{9}[0-9]$'
           example: C1234848431
 
-    AdHocDirection:
-      type: string
-      enum:
-        - Production
-        - Consumption
 
-    AdHocReason:
-      type: string
-      description: >
-       Die Angabe eines AdHocReason sorgt für eine Transparenz und kann u.a. für Dokumentationen und Veröffentlichungspflichten genutzt werden. Neben gesetzlich vorgeschriebenen Gründen (bspw. §14a EnWG) kann es eine vertragliche Basis geben (bspw. bei marktlichen Akteuren). Außerdem kann "Test" als Grund angegeben werden und explizit für Teststeuerungen eingesetzt werden.
-      enum:
-        - Legal/Regulatory
-        - Contract
-        - Test
+
 
     PowerInterval:
       type: object
@@ -589,169 +637,303 @@ components:
               pattern: '^([01]\d|2[0-3]):[0-5]\d:[0-5]\dZ$'
 
               example: "18:15:00Z"
-    
-    AdHocPrioItem:
+
+
+    communicationFailureItem:
       allOf:
         - $ref: '#/components/schemas/LocationReference'
         - type: object
-          required:
-            - adHocReason
-            - adHocDirection
-            - adHocMaximumValues
           properties:
-            adHocReason:
-              $ref: '#/components/schemas/AdHocReason'
-            adHocDirection:
-              $ref: '#/components/schemas/AdHocDirection'
-            adHocMaximumValues:
+            connectionTimeout:
+              type: integer
+              minimum: 60
+              description: Maximale Dauer eines Kommunikationsausfalls in Sekunden, bevor die Communication-Failure-Werte aktiviert werden.
+              example: 120
+
+            wanFailureValuesConsumption:
               type: array
+              minItems: 1
+              maxItems: 1
               items:
-                $ref: '#/components/schemas/ExecutionPowerInterval'
+                $ref: '#/components/schemas/DurationPowerInterval'
 
-    AdHocPrioRequest:
-        $ref: '#/components/schemas/AdHocPrioItem'
-
-    AdHocZyklischItem:
-      allOf:
-        - $ref: '#/components/schemas/LocationReference'
-        - type: object
-          required:
-            - adHocReason
-            - adHocDirection
-            - executionRange
-            - adHocMaximumValues
-          properties:
-            adHocReason:
-              $ref: '#/components/schemas/AdHocReason'
-            adHocDirection:
-              $ref: '#/components/schemas/AdHocDirection'
-            executionRange:
-              $ref: '#/components/schemas/ExecutionInterval'
-
-            adHocMaximumValues:
+            wanFailureValuesProduction:
               type: array
-              maxItems: 96
+              minItems: 1
+              maxItems: 1
               items:
-                $ref: '#/components/schemas/PowerIntervalHHMM'
+                $ref: '#/components/schemas/DurationPowerInterval'
+
+          anyOf:
+            - required:
+                - wanFailureValuesConsumption
+            - required:
+                - wanFailureValuesProduction
 
 
 
-    AdHocZyklischRequest:
-        $ref: '#/components/schemas/AdHocZyklischItem'
+    communicationFailure:
+        $ref: '#/components/schemas/communicationFailureItem'
 
     SoftstartRequest:
-        allOf:
-          - $ref: '#/components/schemas/LocationReference'   
-          - type: object
-            properties:
-              softstartValuesMaxProduction:
-                type: array
-                items:
-                  $ref: '#/components/schemas/DurationPowerInterval'
-                example:
-                  - activePowerValue: 0
-                    duration: 900
-                  - activePowerValue: 4.2
-                    duration: 3600
-              softstartValuesMaxConsumption:
-                type: array
-                items:
-                  $ref: '#/components/schemas/DurationPowerInterval'
-                example:
-                  - activePowerValue: 2
-                    duration: 900
-                  - activePowerValue: 4.2
-                    duration: 3600
+      allOf:
+        - $ref: '#/components/schemas/LocationReference'
+        - type: object
+          properties:
+            softstartValuesMaxProduction:
+              type: array
+              minItems: 1
+              items:
+                $ref: '#/components/schemas/DurationPowerInterval'
+
+            softstartValuesMaxConsumption:
+              type: array
+              minItems: 1
+              items:
+                $ref: '#/components/schemas/DurationPowerInterval'
+
+          anyOf:
+            - required:
+                - softstartValuesMaxProduction
+            - required:
+                - softstartValuesMaxConsumption
+
 
     FailsafeRequest:
-        allOf:
-          - $ref: '#/components/schemas/LocationReference'  
-          - type: object
-            properties:
-              failsafeValueProduction:
-                $ref: '#/components/schemas/DurationPowerInterval'
-              failsafeValueConsumption:
-                $ref: '#/components/schemas/DurationPowerInterval'
+      allOf:
+        - $ref: '#/components/schemas/LocationReference'
+        - type: object
+          properties:
+            failsafeValueProduction:
+              $ref: '#/components/schemas/DurationPowerInterval'
+
+            failsafeValueConsumption:
+              $ref: '#/components/schemas/DurationPowerInterval'
+
+          anyOf:
+            - required:
+                - failsafeValueProduction
+            - required:
+                - failsafeValueConsumption
 
     InitialZustandRequest:
       allOf:
-          - $ref: '#/components/schemas/LocationReference'  
-          - type: object
-            properties:
-        
-              adHocStopTime:
-                type: string
-                format: date-time
-              stopProfile:
-                type: string
-                example: "AdHoc-01"
-                enum:
-                  - AdHoc-01
-                  - AdHoc-02
-                  - AdHoc-03
+        - $ref: '#/components/schemas/LocationReference'
+        - oneOf:
+            - type: object
+              description: >
+                Ruecknahme der Steuerungsanweisung(en) (AdHoc-01),
+                der Failsafe-Werte (AdHoc-03) oder der Kommunikationsausfall-Werte (AdHoc-04). Das Feld deleteSofstart darf entfallen
+              required:
+                - stopProfile
+              properties:
+                stopProfile:
+                  type: string
+                  enum:
+                    - AdHoc-01
+                    - AdHoc-03
+                    - AdHoc-04
+                adHocStopTime:
+                  type: string
+                  format: date-time
+                  description: Ohne Zeitangabe wird das angegebene Profil schnellstmöglich beendet.
+
+
+            - type: object
+              description: >
+                Ruecknahme der Softstart-Werte (AdHoc-02).
+                In diesem Fall muss das Feld deleteSofstart angegeben werden.
+              required:
+                - stopProfile
+                - deleteSofstart
+              properties:
+                stopProfile:
+                  type: string
+                  enum:
+                    - AdHoc-02
+                adHocStopTime:
+                  type: string
+                  format: date-time
+                  description: Ohne Zeitangabe wird das angegebene Profil schnellstmöglich beendet.
+
+                deleteSofstart:
+                  type: boolean
 
 
     PreliminaryResponse:
       allOf:
-          - $ref: '#/components/schemas/LocationReference'  
-          - type: object
-            required:
-              - preliminaryState
-              - preliminaryResponseCode
-            properties:
-              preliminaryState:
-                type: string
-                enum: [possible, unable]
-                example: "unable"
-              preliminaryResponseCode:
-                type: string
-                enum: [succeeded, communicationFailure, overload, maintanance, missing contract, invalid message, unable]
-                description: >
-                  succeeded = erfolgreiche Verarbeitung; 
-                  communicationFailure = temporäre Störung in der Gerätekommunikation; 
-                  localFailure = Gerät(e) Störung - wird durch Außendienst behoben;
-                  customerInteractionRequired = Mitwirkung durch den Betreiber notwendig (bspw. SHIP Pairing);
-                  overload = Überlastung der Kommunikationsstrecke;
-                  missing contract = Keine gültige Berechtigung;
-                  invalid message = Nachricht enthält fachliche Fehler;
-                  unable = Sonstiger Fehler, siehe weitere Fehlerbeschreibung.
-                example: "customerInteractionRequired"
-              preliminaryReason:
-                type: string
-                example: "Fehlendes Pairing zwischen der Steuerungseinrichtung und der steuerbaren Einrichtung des Betreibers. Eine Kundeninteraktion ist notwendig"
+        - $ref: '#/components/schemas/LocationReference'
 
+        - type: object
+          required:
+            - preliminaryState
+            - preliminaryResponseCode
 
+          properties:
+            preliminaryState:
+              type: string
+              enum:
+                - possible
+                - unable
+
+            preliminaryResponseCode:
+              type: string
+              enum:
+                - succeeded
+                - localFailure
+                - communicationFailure
+                - customerInteractionRequired
+                - overload
+                - maintenance
+                - missingContract
+                - notSupported
+                - invalidCommand
+                - unable
+              description: >
+                localFailure = Gerätestörung, wird durch Außendienst behoben;
+                customerInteractionRequired = Mitwirkung durch den Betreiber notwendig (z. B. SKI Pairing);
+                communicationFailure = Kommunikationsverbindung nicht verfügbar;
+                overload = Überlastung der Kommunikationsstrecke;
+                maintenance = Wartungsarbeiten, vorübergehend nicht umsetzbar;
+                missingContract = Keine gültige Berechtigung;
+                notSupported = Anwendungsfall an der Lokation nicht möglich;
+                invalidCommand = Nachricht enthält fachliche Fehler;
+                unable = Sonstiger Fehler
+
+            preliminaryReason:
+              type: string
+              example: "Erfolgreich validiert - Umsetzung möglich"
+
+          allOf:
+            - if:
+                properties:
+                  preliminaryState:
+                    const: possible
+              then:
+                properties:
+                  preliminaryResponseCode:
+                    enum:
+                      - succeeded
+
+              else:
+                required:
+                  - preliminaryReason
+
+                properties:
+                  preliminaryResponseCode:
+                    enum:
+                      - localFailure
+                      - communicationFailure
+                      - customerInteractionRequired
+                      - overload
+                      - maintenance
+                      - missingContract
+                      - notSupported
+                      - invalidCommand
+                      - unable
     FinalResponse:
       allOf:
-          - $ref: '#/components/schemas/LocationReference'  
-          - type: object
-            required:
-              - adHocState
-              - adHocReason
-            example:
-                locationId: C1234848431
-                adHocState: possible
-                adHocResponseCode: succeeded 
-                adHocReason: AdHoc-Residualprofil erfolgreich in der Steuerungseinrichtung aktiviet.
-            properties:
-              adHocState:
-                type: string
-                enum: [possible, unable]
-              adHocResponseCode:
-                type: string
-                enum: [succeeded, communicationFailure, overload, maintanance, missing contract, invalid message, unable]
-                description: >
-                  succeeded = erfolgreiche Verarbeitung; 
-                  communicationFailure = temporäre Störung in der Gerätekommunikation; 
-                  localFailure = Gerät(e) Störung - wird durch Außendienst behoben;
-                  customerInteractionRequired = Mitwirkung durch den Betreiber notwendig (bspw. SHIP Pairing);
-                  overload = Überlastung der Kommunikationsstrecke;
-                  missing contract = Keine gültige Berechtigung;
-                  invalid message = Nachricht enthält fachliche Fehler;
-                  unable = Sonstiger Fehler, siehe weitere Fehlerbeschreibung.
-              adHocReason:
-                type: string
-                description: Freitext zur weiteren Fehlerbeschreibung
+        - $ref: '#/components/schemas/LocationReference'
+        - type: object
+          required:
+            - adHocState
+            - adHocResponseCode
+
+          example:
+            locationId: C1234848431
+            adHocState: possible
+            adHocResponseCode: succeeded
+            adHocReason: AdHoc-Residualprofil erfolgreich in der Steuerungseinrichtung aktiviert.
+            residualLimits:
+              adHocResidualMaxConsumption:
+                - executionTimeFrom: "2026-01-01T00:00:00Z"
+                  executionTimeUntil: "2026-01-01T01:00:00Z"
+                  activePowerValue: 4500
+                - executionTimeFrom: "2026-01-01T01:00:00Z"
+                  executionTimeUntil: "2026-01-01T02:00:00Z"
+                  activePowerValue: 5000
+              adHocResidualMaxProduction:
+                - executionTimeFrom: "2026-01-01T00:00:00Z"
+                  executionTimeUntil: "2026-01-01T01:00:00Z"
+                  activePowerValue: 3000
+
+          properties:
+            adHocState:
+              type: string
+              enum:
+                - possible
+                - unable
+
+            adHocResponseCode:
+              type: string
+              enum:
+                - succeeded
+                - localFailure
+                - communicationFailure
+                - customerInteractionRequired
+                - overload
+                - maintenance
+                - missingContract
+                - notSupported
+                - invalidCommand
+                - unable
+              description: >
+                succeeded = erfolgreiche Verarbeitung;
+                localFailure = Gerätestörung, wird durch Außendienst behoben;
+                communicationFailure = temporäre Störung in der Gerätekommunikation;
+                customerInteractionRequired = Mitwirkung durch den Betreiber notwendig (z. B. SHIP Pairing);
+                overload = Überlastung der Kommunikationsstrecke;
+                maintenance = Wartungsarbeiten, vorübergehend nicht umsetzbar;
+                missingContract = Keine gültige Berechtigung;
+                notSupported = Anwendungsfall an der Lokation nicht möglich;
+                invalidCommand = Nachricht enthält fachliche Fehler;
+                unable = Sonstiger Fehler.
+
+            adHocReason:
+              type: string
+              description: Freitext zur Erläuterung des Ergebnisses
+              example: "Erfolgreich validiert und in der Steuerungseinrichtung aktiviert."
+
+            residualLimits:
+              type: object
+              description: Optional berechnete Residualleistungsgrenzen.
+              properties:
+                adHocResidualMaxConsumption:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/PowerLimits'
+
+                adHocResidualMaxProduction:
+                  type: array
+                  description: Liste von Residualprofilen für die maximale Einspeisung.
+                  items:
+                    $ref: '#/components/schemas/PowerLimits'
+
+          allOf:
+            - if:
+                properties:
+                  adHocState:
+                    const: possible
+              then:
+                properties:
+                  adHocResponseCode:
+                    enum:
+                      - succeeded
+              else:
+                required:
+                  - adHocReason
+                properties:
+                  adHocResponseCode:
+                    enum:
+                      - localFailure
+                      - communicationFailure
+                      - customerInteractionRequired
+                      - overload
+                      - maintenance
+                      - missingContract
+                      - notSupported
+                      - invalidCommand
+                      - unable            
 
     InformationRequest:
       allOf:
@@ -766,15 +948,12 @@ components:
             # adHocEndDate:
             #   type: string
             #   format: date-time
-              adHocPrioValues:
+              adHocValues:
                 type: array
                 items:
-                  $ref: '#/components/schemas/AdHocPrioItem'
+                  $ref: '#/components/schemas/AdHocItem'
 
-              adHocZyklisch:
-                type: array
-                items:
-                  $ref: '#/components/schemas/AdHocZyklischItem'
+
               
               adHocSoftstart:
                 type: array
