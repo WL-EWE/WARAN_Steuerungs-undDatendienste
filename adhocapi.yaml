@@ -1,6 +1,6 @@
 openapi: 3.1.3
 info:
-  title: WARAN - Impuls zur Anpassung der Ad-Hoc-Steuerungs-API (Variante 2)
+  title: WARAN - Impuls zur Anpassung der Ad-Hoc-Steuerungs-API (V2)
   version: 0.9.7
   description: >
     **WARAN - Variante 2 - Update 11.2026** 
