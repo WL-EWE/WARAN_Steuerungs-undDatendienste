@@ -628,7 +628,7 @@
             adhocSimulator: "adhocsimulator.html"
         };
         
-        const hash = window.location.hash.slice(1);
+        const hash = window.location.hash.slice(1).toLowerCase();
         
         if (hiddenPages[hash]) {
             window.location.replace(hiddenPages[hash]);
