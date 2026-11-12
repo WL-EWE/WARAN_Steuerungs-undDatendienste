@@ -3,7 +3,7 @@ info:
   title: WARAN - Impuls zur Anpassung der Ad-Hoc-Steuerungs-API (Variante 2)
   version: 0.9.7
   description: >
-    WARAN - Variante 2 - Update 11.2026 
+    **WARAN - Variante 2 - Update 11.2026** 
     
     
     Aufbauend auf dem bereits existierenden API-Webdienst zur prozessualen Abwicklung von Steuerungshandlungen (https://edi-energy.github.io/api-electricity/aktuell-gueltig/#/), werden im vorliegenden Abschnitt Erweiterungen vorgeschlagen, die es den Marktakteuren ermöglichen das volle Potential der Ad-hoc Steuerung zu nutzen. Der Vorschlag orientiert sich an der bisherigen, gültigen Version, ist aber nicht kompatibel da neue Dienste und Strukturen bzw. Bezeichnungen verwendet werden. Es handelt sich somit um einen fachlichen Vorschlag für ein neues Major Release. 
