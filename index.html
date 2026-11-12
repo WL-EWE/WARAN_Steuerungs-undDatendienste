@@ -553,8 +553,8 @@
             flexband: { title: "Flexband API", url: "flexband.yaml" },
             status: { title: "Status API", url: "status.yaml" },
             eebusData: { title: "EMS Data API", url: "eebus-data.yaml" },
-            multiSector: { title: "MultiSectorAPI", url: "multiSector.yaml" },
-            adHocSimulator: { title: "AdHoc Simulator", url: "adHocSimulator.html" }
+            multiSector: { title: "MultiSectorAPI", url: "multiSector.yaml" }
+            
         };
 
         const overview = document.getElementById("overview");
@@ -608,13 +608,25 @@
         }
 
         function navigate(page, updateHash = true) {
+        
+            // adhocSimulator - vorerst versteckt 
+            if (page === "adhocSimulator") {
+                window.location.href = "adhocsimulator.html";
+                return;
+            }
+        
             const targetPage = apiPages[page] ? page : "overview";
+        
             if (updateHash && window.location.hash !== "#" + targetPage) {
                 window.location.hash = targetPage;
                 return;
             }
+        
             if (targetPage === currentPage) return;
-            targetPage === "overview" ? showOverview() : showApi(targetPage);
+        
+            targetPage === "overview"
+                ? showOverview()
+                : showApi(targetPage);
         }
 
         document.addEventListener("click", (event) => {
