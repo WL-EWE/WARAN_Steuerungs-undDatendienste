@@ -623,7 +623,16 @@
             event.preventDefault();
             navigate(trigger.dataset.page);
         });
-
+        // Versteckte HTML-Seiten
+        const hiddenPages = {
+            adhocSimulator: "adhocsimulator.html"
+        };
+        
+        const hash = window.location.hash.slice(1);
+        
+        if (hiddenPages[hash]) {
+            window.location.replace(hiddenPages[hash]);
+        }
         window.addEventListener("hashchange", () => navigate(window.location.hash.slice(1), false));
         navigate(window.location.hash.slice(1) || "overview", false);
     </script>
