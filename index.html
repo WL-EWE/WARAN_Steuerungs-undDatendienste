@@ -608,26 +608,14 @@
         }
 
         function navigate(page, updateHash = true) {
-        
-            // adhocSimulator - vorerst versteckt 
-            if (page === "adhocSimulator") {
-                window.location.href = "adhocsimulator.html";
-                return;
-            }
-        
             const targetPage = apiPages[page] ? page : "overview";
-        
             if (updateHash && window.location.hash !== "#" + targetPage) {
                 window.location.hash = targetPage;
                 return;
             }
-        
             if (targetPage === currentPage) return;
-        
-            targetPage === "overview"
-                ? showOverview()
-                : showApi(targetPage);
-        }
+            targetPage === "overview" ? showOverview() : showApi(targetPage);
+        }      
 
         document.addEventListener("click", (event) => {
             const trigger = event.target.closest("[data-page]");
